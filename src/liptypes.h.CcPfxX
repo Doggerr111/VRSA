@@ -1,0 +1,25 @@
+#ifndef LIPTYPES_H
+#define LIPTYPES_H
+
+
+
+class LIPTypes
+{
+public:
+    enum class LIPCrs {};
+    /**
+     * @brief Geometry types
+     */
+
+    enum class LIPGeometryType{
+        LIPPoint,
+        LIPMultiPoint,
+        LIPLineString,
+        LIPMultiLineString,
+        LIPPolygon,
+        LIPMultiPoligon
+    };
+    LIPTypes();
+};
+
+#endif // LIPTYPES_H
