@@ -24,7 +24,7 @@ bool LIPVectorTypeChecker::isLineLayer(LIPVectorLayer *layer)
 bool LIPVectorTypeChecker::isPolygonLayer(LIPVectorLayer *layer)
 {
     //LIPPolygonLayer *newLayer = dynamic_cast<LIPPolygonLayer*>(layer);
-    if (dynamic_cast<LIPPolygonLayer*>(layer))
+    if (dynamic_cast<LIPPolygonLayer*>(layer)==nullptr)
         return false;
     return true;
 }
