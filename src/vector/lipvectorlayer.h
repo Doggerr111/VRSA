@@ -41,7 +41,7 @@ public:
     virtual void selectFeature(int index);
 
 signals:
-    void needRepaint(LIPVectorLayer*);
+    void needRepaint();
 
 public slots:
     virtual void setSceneScaleFactor(double factor);
