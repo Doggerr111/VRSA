@@ -42,6 +42,7 @@ protected:
 public slots:
     void drawVectorLayer(LIPVectorLayer*);
     void redrawVectorLayer(LIPVectorLayer*);
+    void updateVectorLayer();
     void addPointFeature();
 private:
     QPointF clickPos;

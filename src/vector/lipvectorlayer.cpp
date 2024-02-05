@@ -64,7 +64,7 @@ bool LIPVectorLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSyst
 
 void LIPVectorLayer::update()
 {
-    emit needRepaint(this);
+    emit needRepaint();
 }
 /////////////
 std::map<int, QVector<LIPAttribute>> LIPVectorLayer::getAttributes()

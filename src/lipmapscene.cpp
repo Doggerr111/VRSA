@@ -261,6 +261,55 @@ void LIPMapScene::redrawVectorLayer(LIPVectorLayer *)
 
 }
 
+void LIPMapScene::updateVectorLayer()
+{
+    LIPVectorLayer *layer = qobject_cast<LIPVectorLayer *>(sender());
+    if (layer!=nullptr)
+    {
+        LIPPointLayer* pointLayer=dynamic_cast<LIPPointLayer*>(layer);
+        if (pointLayer!=nullptr)
+        {
+            pointLayer->setMapFeatures(); //для создания графических айтемов
+            for (int i=0; i<pointLayer->returnMapFeatures().size(); i++)
+            {
+                if (!items().contains(pointLayer->returnMapFeatures().at(i)))
+                    addItem(pointLayer->returnMapFeatures().at(i));
+            }
+
+        }
+        else
+        {
+            LIPLineLayer* lineLayer=dynamic_cast<LIPLineLayer*>(layer);
+            if(lineLayer!=nullptr)
+            {
+                lineLayer->setMapFeatures(); //для создания графических айтемов
+                for (int i=0; i<lineLayer->returnMapFeatures().size(); i++)
+                {
+                    if (!items().contains(lineLayer->returnMapFeatures().at(i)))
+                        addItem(lineLayer->returnMapFeatures().at(i));
+                }
+
+            }
+            else
+            {
+                LIPPolygonLayer* polyLayer=dynamic_cast<LIPPolygonLayer*>(layer);
+                if(polyLayer!=nullptr)
+                {
+                    polyLayer->setMapFeatures(); //для создания графических айтемов
+                    for (int i=0; i<polyLayer->returnMapFeatures().size(); i++)
+                    {
+                        if (!items().contains(polyLayer->returnMapFeatures().at(i)))
+                            addItem(polyLayer->returnMapFeatures().at(i));
+                    }
+
+                }
+            }
+
+    }
+    }
+
+}
+
 void LIPMapScene::addPointFeature()
 {
     //delete this;
