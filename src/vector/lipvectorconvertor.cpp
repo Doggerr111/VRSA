@@ -78,6 +78,7 @@ GeometryFactory LIPVectorConvertor::buildPolygonFromCoordinateSeq(CoordinateSequ
 
 std::unique_ptr<geos::geom::Geometry> LIPVectorConvertor::getGeosGeometryFromCoordinates(QVector<QVector<LIPPoint *> > cords, LIPGeometryType geomType)
 {
+
     auto factory = geos::geom::GeometryFactory::create();
     geos::io::WKTReader reader(factory.get());
     QString wktFormat;
@@ -122,6 +123,25 @@ std::unique_ptr<geos::geom::Geometry> LIPVectorConvertor::getGeosGeometryFromCoo
 
 
 }
+
+std::unique_ptr<MultiPolygon> LIPVectorConvertor::vectorPointstoGeosPolygon(QVector<QVector<LIPPoint *> > lipPoints)
+{
+    auto geomFac = geos::geom::GeometryFactory::create();
+    std::vector<std::unique_ptr<geos::geom::Polygon>> geosPolygons;
+    for (auto vec: lipPoints)
+    {
+        if (vec.size()>=3) //проверка, что в слое нет некорректных полигонов
+        {
+            geos::geom::CoordinateSequence points=LIPPointsToGeosCoordinateSequence(vec);
+            points.add(vec[0]->x(), vec[0]->y()); //ЗАКРЫВАЕМ ПОЛИГОН!!
+            qDebug()<<points.size();
+            auto poly=geomFac->createPolygon(std::move(points));
+            geosPolygons.push_back(std::move(poly));
+        }
+    }
+    return geomFac->createMultiPolygon(std::move(geosPolygons));
+}
+
 
 //geos::geom::Point LIPVectorConvertor::QPointFtoGeosPoint(QPointF qtPoint)
 //{

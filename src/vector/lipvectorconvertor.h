@@ -20,6 +20,7 @@
 #include <geos/geom/LinearRing.h>
 #include <geos/geom/CoordinateSequenceFactory.h>
 #include <geos/geom/GeometryFactory.h>
+#include <geos/geom/MultiPolygon.h>
 #include <geos/geom/Geometry.h>
 #include <geos/operation/overlay/OverlayOp.h>
 #include <liptypes.h>
@@ -39,6 +40,7 @@ public:
     static std::unique_ptr<geos::geom::Geometry> getGeosGeometryFromCoordinates(QVector<QVector<LIPPoint*>> cords, LIPGeometryType geomType);
     /** Получение geos::geom::Geometry для точек */
     static geos::geom::Geometry getGeosGeometryFromCoordinates(QVector<LIPPoint*> cords);
+    static std::unique_ptr<geos::geom::MultiPolygon> vectorPointstoGeosPolygon(QVector<QVector<LIPPoint*>> lipPoints);
 //    static geos::geom::Point *QPointFtoGeosPoint(QPointF* qtPoint);
 //    static QPointF geosPointtoQPointF(geos::geom::Point geosPoint);
 //    static QPointF* geosPointtoQPointF(geos::geom::Point* geosPoint);
