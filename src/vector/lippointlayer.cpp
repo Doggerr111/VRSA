@@ -5,6 +5,7 @@ LIPPointLayer::LIPPointLayer(OGRLayer *l, QString name, QString fileName, GDALDa
       //layer{l},
       GISName(name)
 {
+    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPoint);
     LIPWidgetManager::getInstance().getMainWindow()->addLayer(this);
 }
 
@@ -108,7 +109,7 @@ void LIPPointLayer::update()
     mapFeatures.clear();
     coordinates.clear();
     //setMapFeatures();
-    emit needRepaint(this);
+    emit needRepaint();
 
 }
 
@@ -159,7 +160,7 @@ void LIPPointLayer::setMapFeatures()
 {
 
     returnCords();
-    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPoint);
+
 
 
 
@@ -171,6 +172,7 @@ void LIPPointLayer::setMapFeatures()
         point->setX(coordinates.at(i)->x());
         point->setY(coordinates.at(i)->y());
         item->setPoint(point);
+        item->setScaleFactor(mScaleFactor);
         mapFeatures.append(item);
     }
 }

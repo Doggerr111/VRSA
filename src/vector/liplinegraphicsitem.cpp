@@ -20,7 +20,7 @@ void LIPLineGraphicsItem::setPoints(QVector<LIPPoint *> points)
         QPointF p=QPointF(points.at(i)->x(),points.at(i)->y());
         vect.append(p);
     }
-    calculateBoundingRect();
+    //calculateBoundingRect();
     prepareGeometryChange();
     update();
 

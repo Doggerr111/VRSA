@@ -11,6 +11,7 @@ LIPLineLayer::LIPLineLayer(OGRLayer *l, QString name, QString fileName, GDALData
     {
 
     }
+    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPLineString);
     LIPWidgetManager::getInstance().getMainWindow()->addLayer(this);
 }
 
@@ -122,7 +123,7 @@ void LIPLineLayer::setStyle(LIPVectorStyle *style)
     mStyle->setGeomType(LIPGeometryType::LIPLineString);
     foreach(LIPLineGraphicsItem *item, mapFeatures)
     {
-        item->setVectorStyle(style); //задаем стиль для каждого обьекта слоя
+        item->setVectorStyle(mStyle); //задаем стиль для каждого обьекта слоя
     }
 }
 
@@ -148,12 +149,14 @@ QString LIPLineLayer::getFileName()
 void LIPLineLayer::setMapFeatures()
 {
     QVector<QVector<LIPPoint*>> vect = returnCords();
-    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPLineString);
+
+
     for (int i=0; i<vect.size(); i++)
     {
         LIPLineGraphicsItem *el = new LIPLineGraphicsItem;
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
+        el->setScaleFactor(mScaleFactor);
         mapFeatures.append(el);
 
     }
@@ -168,6 +171,63 @@ QVector<LIPLineGraphicsItem *> LIPLineLayer::returnMapFeatures()
 
 void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
 {
+    OGRFeature *newFeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
+    OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
+    //OGRPolygon *polygon = new OGRPolygon();
+    OGRLineString *lineString = new OGRLineString();
+    LIPLineGraphicsItem *line = new LIPLineGraphicsItem();
+    QVector<LIPPoint*> pointPtrs;
+    for (int i = 0; i < coords.size(); i++)
+    {
+        LIPPoint* p = new LIPPoint;
+        p->setX(coords[i].x());
+        p->setY(coords[i].y());
+        pointPtrs.append(p);
+    }
+    line->setPoints(pointPtrs);
+    mapFeatures.append(line);
+    for (int i=0; i<coords.size(); i++)
+    {
+        lineString->addPoint(coords.at(i).x(), coords.at(i).y());
+    }
+
+
+
+
+    for (int i=0; i<attrs.size(); i++)
+    {
+        QString fieldName = attrs.at(i).getName();
+        QByteArray fieldNameBa = fieldName.toLocal8Bit();
+        const char *fieldNameChar = fieldNameBa.data();
+        switch (attrs.at(i).getType())
+        {
+        case LIPAttributeType::INT32:
+            newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toInt());
+            break;
+        case LIPAttributeType::Real:
+            newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toDouble());
+            break;
+        case LIPAttributeType::String:
+            const char *fieldValueChar=attrs.at(i).getValue().toString().toLocal8Bit().data();
+            newFeature->SetField(fieldNameChar, fieldValueChar);
+            break;
+        }
+    }
+
+    newFeature->SetGeometry(lineString);
+    newFeature->SetFID(layer->GetFeatureCount());
+
+    // Добавление объекта к слою
+    OGRErr er1 = layer->StartTransaction();
+    OGRErr er = layer->CreateFeature(newFeature);
+    layer->GetLayerDefn()->SetGeomType(wkbPolygon);
+    layer->SetSpatialFilter(nullptr);
+    er1= layer->CommitTransaction();
+    layer->SyncToDisk();
+    //setMapFeatures();
+    //GDALClose(layer);
+
+    OGRFeature::DestroyFeature(newFeature);
 }
 
 

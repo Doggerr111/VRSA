@@ -7,7 +7,10 @@ LIPPolygonLayer::LIPPolygonLayer(OGRLayer *l, QString name, QString path, GDALDa
       GISName{name},
       fileName{path}
 {
+
+    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
     LIPWidgetManager::getInstance().getMainWindow()->addLayer(this);
+    qDebug()<<mStyle;
 }
 
 LIPPolygonLayer::~LIPPolygonLayer()
@@ -93,14 +96,16 @@ void LIPPolygonLayer::setMapFeatures()
 {
     mapFeatures.clear();
     QVector<QVector<LIPPoint*>> vect = returnCords();
-    mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
+    //if (mStyle==nullptr)
+        //mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
     for (int i=0; i<vect.size(); i++)
     {
         LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
-
+        el->setScaleFactor(mScaleFactor);
         mapFeatures.append(el);
+
         qDebug()<<mapFeatures.at(i);
     }
 
@@ -185,6 +190,7 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
     //GDALClose(layer);
 
     OGRFeature::DestroyFeature(newFeature);
+    //emit needRepaint(); очень плохо...
 }
 
 void LIPPolygonLayer::setStyle(LIPVectorStyle *style)
