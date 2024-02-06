@@ -14,12 +14,16 @@ LIPLineGraphicsItem::~LIPLineGraphicsItem()
 
 void LIPLineGraphicsItem::setPoints(QVector<LIPPoint *> points)
 {
+    vect.clear();
     for (int i=0; i<points.size(); i++)
     {
         QPointF p=QPointF(points.at(i)->x(),points.at(i)->y());
         vect.append(p);
     }
     calculateBoundingRect();
+    prepareGeometryChange();
+    update();
+
     //vect=points;
 }
 
@@ -38,7 +42,8 @@ void LIPLineGraphicsItem::calculateBoundingRect()
 
 QRectF LIPLineGraphicsItem::boundingRect() const
 {
-    return(bRect);
+    //return(bRect);
+    return(QPolygonF(vect).boundingRect());
 }
 
 void LIPLineGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
