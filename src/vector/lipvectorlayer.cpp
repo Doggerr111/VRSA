@@ -4,10 +4,13 @@
 LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
     : layer{l},
       dS{dataset},
-      fileName{path}
+      fileName{path},
+      mScaleFactor{1.0},
+      mStyle{nullptr}
       //mCRS{nullptr}
 {
-    //emit LIPWidgetManager::getInstance().getMainWindow()->newVectorLayer(this);
+    //получаем тут текущий масштаб виджета, чтобы при загрузке векторных данных (например) они сразу отображались в нужном масштабе
+    mScaleFactor = LIPWidgetManager::getInstance().getMainWindow()->findChild<QGraphicsView*>("graphicsView")->transform().m11();
 
     //connect(this, SIGNAL(needRepaint(LIPVectorLayer*)),LIPWidgetManager::getInstance().getScene(), SLOT(drawVectorLayer(LIPVectorLayer*)));
     //connect(LIPWidgetManager::getInstance(), SIGNAL)
