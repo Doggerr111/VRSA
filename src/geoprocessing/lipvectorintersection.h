@@ -4,11 +4,13 @@
 #include "lippointlayer.h"
 #include "lippolygonlayer.h"
 #include "liplinelayer.h"
+#include <geos/util/TopologyException.h>
+#include <geos/util/Assert.h>
 class LIPVectorIntersection
 {
 public:
     LIPVectorIntersection();
-    static LIPVectorLayer *getIntersection(LIPVectorLayer* inputLayer, LIPPolygonLayer* overlayLayer);
+    static QVector<QVector<QPointF>> getIntersection(LIPVectorLayer* inputLayer, LIPPolygonLayer* overlayLayer);
 
 private:
     LIPVectorLayer *resultLayer;

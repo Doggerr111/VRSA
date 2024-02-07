@@ -29,9 +29,53 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
                 ui->comboBoxIntersectLayer->itemData(ui->comboBoxIntersectLayer->currentIndex()).toString());
     if (intersectLayer==nullptr)
         return;
-    if (!LIPVectorTypeChecker::isPolygonLayer(intersectLayer))
+    //if (!LIPVectorTypeChecker::isPolygonLayer(intersectLayer))
+    //    return;
+    auto polyLayer = intersectLayer->toPolygonLayer();
+    if (polyLayer==nullptr)
         return;
+    auto coordinatesVect = LIPVectorIntersection::getIntersection(inputLayer, polyLayer);
+    //LIPPointLayer *layer = inputLayer->top
+    if (inputLayer->toPointLayer()!=nullptr)
+    {
+        LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPoint, fileName, "outputLayer",
+                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+        outputLayer=lCr->returnLayer();
+        for (auto pointFeatureCord : coordinatesVect)
+        {
+            for (auto point:pointFeatureCord)
+            {
+                QVector<QPointF> tempVec{point};
 
+                outputLayer->addFeature(tempVec, QVector<LIPAttribute>());
+            }
+        }
+        outputLayer->update();
+    }
+
+    else if (inputLayer->toLineLayer()!=nullptr)
+    {
+        LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPLineString, fileName, "outputLayer",
+                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+        outputLayer=lCr->returnLayer();
+        for (auto lineFeatureCords : coordinatesVect)
+        {
+            outputLayer->addFeature(lineFeatureCords, QVector<LIPAttribute>());
+        }
+        outputLayer->update();
+    }
+
+    else if (inputLayer->toPointLayer()!=nullptr)
+    {
+        LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
+                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+        outputLayer=lCr->returnLayer();
+        for (auto polyFeatureCoord : coordinatesVect)
+        {
+            outputLayer->addFeature(polyFeatureCoord, QVector<LIPAttribute>());
+        }
+        outputLayer->update();
+    }
 
     close();
 }

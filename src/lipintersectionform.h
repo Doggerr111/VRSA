@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "lipvectortypechecker.h"
 #include <QFileDialog>
+#include "lipvectorintersection.h"
+#include "liplayercreator.h"
 namespace Ui {
 class LIPIntersectionForm;
 }
@@ -24,6 +26,7 @@ private slots:
 private:
     Ui::LIPIntersectionForm *ui;
     QString fileName;
+    LIPVectorLayer* outputLayer;
 };
 
 #endif // LIPINTERSECTIONFORM_H
