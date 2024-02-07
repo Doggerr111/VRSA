@@ -142,6 +142,38 @@ std::unique_ptr<MultiPolygon> LIPVectorConvertor::vectorPointstoGeosPolygon(QVec
     return geomFac->createMultiPolygon(std::move(geosPolygons));
 }
 
+std::unique_ptr<MultiPoint> LIPVectorConvertor::vectorPointstoGeosPoints(QVector<LIPPoint *> lipPoints)
+{
+    auto geomFac = geos::geom::GeometryFactory::create();
+    std::vector<std::unique_ptr<geos::geom::Point>> geosPoints;
+    for (auto point: lipPoints)
+    {
+        geos::geom::Coordinate coordinate(point->x(), point->y());
+        auto geosPoint=geomFac->createPoint(coordinate);
+        geosPoints.push_back(std::move(geosPoint));
+
+    }
+    return geomFac->createMultiPoint(std::move(geosPoints));
+}
+
+std::unique_ptr<MultiLineString> LIPVectorConvertor::vectorPointstoGeosLine(QVector<QVector<LIPPoint *> > lipPoints)
+{
+    auto geomFac = geos::geom::GeometryFactory::create();
+    std::vector<std::unique_ptr<geos::geom::LineString>> geosLines;
+    for (auto vec: lipPoints)
+    {
+        if (vec.size()>=3) //проверка, что в слое нет некорректных полигонов
+        {
+            geos::geom::CoordinateSequence points=LIPPointsToGeosCoordinateSequence(vec);
+            points.add(vec[0]->x(), vec[0]->y()); //ЗАКРЫВАЕМ ПОЛИГОН!!
+            qDebug()<<points.size();
+            auto line=geomFac->createLineString(std::move(points));
+            geosLines.push_back(std::move(line));
+        }
+    }
+    return geomFac->createMultiLineString(std::move(geosLines));
+}
+
 
 //geos::geom::Point LIPVectorConvertor::QPointFtoGeosPoint(QPointF qtPoint)
 //{

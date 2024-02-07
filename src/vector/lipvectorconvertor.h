@@ -40,7 +40,10 @@ public:
     static std::unique_ptr<geos::geom::Geometry> getGeosGeometryFromCoordinates(QVector<QVector<LIPPoint*>> cords, LIPGeometryType geomType);
     /** Получение geos::geom::Geometry для точек */
     static geos::geom::Geometry getGeosGeometryFromCoordinates(QVector<LIPPoint*> cords);
+    //point to geos
     static std::unique_ptr<geos::geom::MultiPolygon> vectorPointstoGeosPolygon(QVector<QVector<LIPPoint*>> lipPoints);
+    static std::unique_ptr<geos::geom::MultiPoint> vectorPointstoGeosPoints(QVector<LIPPoint*> lipPoints);
+    static std::unique_ptr<geos::geom::MultiLineString> vectorPointstoGeosLine(QVector<QVector<LIPPoint*>> lipPoints);
 //    static geos::geom::Point *QPointFtoGeosPoint(QPointF* qtPoint);
 //    static QPointF geosPointtoQPointF(geos::geom::Point geosPoint);
 //    static QPointF* geosPointtoQPointF(geos::geom::Point* geosPoint);
