@@ -182,6 +182,10 @@ void MainWindow::sceneInitialization()
     connect(this, SIGNAL(newVectorLayer(LIPVectorLayer*)), scene, SLOT(drawVectorLayer(LIPVectorLayer*)));
     connect(scene,SIGNAL(pos_changed(QPointF)),this,SLOT(scenePos(QPointF)));
     connect(scene,SIGNAL(scene_dragging(QPointF,QPointF)),this,SLOT(changeExtent(QPointF,QPointF)));
+
+    //connect(scene,SIGNAL(startAdding()),ui->graphicsView,SLOT(onAddingFeatures()));
+    //connect(scene,SIGNAL(stopAdding()),ui->graphicsView,SLOT(onStopAddingFeatures()));
+
     connect(ui->graphicsView, SIGNAL(MapHolderZoomed(double)), this, SLOT(redrawNeeded(double)));
     ui->graphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState);
     ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -200,6 +204,7 @@ void MainWindow::addLayer(LIPVectorLayer *l)
 {
     emit newVectorLayer(l);
     connect(this, SIGNAL(scaleFactorChanged(double)), l, SLOT(setSceneScaleFactor(double)));
+    connect(l, SIGNAL(needRepaint()),scene, SLOT(updateVectorLayer()));
     LIPProject::getInstance().addVectorLayer(l);
 
     LIPPointLayer* new_layer=dynamic_cast<LIPPointLayer*>(l);
@@ -216,30 +221,17 @@ void MainWindow::addLayer(LIPVectorLayer *l)
 
 
     }
-
     LIPLineLayer* new_line_layer=dynamic_cast<LIPLineLayer*>(l);
     if(new_line_layer!=nullptr) //если линия
     {
-        LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-        item->setText(0,l->returnGISName());
-        item->setCheckState(0,Qt::Checked);
         item->setIcon(0,QIcon(":/ui/icons/lineLayer.png"));
-        item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-        item->setToolTip(0,l->returnFileName());
-        ui->LayerTree->addTopLevelItem(item);
         return;
     }
 
     LIPPolygonLayer* new_poly_layer=dynamic_cast<LIPPolygonLayer*>(l);
     if(new_poly_layer!=nullptr) //если полигон
     {
-        LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-        item->setText(0,l->returnGISName());
-        item->setCheckState(0,Qt::Checked);
         item->setIcon(0,QIcon(":/ui/icons/polygonLayer.png"));
-        item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-        item->setToolTip(0,l->returnFileName());
-        ui->LayerTree->addTopLevelItem(item);
         return;
     }
 
@@ -1072,20 +1064,20 @@ void MainWindow::on_actionNew_point_layer_triggered()
     LIPNewLineLayerForm *layerForm = new LIPNewLineLayerForm(nullptr, LIPGeometryType::LIPPoint);
     layerForm->exec();
     LIPPointLayer* new_layer= dynamic_cast<LIPPointLayer*>(layerForm->returnLayer());
-    connect(this, SIGNAL(scaleFactorChanged(double)), new_layer, SLOT(setSceneScaleFactor(double)));
-    QString name=new_layer->returnGISName();
-    QString fileName = new_layer->getFileName();
+    //connect(this, SIGNAL(scaleFactorChanged(double)), new_layer, SLOT(setSceneScaleFactor(double)));
+//    QString name=new_layer->returnGISName();
+//    QString fileName = new_layer->getFileName();
 
 
-    emit newVectorLayer(new_layer);
-    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-    item->setText(0,name);
-    item->setCheckState(0,Qt::Checked);
-    item->setIcon(0,QIcon(":/ui/icons/pointLayer.png"));
-    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-    item->setToolTip(0,fileName);
-    ui->LayerTree->addTopLevelItem(item);
-    LIPProject::getInstance().addVectorLayer(new_layer);
+//    emit newVectorLayer(new_layer);
+//    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
+//    item->setText(0,name);
+//    item->setCheckState(0,Qt::Checked);
+//    item->setIcon(0,QIcon(":/ui/icons/pointLayer.png"));
+//    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
+//    item->setToolTip(0,fileName);
+//    ui->LayerTree->addTopLevelItem(item);
+//    LIPProject::getInstance().addVectorLayer(new_layer);
 
 
 }
@@ -1103,19 +1095,19 @@ void MainWindow::on_actionNew_line_layer_triggered() //при нажатии н�
         return;
     }
     //TODO добавить этот код в конструктор LIPVectorLayer
-    connect(this, SIGNAL(scaleFactorChanged(double)), newLayer, SLOT(setSceneScaleFactor(double)));
-    QString name=newLayer->returnGISName();
-    QString fileName = newLayer->getFileName();
+//    connect(this, SIGNAL(scaleFactorChanged(double)), newLayer, SLOT(setSceneScaleFactor(double)));
+//    QString name=newLayer->returnGISName();
+//    QString fileName = newLayer->getFileName();
 
-    emit newVectorLayer(newLayer);
-    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-    item->setText(0,name);
-    item->setCheckState(0,Qt::Checked);
-    item->setIcon(0,QIcon(":/ui/icons/lineLayer.png"));
-    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-    item->setToolTip(0,fileName);
-    ui->LayerTree->addTopLevelItem(item);
-    LIPProject::getInstance().addVectorLayer(newLayer);
+//    emit newVectorLayer(newLayer);
+//    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
+//    item->setText(0,name);
+//    item->setCheckState(0,Qt::Checked);
+//    item->setIcon(0,QIcon(":/ui/icons/lineLayer.png"));
+//    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
+//    item->setToolTip(0,fileName);
+//    ui->LayerTree->addTopLevelItem(item);
+//    LIPProject::getInstance().addVectorLayer(newLayer);
 
 
 
@@ -1258,16 +1250,27 @@ void MainWindow::on_LayerTree_itemActivated(QTreeWidgetItem *item, int column) /
 
 void MainWindow::on_pushButton_addPointFeature_clicked(bool checked)
 {
+
     if (checked)
     {
-        ui->graphicsView->setCursor(Qt::CrossCursor);
+
         LIPVectorLayer *tL = LIPProject::getInstance().getActiveLayer();
         if (tL!=nullptr)
-            scene->startAddFeatures(tL);
-        else
         {
-            //error message
+            ui->graphicsView->setCursor(Qt::CrossCursor);
+            scene->startAddingFeatures(tL);
+            ui->graphicsView->updateAddingFeaturesFlag(true);
+            return;
         }
+        LIPWidgetManager::getInstance().showMessage("Для добавления новых объектов необходимо выбрать активный слой",
+                                                    2000, messageStatus::Error);
+        ui->graphicsView->updateAddingFeaturesFlag(false);
+    }
+    else
+    {
+        ui->graphicsView->setCursor(Qt::ArrowCursor);
+        scene->stopAddingFeatures();
+        ui->graphicsView->updateAddingFeaturesFlag(false);
     }
 }
 
@@ -1660,6 +1663,7 @@ void MainWindow::on_actionGeosTriangulation_triggered()
 
 void MainWindow::on_actionIntersection_triggered() //пересечение
 {
-
+    LIPIntersectionForm* form = new LIPIntersectionForm;
+    form->exec();
 }
 

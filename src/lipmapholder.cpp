@@ -7,6 +7,21 @@ LIPMapHolder::LIPMapHolder(QObject *parent)
 
 }
 
+void LIPMapHolder::onAddingFeatures()
+{
+    isAddingFeatures=true;
+}
+
+void LIPMapHolder::onStopAddingFeatures()
+{
+    isAddingFeatures=false;
+}
+
+void LIPMapHolder::updateAddingFeaturesFlag(bool flag)
+{
+    isAddingFeatures=flag;
+}
+
 void LIPMapHolder::resizeEvent(QResizeEvent *event)
 {
     emit MapHolderResized();
@@ -32,7 +47,9 @@ void LIPMapHolder::wheelEvent(QWheelEvent *event)
 void LIPMapHolder::mousePressEvent(QMouseEvent *event)
 {
     QGraphicsView::mousePressEvent(event);
-    if (event->button()==Qt::LeftButton)
+    if (event->button()==Qt::LeftButton && !isAddingFeatures)
+        isDraging=true;
+    else if (event->button()==Qt::MiddleButton && isAddingFeatures)
         isDraging=true;
     clickPos=event->pos();
 }

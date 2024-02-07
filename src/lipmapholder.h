@@ -16,11 +16,15 @@ class LIPMapHolder : public QGraphicsView
 public:
     LIPMapHolder(QObject *parent);
 
-
+public slots:
+    void onAddingFeatures();
+    void onStopAddingFeatures();
+    void updateAddingFeaturesFlag(bool flag);
 
 private:
     QPoint clickPos;
     bool isDraging;
+    bool isAddingFeatures;
     double scaleFactor;
 signals:
     void MapHolderResized();

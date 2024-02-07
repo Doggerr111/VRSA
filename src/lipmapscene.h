@@ -16,6 +16,7 @@
 #include "lipnewlinelayerform.h"
 #include "lipnewattrfeatureform.h"
 #include "vector/lipvectorconvertor.h"
+#include <QKeyEvent>
 class LIPMapScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -23,13 +24,17 @@ public:
     explicit LIPMapScene(QObject *parent = nullptr);
 
 
-    void startAddFeatures(LIPVectorLayer *activeLayer);
+    void startAddingFeatures(LIPVectorLayer *activeLayer);
+    void stopAddingFeatures();
     // QGraphicsScene interface
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 signals:
     void pos_changed(QPointF);
     void scene_dragging(QPointF,QPointF);
+    /** Сигнал, срабатывающий, когда добавляются новые объекты к слою*/
+    void startAdding();
+    void stopAdding();
 
     // QGraphicsScene interface
 protected:
@@ -58,6 +63,10 @@ private:
     QGraphicsPolygonItem *tempPoly=nullptr;
     LIPVectorLayer *activeLayer;
     QVector<LIPPointLayer*> layers;
+
+    // QGraphicsScene interface
+protected:
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // LIPMAPSCENE_H

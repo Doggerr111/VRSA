@@ -7,13 +7,16 @@ LIPMapScene::LIPMapScene(QObject *parent)
       isAddingFeaturesToMap{false},
       isPoint{false},
       isLine{false},
-      isPolygon{false}
+      isPolygon{false},
+      tempLine{nullptr},
+      tempPoly{nullptr}
 {
 
 }
 
-void LIPMapScene::startAddFeatures(LIPVectorLayer *aL)
+void LIPMapScene::startAddingFeatures(LIPVectorLayer *aL)
 {
+    emit startAdding();
     isAddingFeaturesToMap=true;
     activeLayer = aL;
     //isPolygon=true;
@@ -54,6 +57,24 @@ void LIPMapScene::startAddFeatures(LIPVectorLayer *aL)
 
 }
 
+void LIPMapScene::stopAddingFeatures()
+{
+    emit stopAdding();
+    isAddingFeaturesToMap=true;
+    activeLayer = nullptr;
+    if (items().contains(tempLine))
+        removeItem(tempLine);
+    if (items().contains(tempPoly))
+        removeItem(tempPoly);
+    isPoint=false;
+    isLine=false;
+    isPolygon=false;
+    vectPoints.clear();
+   // this->views();
+
+
+}
+
 void LIPMapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     emit pos_changed(event->scenePos());
@@ -69,13 +90,16 @@ void LIPMapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         vectPoints.append(event->scenePos());
         tempLine->setPoints(LIPVectorConvertor::QPointsFtoLIPPoints(vectPoints));
+        update(tempLine->bRect);
         vectPoints.removeLast();
+
     }
     if (isPolygon && tempPoly!=nullptr)
     {
         vectPoints.append(event->scenePos());
         tempPoly->setPolygon(vectPoints);
         vectPoints.removeLast();
+
     }
 }
 
@@ -94,12 +118,12 @@ void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             if (isPoint) //если добавляем точки
             {
                 //добавляем точку на сцену
-                LIPPointGraphicsItem *point = new LIPPointGraphicsItem;
-                LIPPoint *p= new LIPPoint;
-                p->setX(clickPos.x());
-                p->setY(clickPos.y());
-                point->setPoint(p);
-                addItem(point);
+                //LIPPointGraphicsItem *point = new LIPPointGraphicsItem;
+                //LIPPoint *p= new LIPPoint;
+                //p->setX(clickPos.x());
+                //p->setY(clickPos.y());
+                //point->setPoint(p);
+                //addItem(point);
                 vectPoints.append(clickPos);
 
                 LIPNewAttrFeatureForm *form = new LIPNewAttrFeatureForm;
@@ -109,39 +133,63 @@ void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
                 dynamic_cast<LIPPointLayer*>(activeLayer)->addFeature(vectPoints,
                     LIPVectorLayer::stringValToAttrs(form->getNames(), form->getValues(), activeLayer->getAttributeTypes()));
+                activeLayer->update();
                 vectPoints.clear();
+                return;
             }
             else if (isLine) //если добавляем линии
             {
+
                 tempLine->setPoints(LIPVectorConvertor::QPointsFtoLIPPoints(vectPoints));
                 //tempLine->set(QPolygonF(vectPoints));
-                LIPNewAttrFeatureForm *form = new LIPNewAttrFeatureForm;
-                form->setAttributeNames(activeLayer->getAttributeNames());
-                form->exec();
-                dynamic_cast<LIPPolygonLayer*>(activeLayer)->addFeature(vectPoints,
-                    LIPVectorLayer::stringValToAttrs(form->getNames(), form->getValues(), activeLayer->getAttributeTypes()));
-                vectPoints.clear();
-                drawVectorLayer(activeLayer);
-                removeItem(tempPoly);
+                if (vectPoints.size()>1) //линия только с 2+ точками
+                {
+                    LIPNewAttrFeatureForm *form = new LIPNewAttrFeatureForm;
+                    form->setAttributeNames(activeLayer->getAttributeNames());
+                    form->exec();
+                    dynamic_cast<LIPLineLayer*>(activeLayer)->addFeature(vectPoints,
+                        LIPVectorLayer::stringValToAttrs(form->getNames(), form->getValues(), activeLayer->getAttributeTypes()));
+                    activeLayer->update();
+                    vectPoints.clear();
+                    //drawVectorLayer(activeLayer);
+                    tempLine->setPoints(LIPVectorConvertor::QPointsFtoLIPPoints(vectPoints));
+                    removeItem(tempLine);
+                    tempLine=nullptr;
+                    return;
+                }
+                LIPWidgetManager::getInstance().showMessage("Для создания линии необходимо добавить минимум 2 точки",
+                                                            1000, messageStatus::Error);
+                return;
+
             }
             else if (isPolygon) //если добавляем полигон
             {
                 tempPoly->setPolygon(QPolygonF(vectPoints));
+                if (vectPoints.size()>2) //3+ точки для полигона
+                {
                 LIPNewAttrFeatureForm *form = new LIPNewAttrFeatureForm;
                 form->setAttributeNames(activeLayer->getAttributeNames());
                 form->exec();
                 dynamic_cast<LIPPolygonLayer*>(activeLayer)->addFeature(vectPoints,
                     LIPVectorLayer::stringValToAttrs(form->getNames(), form->getValues(), activeLayer->getAttributeTypes()));
                 vectPoints.clear();
-                drawVectorLayer(activeLayer);
+                //drawVectorLayer(activeLayer);
+                activeLayer->update();
                 removeItem(tempPoly);
+                tempPoly=nullptr;
+                return;
+                }
+                LIPWidgetManager::getInstance().showMessage("Для создания полигона необходимо добавить минимум 3 точки",
+                                                            1000, messageStatus::Error);
+                return;
+
             }
         }
     }
     //QGraphicsScene::mousePressEvent(event);
 
 
-    if (isAddingFeaturesToMap) //если добавляем обьекты
+    if (isAddingFeaturesToMap && event->button()!=Qt::MiddleButton) //если добавляем обьекты
     {
         if (isPoint) //если добавляем точки
         {
@@ -157,11 +205,12 @@ void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             {
                 tempLine = new LIPLineGraphicsItem;
                 QPen pen;
-                pen.setWidthF(0);
-                tempPoly->setPen(pen);
+                pen.setWidthF(1);
+                tempLine->setPen(pen);
             }
             vectPoints.append(clickPos);
-            tempLine->setPoints(LIPVectorConvertor::QPointsFtoLIPPoints(vectPoints));
+            if (vectPoints.size()>1)
+                tempLine->setPoints(LIPVectorConvertor::QPointsFtoLIPPoints(vectPoints));
             //addItem(tempLine); //добавляем временный элемент с линией
             if (!items().contains(tempLine))
                 addItem(tempLine);
@@ -282,6 +331,8 @@ void LIPMapScene::updateVectorLayer()
             LIPLineLayer* lineLayer=dynamic_cast<LIPLineLayer*>(layer);
             if(lineLayer!=nullptr)
             {
+                //TODO проходим по всем айтемам очень долго, нужно сделать флаги (возможно) для объектов, которые показывают
+                //добавлены ли объекты или нет
                 lineLayer->setMapFeatures(); //для создания графических айтемов
                 for (int i=0; i<lineLayer->returnMapFeatures().size(); i++)
                 {
@@ -313,4 +364,33 @@ void LIPMapScene::updateVectorLayer()
 void LIPMapScene::addPointFeature()
 {
     //delete this;
+}
+
+
+void LIPMapScene::keyPressEvent(QKeyEvent *event)
+{
+    if (isAddingFeaturesToMap && event->key()==Qt::Key_Escape)
+    {
+        if (isPoint) //если добавляем точки
+        {
+            vectPoints.clear();
+            return;
+        }
+        else if (isLine) //если добавляем линии
+        {
+            vectPoints.clear();
+            removeItem(tempLine);
+            tempLine=nullptr;
+            return;
+
+        }
+        else if (isPolygon) //если добавляем полигон
+        {
+            vectPoints.clear();
+            removeItem(tempPoly);
+            tempPoly=nullptr;
+            return;
+
+        }
+    }
 }
