@@ -1,21 +1,21 @@
 <RCC>
     <qresource prefix="/">
-        <file>ui/icons/lineLayer.png</file>
-        <file>ui/icons/pointLayer.png</file>
-        <file>ui/icons/polygonLayer.png</file>
-        <file>ui/icons/addLineFeature.png</file>
-        <file>ui/icons/addPointFeature.png</file>
-        <file>ui/icons/addPolygonFeature.png</file>
-        <file>ui/icons/postgis.png</file>
-        <file>ui/icons/close.png</file>
-        <file>ui/icons/intersection.png</file>
-        <file>ui/icons/triangulate.png</file>
-        <file>ui/icons/selectFeature.png</file>
-        <file>ui/icons/selectFeature2.png</file>
-        <file>ui/icons/metaData.png</file>
-        <file>ui/icons/addPointFeature2.png</file>
-        <file>ui/icons/removeLayer.png</file>
-        <file>ui/icons/moveUp.png</file>
-        <file>ui/icons/moveDown.png</file>
+        <file>../images/icons/triangulate.png</file>
+        <file>../images/icons/selectFeature2.png</file>
+        <file>../images/icons/selectFeature.png</file>
+        <file>../images/icons/removeLayer.png</file>
+        <file>../images/icons/postgis.png</file>
+        <file>../images/icons/polygonLayer.png</file>
+        <file>../images/icons/pointLayer.png</file>
+        <file>../images/icons/moveUp.png</file>
+        <file>../images/icons/moveDown.png</file>
+        <file>../images/icons/metaData.png</file>
+        <file>../images/icons/lineLayer.png</file>
+        <file>../images/icons/intersection.png</file>
+        <file>../images/icons/close.png</file>
+        <file>../images/icons/addPolygonFeature.png</file>
+        <file>../images/icons/addPointFeature2.png</file>
+        <file>../images/icons/addPointFeature.png</file>
+        <file>../images/icons/addLineFeature.png</file>
     </qresource>
 </RCC>
