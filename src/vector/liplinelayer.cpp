@@ -157,6 +157,7 @@ void LIPLineLayer::setMapFeatures()
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
         el->setScaleFactor(mScaleFactor);
+
         mapFeatures.append(el);
 
     }
@@ -242,5 +243,14 @@ void LIPLineLayer::setVisible(bool isVisible)
     {
         foreach(LIPLineGraphicsItem *item, mapFeatures)
             item->setVisible(false);
+    }
+}
+
+
+void LIPLineLayer::setZValue(int zValue)
+{
+    for(auto feature: mapFeatures)
+    {
+        feature->setZValue(zValue);
     }
 }

@@ -53,6 +53,10 @@ public:
     // LIPVectorLayer interface
 public:
     void setVisible(bool=true) override;
+
+    // LIPVectorLayer interface
+public:
+    void setZValue(int zValue);
 };
 
 #endif // LIPLINELAYER_H

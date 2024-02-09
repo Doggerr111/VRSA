@@ -13,6 +13,11 @@
 #include "lipcoordinatesystem.h"
 #include "lipwidgetmanager.h"
 #include "ogr_spatialref.h"
+
+class LIPPointLayer;
+class LIPLineLayer;
+class LIPPolygonLayer;
+
 class LIPVectorLayer: public QObject
 {
     Q_OBJECT
@@ -29,6 +34,12 @@ public:
     std::map<int, QVector<LIPAttribute>> getAttributes();
     bool setCoordinateSystem(LIPCoordinateSystem *targetCRS);
 
+
+    LIPPointLayer* toPointLayer();
+    LIPLineLayer* toLineLayer();
+    LIPPolygonLayer* toPolygonLayer();
+
+
 public:
     virtual QString returnGISName();
     virtual ~LIPVectorLayer();
@@ -39,6 +50,7 @@ public:
     virtual void update();
     virtual void setMapFeatures();
     virtual void selectFeature(int index);
+    virtual void setZValue(int zValue);
 
 signals:
     void needRepaint();
@@ -55,6 +67,7 @@ protected:
     double mScaleFactor;
     LIPVectorStyle *mStyle;
     LIPCoordinateSystem* mCRS;
+    int mZValue;
 
 
 

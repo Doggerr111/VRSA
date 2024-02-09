@@ -34,6 +34,10 @@ private:
 
     QVector<LIPPolygonGraphicsItem*> mapFeatures;
 
+
+    // LIPVectorLayer interface
+public:
+    void setZValue(int zValue);
 };
 
 #endif // LIPPOLYGONLAYER_H

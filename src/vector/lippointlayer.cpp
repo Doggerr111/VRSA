@@ -158,12 +158,7 @@ QVector<LIPPoint *> LIPPointLayer::returnCords()
 
 void LIPPointLayer::setMapFeatures()
 {
-
     returnCords();
-
-
-
-
     for (int i=0; i<coordinates.size(); i++)
     {
         LIPPointGraphicsItem* item = new LIPPointGraphicsItem;
@@ -173,6 +168,7 @@ void LIPPointLayer::setMapFeatures()
         point->setY(coordinates.at(i)->y());
         item->setPoint(point);
         item->setScaleFactor(mScaleFactor);
+
         mapFeatures.append(item);
     }
 }
@@ -284,5 +280,14 @@ void LIPPointLayer::setVisible(bool isVisible)
     {
         foreach(LIPPointGraphicsItem *item, mapFeatures)
             item->setVisible(false);
+    }
+}
+
+
+void LIPPointLayer::setZValue(int zValue)
+{
+    for(auto feature: mapFeatures)
+    {
+        feature->setZValue(zValue);
     }
 }

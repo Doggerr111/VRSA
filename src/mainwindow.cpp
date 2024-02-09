@@ -47,6 +47,26 @@ MainWindow::MainWindow(QWidget *parent)
 
     OGRSpatialReference srcSRS;
     qDebug()<<srcSRS.importFromProj4("+proj=longlat +ellps=GSK2011 +no_defs +type=crs");
+
+    ui->LayerTree->setDragDropMode(QAbstractItemView::DragDrop);
+    ui->LayerTree->setDefaultDropAction(Qt::MoveAction);
+
+    // Разрешить только внешнее перетаскивание
+    ui->LayerTree->setDragDropOverwriteMode(false);
+    ui->LayerTree->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->LayerTree->setDragEnabled(true);
+    ui->LayerTree->setAcceptDrops(true);
+    ui->LayerTree->setDropIndicatorShown(true);
+    ui->LayerTree->setDragDropMode(QAbstractItemView::DragDrop);
+
+    // Запретить вложение элементов
+    ui->LayerTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->LayerTree->setDropIndicatorShown(true);
+    ui->LayerTree->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->LayerTree->setDragDropMode(QAbstractItemView::DragDrop);
+    ui->LayerTree->setDropIndicatorShown(true);
+
+    connect(ui->LayerTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(onItemChanged(QTreeWidgetItem*, int)));
     //srcSRS.IS
     //QSplitter *splitter = new QSplitter(ui->central_frame);
     //splitter->addWidget(ui->frame_2);
@@ -121,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->treeView->viewport ()->setAcceptDrops (true); // ViewPort accepts the action, the default is copy operation
 //    ui->treeView->showDropIndicator ();               // Setting up the indication
 //    ui->treeView->setDragDropMode (QTreeWidget::InternalMove);// internal movement
-
+      //ui->LayerTree->setDragDropMode(QTreeWidget::NoDragDrop);
 //    //LIPTreeWidget *widg=ui->treeView;
 //    connect(ui->LayerTree, SIGNAL(itemDropped()), this, SLOT(layersOrderChanged()));
 
@@ -214,9 +234,10 @@ void MainWindow::addLayer(LIPVectorLayer *l)
     item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
     item->setToolTip(0,l->returnFileName());
     ui->LayerTree->addTopLevelItem(item);
+    layersOrderChanged();
     if (new_layer!=nullptr) //если активный слой точечный
     {
-        item->setIcon(0,QIcon(":/ui/icons/pointLayer.png"));
+        item->setIcon(0,QIcon(":/images/icons/pointLayer.png"));
         return;
 
 
@@ -224,14 +245,14 @@ void MainWindow::addLayer(LIPVectorLayer *l)
     LIPLineLayer* new_line_layer=dynamic_cast<LIPLineLayer*>(l);
     if(new_line_layer!=nullptr) //если линия
     {
-        item->setIcon(0,QIcon(":/ui/icons/lineLayer.png"));
+        item->setIcon(0,QIcon(":/images/icons/lineLayer.png"));
         return;
     }
 
     LIPPolygonLayer* new_poly_layer=dynamic_cast<LIPPolygonLayer*>(l);
     if(new_poly_layer!=nullptr) //если полигон
     {
-        item->setIcon(0,QIcon(":/ui/icons/polygonLayer.png"));
+        item->setIcon(0,QIcon(":/images/icons/polygonLayer.png"));
         return;
     }
 
@@ -240,6 +261,7 @@ void MainWindow::addLayer(LIPVectorLayer *l)
 void MainWindow::layerTreeDataChanged(QTreeWidgetItem *item, int column)
 {
     LIPVectorLayer* activeLayer = LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0));
+
     LIPPointLayer* newPointLayer=dynamic_cast<LIPPointLayer*>(activeLayer);
     if (newPointLayer!=nullptr) //если активный слой точечный
     {
@@ -261,6 +283,11 @@ void MainWindow::layerTreeDataChanged(QTreeWidgetItem *item, int column)
         return;
     }
 
+}
+
+void MainWindow::onItemChanged(QTreeWidgetItem *item, int column)
+{
+    //QMessageBox::warning(this,"","");
 }
 
 
@@ -1063,7 +1090,12 @@ void MainWindow::on_actionNew_point_layer_triggered()
 {
     LIPNewLineLayerForm *layerForm = new LIPNewLineLayerForm(nullptr, LIPGeometryType::LIPPoint);
     layerForm->exec();
-    LIPPointLayer* new_layer= dynamic_cast<LIPPointLayer*>(layerForm->returnLayer());
+    LIPPointLayer* newLayer= dynamic_cast<LIPPointLayer*>(layerForm->returnLayer());
+    if (newLayer==nullptr)
+    {
+        LIPWidgetManager::getInstance().showMessage("Ошибка при создании векторного слоя", 2000, messageStatus::Error);
+        return;
+    }
     //connect(this, SIGNAL(scaleFactorChanged(double)), new_layer, SLOT(setSceneScaleFactor(double)));
 //    QString name=new_layer->returnGISName();
 //    QString fileName = new_layer->getFileName();
@@ -1119,21 +1151,27 @@ void MainWindow::on_actionNew_polygon_layer_triggered()
     LIPNewLineLayerForm *layerForm = new LIPNewLineLayerForm(nullptr, LIPGeometryType::LIPPolygon);
     layerForm->exec();
 
-    LIPPolygonLayer* new_layer= dynamic_cast<LIPPolygonLayer*>(layerForm->returnLayer());
-    connect(this, SIGNAL(scaleFactorChanged(double)), new_layer, SLOT(setSceneScaleFactor(double)));
-    QString name=new_layer->returnGISName();
-    QString fileName = new_layer->getFileName();
-    emit newVectorLayer(new_layer);
+    LIPPolygonLayer* newLayer= dynamic_cast<LIPPolygonLayer*>(layerForm->returnLayer());
+    if (newLayer==nullptr)
+    {
+        LIPWidgetManager::getInstance().showMessage("Ошибка при создании векторного слоя", 2000, messageStatus::Error);
+        return;
+    }
+
+//    connect(this, SIGNAL(scaleFactorChanged(double)), new_layer, SLOT(setSceneScaleFactor(double)));
+//    QString name=new_layer->returnGISName();
+//    QString fileName = new_layer->getFileName();
+//    emit newVectorLayer(new_layer);
 
 
-    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-    item->setText(0,name);
-    item->setCheckState(0,Qt::Checked);
-    item->setIcon(0,QIcon(":/ui/icons/polygonLayer.png"));
-    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-    item->setToolTip(0,fileName);
-    ui->LayerTree->addTopLevelItem(item);
-    LIPProject::getInstance().addVectorLayer(new_layer);
+//    LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
+//    item->setText(0,name);
+//    item->setCheckState(0,Qt::Checked);
+//    item->setIcon(0,QIcon(":/images/icons/polygonLayer.png"));
+//    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
+//    item->setToolTip(0,fileName);
+//    ui->LayerTree->addTopLevelItem(item);
+//    LIPProject::getInstance().addVectorLayer(new_layer);
 
 }
 
@@ -1143,9 +1181,10 @@ void MainWindow::on_actionLoad_vector_layer_triggered()
     QString fileName=QFileDialog::getOpenFileName(this,"","");
     OGRLayer* newLayer = LIPVectorReader::readOGRLayer(fileName).first;
     GDALDataset* dS = LIPVectorReader::readOGRLayer(fileName).second;
+    if (newLayer==nullptr || dS==nullptr)
+        return;
     int startIndex = fileName.lastIndexOf('/') + 1; // Находим индекс символа '/' и добавляем 1, чтобы пропустить его
     int endIndex = fileName.indexOf(".shp");
-
     QString name = fileName.mid(startIndex, endIndex - startIndex);
     if (newLayer!=nullptr)
     {
@@ -1154,65 +1193,22 @@ void MainWindow::on_actionLoad_vector_layer_triggered()
         {
         case LIPGeometryType::LIPPoint:
         {
-
-            //LIPLayerCreator *newLayer = new LIPLayerCreator(type, fileName, name);
-
-            LIPPointLayer *pl = new LIPPointLayer(newLayer,name, fileName, dS);
-
-//            emit newVectorLayer(pl);
-//            connect(this, SIGNAL(scaleFactorChanged(double)), pl, SLOT(setSceneScaleFactor(double)));
-//            LIPProject::getInstance().addVectorLayer(pl);
-//            LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-//            item->setText(0,name);
-//            item->setCheckState(0,Qt::Checked);
-//            item->setIcon(0,QIcon(":/ui/icons/pointLayer.png"));
-//            item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-//            item->setToolTip(0,fileName);
-//            ui->LayerTree->addTopLevelItem(item);
-
-            //pl->setMapFeatures(); //для создания графических айтемов
-
-
-
+            new LIPPointLayer(newLayer,name, fileName, dS);
             break;
         }
         case LIPGeometryType::LIPLineString:
         {
-            LIPLineLayer *pl = new LIPLineLayer(newLayer,name, fileName, dS);
-//            emit newVectorLayer(pl);
-//            connect(this, SIGNAL(scaleFactorChanged(double)), pl, SLOT(setSceneScaleFactor(double)));
-//            LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-//            item->setText(0,name);
-//            item->setCheckState(0,Qt::Checked);
-//            item->setIcon(0,QIcon(":/ui/icons/lineLayer.png"));
-//            item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-//            item->setToolTip(0,fileName);
-//            ui->LayerTree->addTopLevelItem(item);
-//            LIPProject::getInstance().addVectorLayer(pl);
-
+            new LIPLineLayer(newLayer,name, fileName, dS);
             break;
-
-
         }
         case LIPGeometryType::LIPPolygon:
         {
-            LIPPolygonLayer *pl = new LIPPolygonLayer(newLayer,name, fileName, dS);
-//            emit newVectorLayer(pl);
-//            LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
-//            item->setText(0,name);
-//            item->setCheckState(0,Qt::Checked);
-//            item->setIcon(0,QIcon(":/ui/icons/polygonLayer.png"));
-//            item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
-//            item->setToolTip(0,fileName);
-//            ui->LayerTree->addTopLevelItem(item);
-//            LIPProject::getInstance().addVectorLayer(pl);
-            //projectLayers.append(layerForm->returnLayer());
+            new LIPPolygonLayer(newLayer,name, fileName, dS);
             break;
         }
         }
     }
-//    QByteArray bytea=fileName.toLocal8Bit();
-//    const char *charname=bytea.data();
+
 
 }
 
@@ -1222,56 +1218,103 @@ void MainWindow::on_pushButton_addPointFeature_clicked()
 
 }
 
-void MainWindow::layersOrderChanged()
+void MainWindow::layersOrderChanged() //срабатывает при перемещении элементов QTreeWidgetItem
 {
+
 
     for (int i=0; i<ui->LayerTree->topLevelItemCount(); i++)
     {
+        //убираем "вложенность" элементов
+        QTreeWidgetItem *item = ui->LayerTree->topLevelItem(i);
+        qDebug()<<item->childCount();
+        for (int i=0; i<item->childCount(); i++)
+        {
+            auto item2=item->child(i);
+            item->removeChild(item2);
+            ui->LayerTree->addTopLevelItem(item2);
+
+        }
+
+    }
+    int k=0;
+    for (int i=ui->LayerTree->topLevelItemCount()-1; i>=0; i--)
+    {
+
+        //убираем "вложенность" элементов
         QTreeWidgetItem *item = ui->LayerTree->topLevelItem(i);
         QString path = item->toolTip(0); //получаем имя файла
         LIPVectorLayer *layer = LIPProject::getInstance().getVectorLayerByPath(path);
         if (layer!=nullptr)
         {
-            QMessageBox::information(this,"","");
+            layer->setZValue(k);
+            k++;
         }
+
+
     }
+
+
 }
 
 
 void MainWindow::on_LayerTree_itemActivated(QTreeWidgetItem *item, int column) //выбор пользователем активного слоя
 {
     //LIPVectorLayer *layer = LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0)); //получаем элемент по пути к файлу
-    if (LIPProject::getInstance().setActiveLayer(LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0))))
-    {
-        QMessageBox::information(this,"","");
+    auto activeLayer = LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0));
+    if (activeLayer==nullptr)
+        return;
+    LIPProject::getInstance().setActiveLayer(activeLayer);
+
+    int topLevelItemCount = ui->LayerTree->topLevelItemCount();
+    for (int i = 0; i < topLevelItemCount; ++i) {
+        QTreeWidgetItem *topLevelItem = ui->LayerTree->topLevelItem(i);
+        topLevelItem->setBackground(0, QBrush());
     }
+    item->setBackground(column, QBrush(QColor(Qt::gray)));
+
+    if (LIPVectorTypeChecker::isPointLayer(activeLayer))
+    {
+        ui->pushButton_addFeature->setIcon(QIcon(":/images/icons/addPointFeature2.png"));
+        ui->pushButton_addFeature->setIconSize(QSize(60,60));
+    }
+    else if (LIPVectorTypeChecker::isLineLayer(activeLayer))
+    {
+        ui->pushButton_addFeature->setIcon(QIcon(":/images/icons/addLineFeature.png"));
+        ui->pushButton_addFeature->setIconSize(QSize(40,40));
+    }
+    else if (LIPVectorTypeChecker::isPolygonLayer(activeLayer))
+    {
+        ui->pushButton_addFeature->setIcon(QIcon(":/images/icons/addPolygonFeature.png"));
+        ui->pushButton_addFeature->setIconSize(QSize(50,50));
+    }
+
 }
 
 
 void MainWindow::on_pushButton_addPointFeature_clicked(bool checked)
 {
 
-    if (checked)
-    {
+//    if (checked)
+//    {
 
-        LIPVectorLayer *tL = LIPProject::getInstance().getActiveLayer();
-        if (tL!=nullptr)
-        {
-            ui->graphicsView->setCursor(Qt::CrossCursor);
-            scene->startAddingFeatures(tL);
-            ui->graphicsView->updateAddingFeaturesFlag(true);
-            return;
-        }
-        LIPWidgetManager::getInstance().showMessage("Для добавления новых объектов необходимо выбрать активный слой",
-                                                    2000, messageStatus::Error);
-        ui->graphicsView->updateAddingFeaturesFlag(false);
-    }
-    else
-    {
-        ui->graphicsView->setCursor(Qt::ArrowCursor);
-        scene->stopAddingFeatures();
-        ui->graphicsView->updateAddingFeaturesFlag(false);
-    }
+//        LIPVectorLayer *tL = LIPProject::getInstance().getActiveLayer();
+//        if (tL!=nullptr)
+//        {
+//            ui->graphicsView->setCursor(Qt::CrossCursor);
+//            scene->startAddingFeatures(tL);
+//            ui->graphicsView->updateAddingFeaturesFlag(true);
+//            return;
+//        }
+//        LIPWidgetManager::getInstance().showMessage("Для добавления новых объектов необходимо выбрать активный слой",
+//                                                    2000, messageStatus::Error);
+//        ui->graphicsView->updateAddingFeaturesFlag(false);
+//    }
+//    else
+//    {
+//        ui->graphicsView->setCursor(Qt::ArrowCursor);
+//        scene->stopAddingFeatures();
+//        ui->graphicsView->updateAddingFeaturesFlag(false);
+//    }
 }
 
 
@@ -1309,7 +1352,7 @@ void MainWindow::on_actionConnect_to_PostGIS_triggered()
             LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
             item->setText(0,"name");
             item->setCheckState(0,Qt::Checked);
-            item->setIcon(0,QIcon(":/ui/icons/pointLayer.png"));
+            item->setIcon(0,QIcon(":/images/icons/pointLayer.png"));
             item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
             item->setToolTip(0,"fileName");
             ui->LayerTree->addTopLevelItem(item);
@@ -1382,7 +1425,8 @@ void MainWindow::on_pushButtonTriangulationTest_clicked()
     LIPTreeWidgetItem *item = new LIPTreeWidgetItem();
     item->setText(0,name);
     item->setCheckState(0,Qt::Checked);
-    item->setIcon(0,QIcon(":/ui/icons/polygonLayer.png"));
+    item->setIcon(0,QIcon(":/images/icons/polygonLayer.png"));
+
     item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
     item->setToolTip(0,fileName);
     ui->LayerTree->addTopLevelItem(item);
@@ -1665,5 +1709,32 @@ void MainWindow::on_actionIntersection_triggered() //пересечение
 {
     LIPIntersectionForm* form = new LIPIntersectionForm;
     form->exec();
+}
+
+
+void MainWindow::on_pushButton_addFeature_clicked(bool checked)
+{
+    if (checked)
+    {
+
+        LIPVectorLayer *tL = LIPProject::getInstance().getActiveLayer();
+        if (tL!=nullptr)
+        {
+            ui->graphicsView->setCursor(Qt::CrossCursor);
+            scene->startAddingFeatures(tL);
+            ui->graphicsView->updateAddingFeaturesFlag(true);
+            return;
+        }
+        LIPWidgetManager::getInstance().showMessage("Для добавления новых объектов необходимо выбрать активный слой",
+                                                    2000, messageStatus::Error);
+        ui->graphicsView->updateAddingFeaturesFlag(false);
+        ui->pushButton_addFeature->setChecked(false);
+    }
+    else
+    {
+        ui->graphicsView->setCursor(Qt::ArrowCursor);
+        scene->stopAddingFeatures();
+        ui->graphicsView->updateAddingFeaturesFlag(false);
+    }
 }
 

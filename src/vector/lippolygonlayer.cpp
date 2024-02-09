@@ -104,6 +104,7 @@ void LIPPolygonLayer::setMapFeatures()
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
         el->setScaleFactor(mScaleFactor);
+
         mapFeatures.append(el);
 
         qDebug()<<mapFeatures.at(i);
@@ -216,4 +217,13 @@ void LIPPolygonLayer::selectFeature(int index)
 {
     mapFeatures.at(index)->select();
     mapFeatures.at(index)->update();
+}
+
+
+void LIPPolygonLayer::setZValue(int zValue)
+{
+    for(auto feature: mapFeatures)
+    {
+        feature->setZValue(zValue);
+    }
 }

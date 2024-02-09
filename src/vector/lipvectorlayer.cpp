@@ -1,21 +1,21 @@
 #include "lipvectorlayer.h"
 #include "QDebug"
 #include "mainwindow.h"
+#include "lippointlayer.h"
+#include "liplinelayer.h"
+#include "lippolygonlayer.h"
 LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
     : layer{l},
       dS{dataset},
       fileName{path},
       mScaleFactor{1.0},
-      mStyle{nullptr}
+      mStyle{nullptr},
+      mZValue{0}
       //mCRS{nullptr}
 {
-    //получаем тут текущий масштаб виджета, чтобы при загрузке векторных данных (например) они сразу отображались в нужном масштабе
+    //получаем текущий масштаб виджета, чтобы при загрузке векторных данных (например) они сразу отображались в нужном масштабе
+
     mScaleFactor = LIPWidgetManager::getInstance().getMainWindow()->findChild<QGraphicsView*>("graphicsView")->transform().m11();
-
-    //connect(this, SIGNAL(needRepaint(LIPVectorLayer*)),LIPWidgetManager::getInstance().getScene(), SLOT(drawVectorLayer(LIPVectorLayer*)));
-    //connect(LIPWidgetManager::getInstance(), SIGNAL)
-
-
 
     if (l!=nullptr)
     {
@@ -133,6 +133,29 @@ bool LIPVectorLayer::setCoordinateSystem(LIPCoordinateSystem *targetCRS)
 
     //GDALClose(dataSource);
 }
+
+void LIPVectorLayer::setZValue(int zValue)
+{
+    mZValue=zValue;
+    update();
+}
+
+LIPPointLayer *LIPVectorLayer::toPointLayer()
+{
+    return dynamic_cast<LIPPointLayer*>(this);
+}
+
+LIPLineLayer *LIPVectorLayer::toLineLayer()
+{
+    return dynamic_cast<LIPLineLayer*>(this);
+}
+
+
+LIPPolygonLayer *LIPVectorLayer::toPolygonLayer()
+{
+    return dynamic_cast<LIPPolygonLayer*>(this);
+}
+
 
 QVector<LIPAttributeType> LIPVectorLayer::getAttributeTypes()
 {
