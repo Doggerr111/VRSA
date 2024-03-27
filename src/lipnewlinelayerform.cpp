@@ -4,6 +4,7 @@
 LIPNewLineLayerForm::LIPNewLineLayerForm(QWidget *parent, LIPGeometryType geomType) :
     QDialog(parent),
     ui(new Ui::LIPNewLineLayerForm),
+    LIPLayer{nullptr},
     geometryType{geomType}
 {
     ui->setupUi(this);

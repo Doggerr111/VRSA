@@ -22,7 +22,7 @@ public slots:
     void updateAddingFeaturesFlag(bool flag);
 
 private:
-    QPoint clickPos;
+    QPointF clickPos;
     bool isDraging;
     bool isAddingFeatures;
     double scaleFactor;

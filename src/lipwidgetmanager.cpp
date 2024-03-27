@@ -25,26 +25,28 @@ void LIPWidgetManager::showMessage(const QString &errorMessage, int msec, messag
 
         switch (st)
         {
-        case Success:
+        case messageStatus::Success:
         {
             errorWidget->setStyleSheet("background-color: rgb(3, 218, 198);"
                                        "border: 0px solid black");
+            break;
         }
         case Neutral:
         {
             errorWidget->setStyleSheet("background-color: rgb(255, 255, 0);"
                                        "border: 0px solid black");
+            break;
         }
         case Error:
         {
-            errorWidget->setStyleSheet("background-color: rgb(0, 255, 0);"
+            errorWidget->setStyleSheet("background-color: rgb(255, 0, 0);"
                                        "border: 0px solid black");
         }
         }
         errorWidget->update();
 
 
-        QPixmap pixmap(":/ui/icons/close.png");
+        QPixmap pixmap(":/images/icons/close.png");
         QIcon buttonIcon(pixmap);
         button->setIcon(buttonIcon);
         //button->setIconSize(pixmap.rect().size());
@@ -87,6 +89,14 @@ QGraphicsScene *LIPWidgetManager::getScene()
         return nullptr;
     return graphicsView->scene();
 
+}
+
+QGraphicsView *LIPWidgetManager::getView()
+{
+    QGraphicsView* graphicsView = mMainWindow->findChild<QGraphicsView*>("graphicsView");
+    if (graphicsView==nullptr)
+        return nullptr;
+    return graphicsView;
 }
 
 MainWindow *LIPWidgetManager::getMainWindow()

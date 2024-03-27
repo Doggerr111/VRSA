@@ -9,8 +9,9 @@
 #include "liptypes.h"
 #include "QMessageBox"
 //#include "lipvectorlayer.h"
-#include "lippoint.h"
-#include "lipattribute.h"
+#include "vector/lippoint.h"
+#include "vector/lipattribute.h"
+#include "lipwidgetmanager.h"
 
 class LIPVectorReader : public QObject
 {
@@ -20,12 +21,12 @@ public:
     bool Read();
     /**
      *
-     * \brief Данная функция считывает координаты векторного слоя
+     * Данная функция считывает координаты векторного слоя
      */
     bool ReadGeometry();
     /**
      *
-     * \brief Данная функция возвращает охват слоя
+     * Данная функция возвращает охват слоя
      */
     QRectF ReadBoundingBox();
 
@@ -33,6 +34,11 @@ public:
     static QVector<OGRLayer*> readLayersFromDataset(GDALDataset *ds);
     static LIPGeometryType readGeometryType(OGRLayer* layer);
     static std::map<int, QVector<LIPAttribute>> readAttributes(OGRLayer* l);
+
+
+    /** Функция для чтения нескольких векторных слоев из набора путей QStringList. Функция сразу же создает обьекты LIPVectorLayer
+    и, соответственно, добавляет их на карту*/
+    static bool readLayersFromStringList(QStringList paths);
     //bool ReadGeometry():
 
 private:

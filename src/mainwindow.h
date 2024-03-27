@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include "lipvectorconvertor.h"
+#include "vector/lipvectorconvertor.h"
 #include <QMainWindow>
 #include <lipvectorreader.h>
 #include <QFileDialog>
@@ -27,6 +27,7 @@
 #include "vector/lippointlayer.h"
 #include "vector/liplinelayer.h"
 #include "vector/lippolygonlayer.h"
+#include "raster/liprasterlayer.h"
 #include <QObject>
 #include "lipproject.h"
 #include <QTreeWidgetItem>
@@ -35,12 +36,24 @@
 #include <lippostgisconnectionform.h>
 #include <lipwidgetmanager.h>
 #include <algorithm>
-#include <lipcutlayerform.h>
+#include <geoprocessing/lipcutlayerform.h>
 #include "lipattributestableform.h"
 #include "geoprocessing/liptriangulation.h"
 #include "lipcoordinatesystemlibrary.h"
 #include "liptriangulationgeos.h"
 #include "liptriangulationgeosform.h"
+#include "lipintersectionform.h"
+#include "treeView/liptreewidgetrasteritem.h"
+#include "lipvoronoidiagramform.h"
+#include "lipvectorunionform.h"
+#include "liprasterstyledialog.h"
+#include "lipvectorreprojectform.h"
+#include "lipvectorassignprojectform.h"
+#include "lipvectorpropertiesform.h"
+#include "lipcutrasterlayerform.h"
+#include "lipreprojectrasterlayerform.h"
+#include "liprastercontoursform.h"
+#include "lipsettingsform.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -53,10 +66,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void sceneInitialization();
+    /** добавляет ВЕКТОРНЫЙ слой */
     void addLayer(LIPVectorLayer* l);
+    void addRasterLayer(LIPRasterLayer* l);
 
 private slots:
     void layerTreeDataChanged(QTreeWidgetItem *item, int column);
+    void onItemChanged(QTreeWidgetItem* item, int column);
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
@@ -117,6 +133,40 @@ private slots:
 
     void on_actionIntersection_triggered();
 
+    void on_pushButton_addFeature_clicked(bool checked);
+
+    void on_actionOpenRasterLayer_triggered();
+
+    void on_actionVoronoiDiagram_triggered();
+
+    void on_actionUnion_triggered();
+
+    void on_actionRenderMap_triggered();
+
+    void on_actionSaveProject_triggered();
+
+    void on_action_triggered();
+
+    void on_crsComboBox_currentIndexChanged(int index);
+
+    void on_actionVectorReproject_triggered();
+
+    void on_actionAssignVectorProjection_triggered();
+
+    void on_actionCutRasterByVectorMask_triggered();
+
+    void on_actionRasterReproject_triggered();
+
+    void on_actionRasterContours_triggered();
+
+    void on_pushButtonMoveLayerUp_clicked();
+
+    void on_pushButtonMoveLayerDown_clicked();
+
+    void on_pushButtonDeleteLayer_clicked();
+
+    void on_actionSettings_triggered();
+
 signals:
     void start_add();
     void newVectorLayer(LIPVectorLayer*);
@@ -125,6 +175,7 @@ signals:
 public slots:
     void redrawNeeded(double);
     void showLayerContextMenu(const QPoint&);
+    void showDBLayerContextMenu(const QPoint&);
     void deleteVector(LIPVectorLayer* layer, QTreeWidgetItem* item);
 
 

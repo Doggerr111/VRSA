@@ -13,4 +13,8 @@ private:
     QString fileName;
 };
 
+
+
+
+
 #endif // LIPTREEWIDGETITEM_H

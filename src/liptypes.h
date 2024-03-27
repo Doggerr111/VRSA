@@ -4,7 +4,8 @@
 enum class LIPGeometryType{
     LIPPoint,
     LIPLineString,
-    LIPPolygon
+    LIPPolygon,
+    LIPUnknown
 };
 
 enum class LIPStyleUnit{

@@ -28,6 +28,7 @@ public:
     void showMessage(const QString& errorMessage, int msec, messageStatus st);
 
     QGraphicsScene* getScene();
+    QGraphicsView *getView();
     MainWindow *getMainWindow();
 
 private:

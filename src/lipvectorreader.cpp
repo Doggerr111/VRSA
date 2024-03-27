@@ -1,5 +1,7 @@
 #include "lipvectorreader.h"
-
+#include "lippointlayer.h"
+#include "liplinelayer.h"
+#include "lippolygonlayer.h"
 
 LIPVectorReader::LIPVectorReader(const LIPTypes::LIPDrivers driver, const char* new_filename)
     :driver{driver},
@@ -229,25 +231,28 @@ QRectF LIPVectorReader::ReadBoundingBox()
 QPair<OGRLayer*, GDALDataset*> LIPVectorReader::readOGRLayer(QString filename)
 {
     OGRRegisterAll();
+    QPair<OGRLayer*, GDALDataset*> f;
     QByteArray ba = filename.toLocal8Bit();
     const char *nameChar = ba.data();
     char** ppszOptions = NULL;
     ppszOptions = CSLSetNameValue(ppszOptions, "ENCODING", "UTF-8");
-    CPLSetConfigOption("SHAPE_ENCODING","");
+    //CPLSetConfigOption("SHAPE_ENCODING","");
     GDALDataset *shpDS = (GDALDataset *)GDALOpenEx(nameChar, GDAL_OF_VECTOR |  GDAL_OF_UPDATE, NULL, NULL, NULL);
-
-
-    //shpDS = (GDALDataset *)GDALOpen(nameChar, GA_Update);
     if (shpDS == NULL)
     {
-       // qDebug()<<"Error:cant read this shp file: " + QString(filename);
-
-
+       LIPWidgetManager::getInstance().showMessage("Ошибка открытия векторного слоя", 2000, messageStatus::Error);
+       f.first=nullptr;
+       f.second=nullptr;
+       return f;
     }
-    int c=shpDS->GetLayers().size();
-    qDebug()<<QString::number(c);
     OGRLayer *l = shpDS->GetLayer(0);
-    QPair<OGRLayer*, GDALDataset*> f;
+    if (l==nullptr)
+    {
+        LIPWidgetManager::getInstance().showMessage("Ошибка открытия векторного слоя", 2000, messageStatus::Error);
+        f.first=nullptr;
+        f.second=nullptr;
+        return f;
+    }
     f.first=l;
     f.second=shpDS;
     return f;
@@ -277,8 +282,38 @@ LIPGeometryType LIPVectorReader::readGeometryType(OGRLayer *layer)
         return LIPGeometryType::LIPPoint;
         break;
     }
-
+    case wkbMultiPoint:
+    {
+        return LIPGeometryType::LIPPoint;
+        break;
+    }
+    case wkbPointZM:
+    {
+        return LIPGeometryType::LIPPoint;
+        break;
+    }
     case wkbLineString:
+    {
+        return LIPGeometryType::LIPLineString;
+        break;
+    }
+    case wkbLineStringZM:
+    {
+        return LIPGeometryType::LIPLineString;
+        break;
+    }
+
+    case wkbMultiLineString:
+    {
+        return LIPGeometryType::LIPLineString;
+        break;
+    }
+    case wkbMultiLineStringZM:
+    {
+        return LIPGeometryType::LIPLineString;
+        break;
+    }
+    case wkbMultiLineStringM:
     {
         return LIPGeometryType::LIPLineString;
         break;
@@ -289,7 +324,13 @@ LIPGeometryType LIPVectorReader::readGeometryType(OGRLayer *layer)
         return LIPGeometryType::LIPPolygon;
         break;
     }
+    case wkbMultiPolygon:
+    {
+        return LIPGeometryType::LIPPolygon;
+        break;
+    }
     default:
+        return LIPGeometryType::LIPUnknown;
         break;
     }
 
@@ -331,4 +372,53 @@ std::map<int, QVector<LIPAttribute>>LIPVectorReader::readAttributes(OGRLayer *sh
     }
     return f;
 
+}
+
+bool LIPVectorReader::readLayersFromStringList(QStringList paths)
+{
+    if (paths.isEmpty())
+        return false;
+    for (QString path: paths)
+    {
+        QByteArray ba = path.toLocal8Bit();
+        const char *nameChar = ba.data();
+        char** ppszOptions = NULL;
+        ppszOptions = CSLSetNameValue(ppszOptions, "ENCODING", "UTF-8");
+        //CPLSetConfigOption("SHAPE_ENCODING","");
+        GDALDataset *dS = (GDALDataset *)GDALOpenEx(nameChar, GDAL_OF_VECTOR |  GDAL_OF_UPDATE, NULL, NULL, NULL);
+        if (dS == nullptr)
+        {
+           LIPWidgetManager::getInstance().showMessage("Ошибка открытия векторного слоя: " + path, 2000, messageStatus::Error);
+        }
+        OGRLayer *newLayer = dS->GetLayer(0);
+        if (newLayer==nullptr)
+        {
+            LIPWidgetManager::getInstance().showMessage("Ошибка открытия векторного слоя: " + path, 2000, messageStatus::Error);
+        }
+
+        int startIndex = path.lastIndexOf('/') + 1; // Находим индекс символа '/' и добавляем 1, чтобы пропустить его
+        int endIndex = path.lastIndexOf(".");
+        QString name = path.mid(startIndex, endIndex - startIndex);
+
+        LIPGeometryType type = LIPVectorReader::readGeometryType(newLayer);
+        switch (type)
+        {
+        case LIPGeometryType::LIPPoint:
+        {
+            new LIPPointLayer(newLayer,name, path, dS);
+            break;
+        }
+        case LIPGeometryType::LIPLineString:
+        {
+            new LIPLineLayer(newLayer,name, path, dS);
+            break;
+        }
+        case LIPGeometryType::LIPPolygon:
+        {
+            new LIPPolygonLayer(newLayer,name, path, dS);
+            break;
+        }
+        }
+
+    }
 }

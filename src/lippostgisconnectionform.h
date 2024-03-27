@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "lippostgisprovider.h"
 #include "lipwidgetmanager.h"
-#include "lipvectortypechecker.h"
+#include "vector/lipvectortypechecker.h"
 
 namespace Ui {
 class LIPPostGisConnectionForm;

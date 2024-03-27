@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++20
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -10,12 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     $$PWD/liptreewidgetitem.cpp \
-        treeView/lipobjecttreemodel.cpp \
+    $$PWD/liptreewidgetrasteritem.cpp \
+    $$PWD/lipobjecttreemodel.cpp \
 
 
 HEADERS += \
     $$PWD/liptreewidgetitem.h \
-        treeView/lipobjecttreemodel.h \
+    $$PWD/liptreewidgetrasteritem.h \
+    $$PWD/lipobjecttreemodel.h \
 
 
 

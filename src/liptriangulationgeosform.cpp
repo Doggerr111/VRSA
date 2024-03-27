@@ -13,7 +13,7 @@ LIPTriangulationGeosForm::LIPTriangulationGeosForm(QWidget *parent) :
 LIPTriangulationGeosForm::~LIPTriangulationGeosForm()
 {
     outputLayer=nullptr;
-    delete outputLayer;
+    //delete outputLayer;
     delete ui;
 }
 
@@ -49,6 +49,7 @@ void LIPTriangulationGeosForm::on_pushButtonOk_clicked()
     {
         outputLayer->addFeature(triangle, QVector<LIPAttribute>());
     }
+    outputLayer->update();
 
     close();
 

@@ -1,5 +1,5 @@
 #include "lipmapholder.h"
-
+#include <QDebug>
 LIPMapHolder::LIPMapHolder(QObject *parent)
     : QGraphicsView{},
       isDraging{false}
@@ -51,7 +51,10 @@ void LIPMapHolder::mousePressEvent(QMouseEvent *event)
         isDraging=true;
     else if (event->button()==Qt::MiddleButton && isAddingFeatures)
         isDraging=true;
+    //clickPos=mapToScene(event->pos());
     clickPos=event->pos();
+//    qDebug()<<clickPos;
+//    qDebug()<<mapToScene(event->pos());
 }
 
 void LIPMapHolder::mouseReleaseEvent(QMouseEvent *event)
@@ -65,10 +68,35 @@ void LIPMapHolder::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
     if (isDraging)
     {
+//        qDebug()<<"координаты клика";
+//        qDebug()<<clickPos;
+//        QPointF delta=clickPos-mapToScene(event->pos());
+//        clickPos=mapToScene(event->pos());
+//        qDebug()<<"координаты перемещени";
+//        qDebug()<<clickPos;
+//        QPoint rect=viewport()->rect().center();
+//        qDebug()<<"координаты";
+//        qDebug()<<mapToScene(this->viewport()->rect().center())+delta.toPoint();
+//        this->centerOn(mapToScene(this->viewport()->rect().center())+delta.toPoint());
+
+
         QPointF delta=clickPos-event->pos();
         clickPos=event->pos();
         QPoint rect=viewport()->rect().center();
         this->centerOn(mapToScene(this->viewport()->rect().center()+delta.toPoint()));
+
+
+
+
+
+
+
+
+
+
+
+
+
         //scene()->setSceneRect(sceneRect().translated(-delta));
 //        QMatrix const matrix = this->matrix().inverted();
 //        QRectF visibleRect = matrix.mapRect(this->viewport()->rect());
