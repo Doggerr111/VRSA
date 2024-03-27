@@ -2,14 +2,14 @@
 #define LIPCUTLAYERFORM_H
 
 #include <QDialog>
-#include "lipcombobox.h"
+#include "customWidgets/lipcombobox.h"
 #include "lipvectorclipper.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include "lipfilevalidator.h"
-#include "liplinelayer.h"
-#include "lippointlayer.h"
-#include "lippolygonlayer.h"
+#include "vector/liplinelayer.h"
+#include "vector/lippointlayer.h"
+#include "vector/lippolygonlayer.h"
 #include "lipvectorreader.h"
 
 namespace Ui {

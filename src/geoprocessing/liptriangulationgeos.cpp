@@ -48,38 +48,51 @@ QVector<QVector<QPointF>> LIPTriangulationGeos::getTriangulation(LIPVectorLayer 
         count++;
     }
     return trianglesVec;
-//    for(int i=0; i<triangles->getLength()-1; i++)
-//    {
-//        qDebug()<<"check getGeometryN";
-//        auto tr = triangles->getGeometryN(i)->getCoordinates();
-//        triangles->getCoordinates();
 
-//        QVector<QPointF> tempVec;
-//        for( uint k=0; k<tr->size()-1; k++)
-//        {
-//            qDebug()<<"check Point";
-//            QPointF point(tr->getAt(k).x, tr->getAt(k).y);
-//            qDebug()<<point;
-//            tempVec.append(point);
+}
 
-//        }
-//        trianglesVec.append(tempVec);
-//    }
-//    return trianglesVec;
-    //std::unique_ptr<geos::geom::CoordinateSequence> coordinateSequence = triangles->getCoordinates();
+QVector<QVector<QPointF> > LIPTriangulationGeos::getVoronoiDiagram(LIPVectorLayer *pointLayer)
+{
+    //проверки
+    if (pointLayer==nullptr)
+    {
+        LIPWidgetManager::getInstance().showMessage("Некорректный слой, триангуляция невозможна", 2000, messageStatus::Error);
+        return QVector<QVector<QPointF>>();
+    }
+    LIPPointLayer* layer = dynamic_cast<LIPPointLayer*>(pointLayer);
+    if (layer==nullptr)
+    {
+        LIPWidgetManager::getInstance().showMessage("Слой не является точечным, триангуляция невозможна", 2000, messageStatus::Error);
+        return QVector<QVector<QPointF>>();
+    }
+    //триангуляция
+    QVector<QVector<QPointF>> polygonsVec; //координаты полигонов
+    QVector<LIPPoint*> lipPoints= layer->returnCords();
+    //geos::geom::GeometryFactory geometryFactory = geos::geom::GeometryFactory::getDefaultInstance();
+    geos::triangulate::DelaunayTriangulationBuilder geosTr;
+    geos::triangulate::VoronoiDiagramBuilder geosVD;
+    geosVD.setSites(LIPVectorConvertor::LIPPointsToGeosCoordinateSequence(lipPoints));
 
-    //LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
-      //                                           dynamic_cast<LIPCoordinateSystem*>(layer->getOGRLayer()->GetSpatialRef()));
-    //LIPVectorLayer* outputLayer = lCr->returnLayer();
+    geos::geom::GeometryFactory::Ptr gfact = geos::geom::GeometryFactory::create();
+    std::unique_ptr<geos::geom::GeometryCollection> polygons= geosVD.getDiagram(*gfact);
 
+    for(std::size_t i=0; i<polygons->getLength(); i++)
+    {
 
-//    for (unsigned int i = 0; i < coordinateSequence->getSize(); ++i) {
-//        const geos::geom::Coordinate& coordinate = coordinateSequence->getAt(i);
-//        //outputLayer->addFeature()
-//        //qDebug()<<QPointF(coordinate.x, coordinate.y);
-//    }
+        auto poly = polygons->getGeometryN(i);
+        if (poly==nullptr)
+            break;
+        auto polyCords = poly->getCoordinates();
+        QVector<QPointF> tempVec;
+        for(std::size_t n=0; n<polyCords->getSize(); n++)
+        {
+            auto point = polyCords->getAt(n);
+            tempVec.append(QPointF(point.x, point.y));
+        }
+        polygonsVec.append(tempVec);
 
+    }
 
-    //qDebug()<<coordinateSequence->getSize();
-
+    return polygonsVec;
+    //return QVector<QVector<QPointF>>();
 }

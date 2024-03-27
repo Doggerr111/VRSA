@@ -1,18 +1,21 @@
-#include "lipvectorintersection.h"
+#include "lipvectorunion.h"
 
-
-LIPVectorIntersection::LIPVectorIntersection()
+LIPVectorUnion::LIPVectorUnion()
     :resultLayer{nullptr}
 {
 
 }
 
-QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer *inputLayer, LIPPolygonLayer *overlayLayer)
+QVector<QVector<QPointF> > LIPVectorUnion::getUnion(LIPVectorLayer *inputLayer, LIPVectorLayer *unionLayer)
 {
     //проверяем геометрию исходного слоя
     LIPPointLayer* pointLayer=dynamic_cast<LIPPointLayer*>(inputLayer);
     if (pointLayer!=nullptr) //если  слой точечный
     {
+        //приводим также к полигону так как типы геометрий должны совпадать
+        LIPPointLayer* pointUnionLayer=dynamic_cast<LIPPointLayer*>(unionLayer);
+        if (pointUnionLayer==nullptr)
+            return QVector<QVector<QPointF>>();
         //переходим к геометрии мультиточки GEOS
         auto geosPoints = LIPVectorConvertor::vectorPointstoGeosPoints(pointLayer->returnCords());
 
@@ -20,17 +23,14 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
         qDebug()<<"num geom" + QString::number(geosPoints->getNumGeometries());
         QVector<QVector<QPointF>> resultVector;
         QVector<QPointF> points;
-        std::unique_ptr<geos::geom::Geometry> interResult;
+        std::unique_ptr<geos::geom::Geometry> unionResult;
         try {
-            auto inter = LIPVectorConvertor::vectorPointstoGeosPolygon(overlayLayer->returnCords());
-            for(std::size_t i=0; i<geosPoints->getNumGeometries(); i++)
+            auto inter = LIPVectorConvertor::vectorPointstoGeosPoints(pointUnionLayer->returnCords());
+            unionResult=geosPoints->Union(inter.get());
+            for(std::size_t i=0; i<unionResult->getNumGeometries(); i++)
             {
                 auto pG = geosPoints->getGeometryN(i);
-                if (pG->intersects(inter.get()))
-                {
-                    points.append(QPointF(pG->getX(), pG->getY()));
-
-                }
+                points.append(QPointF(pG->getX(), pG->getY()));
             }
             resultVector.append(points);
             return resultVector;
@@ -47,25 +47,27 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
     LIPLineLayer* lineLayer=dynamic_cast<LIPLineLayer*>(inputLayer);
     if(lineLayer!=nullptr) //если линия
     {
+        //приводим также к линии так как типы геометрий должны совпадать
+        LIPLineLayer* lineUnionLayer=dynamic_cast<LIPLineLayer*>(unionLayer);
+        if (lineUnionLayer==nullptr)
+            return QVector<QVector<QPointF>>();
         //переходим к геометрии мультиполигона GEOS
         auto geosLines = LIPVectorConvertor::vectorPointstoGeosLine(lineLayer->returnCords());
         QVector<QVector<QPointF>> resultVector;
-        std::unique_ptr<geos::geom::Geometry> interResult;
+        std::unique_ptr<geos::geom::Geometry> unionResult;
         try {
-            auto inter = LIPVectorConvertor::vectorPointstoGeosPolygon(overlayLayer->returnCords());
-            qDebug()<<":idk";
-            interResult=geosLines->intersection(inter.get());
-
-
+            auto inter = LIPVectorConvertor::vectorPointstoGeosLine(lineUnionLayer->returnCords());
+            unionResult=geosLines->Union(inter.get());
         } catch ( std::runtime_error& e) {
             // Обработка исключения типа TopologyException
             //std::cerr << "Ошибка топологии GEOS: " << e.what() << std::endl;
             qDebug()<<e.what();
             return QVector<QVector<QPointF>>();
         }
-            for(std::size_t i=0;i<interResult->getNumGeometries(); i++)
+            unionResult.get()->getGeometryN(0)->getCoordinates();
+            for(std::size_t i=0;i<unionResult->getNumGeometries(); i++)
             {
-                auto line = interResult->getGeometryN(i); //получаем геометрию
+                auto line = unionResult->getGeometryN(i); //получаем геометрию
                 QVector<QPointF> lineCords;
                 auto geosCords = line->getCoordinates();
                 for (std::size_t i=0; i<geosCords->size(); i++)
@@ -74,23 +76,24 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
                 }
                 resultVector.append(lineCords);
             }
-            qDebug()<<"sizeeee";
-            qDebug()<<interResult->getNumGeometries();
-            qDebug()<<resultVector.size();
             return resultVector;
     }
 
     LIPPolygonLayer* polyLayer=dynamic_cast<LIPPolygonLayer*>(inputLayer);
     if(polyLayer!=nullptr) //если полигон
     {
+        //приводим также к полигону так как типы геометрий должны совпадать
+        LIPPolygonLayer* polyUnionLayer=dynamic_cast<LIPPolygonLayer*>(unionLayer);
+        if (polyUnionLayer==nullptr)
+            return QVector<QVector<QPointF>>();
         //переходим к геометрии мультиполигона GEOS
         auto geosPoly = LIPVectorConvertor::vectorPointstoGeosPolygon(polyLayer->returnCords());
         QVector<QVector<QPointF>> resultVector;
-        std::unique_ptr<geos::geom::Geometry> interResult;
+        std::unique_ptr<geos::geom::Geometry> unionResult;
         try {
-            auto inter = LIPVectorConvertor::vectorPointstoGeosPolygon(overlayLayer->returnCords());
+            auto inter = LIPVectorConvertor::vectorPointstoGeosPolygon(polyUnionLayer->returnCords());
             qDebug()<<":idk";
-            interResult=geosPoly->intersection(inter.get());
+            unionResult=geosPoly->Union(inter.get());
 
         } catch ( std::runtime_error& e) {
             // Обработка исключения типа TopologyException
@@ -100,10 +103,9 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
 
 
         }
-            interResult.get()->getGeometryN(0)->getCoordinates();
-            for(std::size_t i=0;i<interResult->getNumGeometries(); i++)
+            for(std::size_t i=0;i<unionResult->getNumGeometries(); i++)
             {
-                auto polygon = interResult->getGeometryN(i); //получаем геометрию
+                auto polygon = unionResult->getGeometryN(i); //получаем геометрию
                 QVector<QPointF> polyCords;
                 auto geosCords = polygon->getCoordinates();
                 for (std::size_t i=0; i<geosCords->size(); i++)
@@ -119,7 +121,3 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
 
     }
 }
-
-
-
-

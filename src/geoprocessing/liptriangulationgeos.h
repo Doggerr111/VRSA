@@ -1,6 +1,7 @@
 #ifndef LIPTRIANGULATIONGEOS_H
 #define LIPTRIANGULATIONGEOS_H
 #include <geos/triangulate/DelaunayTriangulationBuilder.h>
+#include <geos/triangulate/VoronoiDiagramBuilder.h>
 #include <geos/triangulate/quadedge/QuadEdgeSubdivision.h>
 #include "lippointlayer.h"
 #include "lipwidgetmanager.h"
@@ -14,7 +15,7 @@ public:
     LIPTriangulationGeos();
     //
     static QVector<QVector<QPointF>> getTriangulation(LIPVectorLayer* pointLayer);
-
+    static QVector<QVector<QPointF>> getVoronoiDiagram(LIPVectorLayer* pointLayer);
 
 };
 

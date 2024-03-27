@@ -9,8 +9,8 @@
 #include <vector/lippointgraphicsitem.h>
 #include <QObject>
 #include "lipwidgetmanager.h"
-#include <lippolygonlayer.h>
-#include <liplinelayer.h>
+#include <vector/lippolygonlayer.h>
+#include <vector/liplinelayer.h>
 #include "liplayercreator.h"
 
 /** Обрезка вектора по обьектам другого вектора (полигона) */
