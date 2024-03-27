@@ -4,6 +4,7 @@ LIPCoordinateSystemLibrary::LIPCoordinateSystemLibrary()
 {
     LIPCoordinateSystem *WGS84 = new LIPCoordinateSystem();
     WGS84->setProj("+proj=longlat +datum=WGS84 +no_defs +type=crs");
+    //WGS84->getOGRSpatialRef()->SetWellKnownGeogCS("WGS84");
     WGS84->setName("WGS 84");
     mCRSLib.append(WGS84);
 

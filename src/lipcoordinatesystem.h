@@ -4,14 +4,17 @@
 #include "gdal_priv.h"
 #include "ogrsf_frmts.h"
 #include <QString>
-class LIPCoordinateSystem: public OGRSpatialReference
+class LIPCoordinateSystem
 {
 public:
     LIPCoordinateSystem(/*QString name ="", QString projString=""*/);
+    ~LIPCoordinateSystem();
     bool setName(QString name);
     bool setProj(QString proj);
     bool isProjValid(QString proj);
-    static LIPCoordinateSystem* fromOGR(OGRSpatialReference* ref);
+    bool setOGRSpatialRef(OGRSpatialReference* ref);
+    OGRSpatialReference *getOGRSpatialRef();
+    //static LIPCoordinateSystem* fromOGR(OGRSpatialReference* ref);
 
 
     QString getName();
@@ -19,6 +22,7 @@ public:
 private:
     QString mName;
     QString mProjString;
+    OGRSpatialReference* mSR;
 
 
 };
