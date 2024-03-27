@@ -6,16 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>533</height>
+    <width>394</width>
+    <height>766</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+   <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
     <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -59,7 +65,7 @@
 }</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="pagePointStyle">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -75,7 +81,7 @@
              <item>
               <widget class="QLabel" name="label">
                <property name="text">
-                <string>Point SIze</string>
+                <string>Размер</string>
                </property>
               </widget>
              </item>
@@ -112,19 +118,332 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Border Color</string>
+                <string>Цвет обводки</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButtonPointColor">
                <property name="text">
-                <string>Choose color</string>
+                <string>Выберите цвет</string>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_14">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Цвет заливки</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonPointBrushColor">
+               <property name="text">
+                <string>Выберите цвет</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_16">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Тип заливки</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="LIPBrushTypeComboBox" name="comboBox"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_13">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>9</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>0</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pushButtonTriangleSymbol">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/triangle.png</normaloff>:/images/icons/triangle.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonCircleSymbol">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/dot.png</normaloff>:/images/icons/dot.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QPushButton" name="pushButtonRhombusSymbol">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/rhomb.png</normaloff>:/images/icons/rhomb.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButtonSquareSymbol">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/square.png</normaloff>:/images/icons/square.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QPushButton" name="pushButtonInvTriangleSymbol">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/invertedTriangle.png</normaloff>:/images/icons/invertedTriangle.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="6">
+              <widget class="QPushButton" name="pushButtonLoadImage">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/folder.png</normaloff>:/images/icons/folder.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -142,7 +461,7 @@
              <item>
               <widget class="QLabel" name="labelLineWidth">
                <property name="text">
-                <string>Line WIdth</string>
+                <string>Толщина линии</string>
                </property>
               </widget>
              </item>
@@ -179,14 +498,14 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Line Color</string>
+                <string>Цвет линии</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButtonLineColor">
                <property name="text">
-                <string>Choose color</string>
+                <string>Выбрать цвет</string>
                </property>
               </widget>
              </item>
@@ -211,15 +530,195 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Line Color</string>
+                <string>Тип линии</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButtonLineType">
+              <widget class="LIPPenTypeComboBox" name="comboBoxLinePenStyle"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_15">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLabel" name="label_4">
                <property name="text">
-                <string>Line Type</string>
+                <string>Стиль конечных точек</string>
                </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBoxLineCapStyle">
+               <property name="iconSize">
+                <size>
+                 <width>16</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Квадратный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/qpen-square.png</normaloff>:/images/icons/qpen-square.png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Плоский</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/qpen-flat.png</normaloff>:/images/icons/qpen-flat.png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Закругленный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/qpen-roundcap.png</normaloff>:/images/icons/qpen-roundcap.png</iconset>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_17">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Стиль соединения</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBoxLineJoinStyle">
+               <item>
+                <property name="text">
+                 <string>Скошенный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/beveled-corner(1).png</normaloff>:/images/icons/beveled-corner(1).png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Под углом</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/miter-join.png</normaloff>:/images/icons/miter-join.png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Скругленный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/round-join.png</normaloff>:/images/icons/round-join.png</iconset>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_18">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="QCheckBox" name="checkBox">
+               <property name="text">
+                <string>Пользовательский пунктир</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frameTableWidgetCustomDashLIne">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <item>
+              <widget class="QTableWidget" name="tableWidgetCustomDashLine">
+               <column>
+                <property name="text">
+                 <string>Длина пунктира</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Длина штриха</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame_20">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="QPushButton" name="pushButtonAddRow">
+                  <property name="text">
+                   <string>+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonDeleteRow">
+                  <property name="text">
+                   <string>-</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonAplyCustomDashLine">
+                  <property name="text">
+                   <string>Применить</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -241,12 +740,12 @@
              <item>
               <widget class="QLabel" name="labelBorderWidth">
                <property name="text">
-                <string>Border Width</string>
+                <string>Толщина обводки</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEditBorderWidth"/>
+              <widget class="QLineEdit" name="lineEditPolyBorderWidth"/>
              </item>
              <item>
               <widget class="QComboBox" name="comboBoxPointSizeUnit_3">
@@ -272,14 +771,14 @@
              <item>
               <widget class="QLabel" name="labelBorderColor">
                <property name="text">
-                <string>Border Color</string>
+                <string>Цвет обводки</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButtonBorderColor">
+              <widget class="QPushButton" name="pushButtonPolyBorderColor">
                <property name="text">
-                <string>Choose Color</string>
+                <string>Выбрать цвет</string>
                </property>
               </widget>
              </item>
@@ -298,15 +797,61 @@
              <item>
               <widget class="QLabel" name="labelPolyColor">
                <property name="text">
-                <string>Polygon Color</string>
+                <string>Тип обводки</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButtonPolyColor">
+              <widget class="LIPPenTypeComboBox" name="comboBoxPolyBorderStyle"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_21">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <item>
+              <widget class="QLabel" name="label_7">
                <property name="text">
-                <string>Choose Color</string>
+                <string>Стиль соединения</string>
                </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBoxPolyBorderJoinStyle">
+               <item>
+                <property name="text">
+                 <string>Скошенный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/beveled-corner(1).png</normaloff>:/images/icons/beveled-corner(1).png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Под углом</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/miter-join.png</normaloff>:/images/icons/miter-join.png</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Скругленный</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons.qrc">
+                  <normaloff>:/images/icons/round-join.png</normaloff>:/images/icons/round-join.png</iconset>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>
@@ -324,19 +869,54 @@
              <item>
               <widget class="QLabel" name="labelPolyType">
                <property name="text">
-                <string>Polygon Type</string>
+                <string>Цвет заливки</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButtonPolygonType">
+              <widget class="QPushButton" name="pushButtonPolygonBrushColor">
                <property name="text">
-                <string>Choose Type</string>
+                <string>Выбрать цвет</string>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_19">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_18">
+             <item>
+              <widget class="QLabel" name="labelPolyType_2">
+               <property name="text">
+                <string>Тип заливки</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="LIPBrushTypeComboBox" name="comboBoxPolyBrushStyle"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -373,6 +953,20 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>LIPPenTypeComboBox</class>
+   <extends>QComboBox</extends>
+   <header>lippentypecombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LIPBrushTypeComboBox</class>
+   <extends>QComboBox</extends>
+   <header>lipbrushtypecombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -16,6 +16,7 @@
 #include "vector/lippointlayer.h"
 #include "vector/lippolygonlayer.h"
 #include "vector/liplinelayer.h"
+#include <QFileDialog>
 namespace Ui {
 class LIPVectorStyleForm;
 }
@@ -47,6 +48,57 @@ private slots:
     void on_lineEditLineWidth_textChanged(const QString &arg1);
 
     void on_pushButtonLineColor_clicked();
+
+
+
+    void on_pushButtonSquareSymbol_clicked();
+
+    void on_pushButtonCircleSymbol_clicked();
+
+    void on_pushButtonTriangleSymbol_clicked();
+
+    void on_pushButtonRhombusSymbol_clicked();
+
+    void on_pushButtonPointBrushColor_clicked();
+
+    void on_pushButtonInvTriangleSymbol_clicked();
+
+    void on_pushButtonLoadImage_clicked();
+
+    void on_comboBoxPointBrushType_currentIndexChanged(int index);
+
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_lineEditPointPenWidth_textChanged(const QString &arg1);
+
+
+    void on_comboBoxLinePenStyle_currentIndexChanged(int index);
+
+    void on_comboBoxLineCapStyle_currentIndexChanged(int index);
+
+    void on_comboBoxLineJoinStyle_currentIndexChanged(int index);
+
+    void on_checkBox_clicked(bool checked);
+
+    void on_pushButtonAddRow_clicked();
+
+    void on_pushButtonDeleteRow_clicked();
+
+    void on_pushButtonAplyCustomDashLine_clicked();
+
+    void on_lineEditPolyBorderWidth_textChanged(const QString &arg1);
+
+    void on_pushButtonPolyBorderColor_clicked();
+
+
+
+    void on_comboBoxPolyBorderStyle_currentIndexChanged(int index);
+
+    void on_pushButtonPolygonBrushColor_clicked();
+
+    void on_comboBoxPolyBrushStyle_currentIndexChanged(int index);
+
+    void on_comboBoxPolyBorderJoinStyle_currentIndexChanged(int index);
 
 private:
     QPen pen;
