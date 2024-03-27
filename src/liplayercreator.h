@@ -10,7 +10,7 @@
 #include "vector/liplinelayer.h"
 #include "vector/lippolygonlayer.h"
 #include "lipcoordinatesystem.h"
-
+#include "lipvectortypechecker.h"
 
 class LIPLayerCreator
 {
@@ -23,6 +23,8 @@ public:
     void setGeometry();
     OGRLayer* returnOGRLayer();
     LIPVectorLayer* returnLayer();
+
+    static LIPVectorLayer* createReprojectedLayer(LIPVectorLayer *inputLayer, LIPCoordinateSystem *targetCRS, QString fileName);
 private:
     char fileName;
     QString fileNameAsString;
