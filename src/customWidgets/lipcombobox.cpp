@@ -11,3 +11,8 @@ LIPComboBox::LIPComboBox(QWidget* parent)
         index++;
     }
 }
+
+LIPVectorLayer *LIPComboBox::getVectorLayer()
+{
+    return LIPProject::getInstance().getVectorLayerByPath(itemData(currentIndex()).toString());
+}

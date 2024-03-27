@@ -11,7 +11,7 @@ class LIPCRSComboBox : public QComboBox
     Q_OBJECT
 public:
     LIPCRSComboBox(QWidget* parent=nullptr);
-
+    LIPCoordinateSystem *getCurrentCRS();
 
 
 public slots:

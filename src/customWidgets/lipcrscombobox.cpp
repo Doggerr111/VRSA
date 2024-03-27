@@ -19,12 +19,19 @@ LIPCRSComboBox::LIPCRSComboBox(QWidget* parent)
     }
         //using namespace geos::geom;
 //    geos::algorithm::Area ar;
-    geos::geom::Coordinate cr;
-     geos::geom::LineSegment crfa;
-     crfa.angle();
-    cr.setNull();
-    qDebug()<<cr.isNull();
-//    cr.setNull();
+
+    //    cr.setNull();
+}
+
+LIPCoordinateSystem *LIPCRSComboBox::getCurrentCRS()
+{
+    for (LIPCoordinateSystem *crs: LIPProject::getInstance().getCoordinateSystems())
+    {
+        if (crs->getName()==currentText())
+        {
+            return crs;
+        }
+    }
 }
 
 void LIPCRSComboBox::updateCRS()
