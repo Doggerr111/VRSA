@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++20
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,15 +14,17 @@ SOURCES += \
         $$PWD/liplinegraphicsitem.cpp \
         $$PWD/liplinelayer.cpp \
         $$PWD/lippointgraphicsitem.cpp \
+        $$PWD/lippointsymbol.cpp \
         $$PWD/lippolygongraphicsitem.cpp \
         $$PWD/lippolygonlayer.cpp \
+        $$PWD/lipsymbol.cpp \
         $$PWD/liptemporarygraphicsitem.cpp \
         $$PWD/lipvectorlayer.cpp \
         $$PWD/lipvectorstyle.cpp \
         $$PWD/lipvectorconvertor.cpp \
         $$PWD/lipvectortypechecker.cpp \
-        vector/lippointlayer.cpp \
-        vector/lippoint.cpp
+        $$PWD/lippointlayer.cpp \
+        $$PWD/lippoint.cpp
 
 HEADERS += \
         $$PWD/lipattribute.h \
@@ -30,20 +32,23 @@ HEADERS += \
         $$PWD/liplinegraphicsitem.h \
         $$PWD/liplinelayer.h \
         $$PWD/lippointgraphicsitem.h \
+        $$PWD/lippointsymbol.h \
         $$PWD/lippolygongraphicsitem.h \
         $$PWD/lippolygonlayer.h \
+        $$PWD/lipsymbol.h \
         $$PWD/liptemporarygraphicsitem.h \
         $$PWD/lipvectorlayer.h \
         $$PWD/lipvectorstyle.h \
         $$PWD/lipvectorconvertor.h \
         $$PWD/lipvectortypechecker.h \
-        vector/lippointlayer.h \
-        vector/lippoint.h
+        $$PWD/lippointlayer.h \
+        $$PWD/lippoint.h
 
 
 
 INCLUDEPATH += /usr/include/gdal
 INCLUDEPATH += /usr/include/geos
+INCLUDEPATH += $$PWD/..
 LIBS += /usr/lib/libgdal.so
 #LIBS += /lib/x86_64-linux-gnu/libgeos.so
 #LIBS += -lgeos

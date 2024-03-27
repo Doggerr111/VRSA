@@ -13,6 +13,7 @@ LIPPointLayer::~LIPPointLayer()
 {
     for(int i=0; i<mapFeatures.size(); i++)
     {
+        //LIPWidgetManager::getInstance().getScene()->removeItem(mapFeatures.at(i));
         delete mapFeatures.at(i);
     }
 
@@ -23,6 +24,7 @@ LIPPointLayer::~LIPPointLayer()
 
     mapFeatures.clear();
     coordinates.clear();
+    //delete mStyle;
 }
 
 QString LIPPointLayer::returnGISName()
@@ -37,7 +39,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
     if (layer==nullptr || targetCRS==nullptr)
         return false;
     OGRSpatialReference *sourceCRS = layer->GetSpatialRef();
-    OGRLayer* newLayer=dS->CreateLayer("layerRep", targetCRS);
+    OGRLayer* newLayer=dS->CreateLayer("layerRep", targetCRS->getOGRSpatialRef(), wkbPoint);
 
     if (sourceCRS==nullptr)
     {
@@ -46,7 +48,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
                                               "Необходимо сначала задать систему координат", 5000, messageStatus::Error);
         return false;
     }
-    OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(mCRS, targetCRS);
+    OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(mCRS->getOGRSpatialRef(), targetCRS->getOGRSpatialRef());
     OGRFeature *shpFeature;
     layer->ResetReading();
 
@@ -80,7 +82,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
     //layer->SyncToDisk();
     dS->StartTransaction();
     //GDALSetProjection(dS, targetCRS->ExportToWkt());
-    dS->SetSpatialRef(targetCRS);
+    dS->SetSpatialRef(targetCRS->getOGRSpatialRef());
     dS->CommitTransaction();
     //TODO Для изменения слоя нужно создать новый OGRLayer в который скопировать все старые параметры
 
@@ -93,6 +95,76 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSyste
 {
 
 }
+
+bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS, QString fileName)
+{
+//    if (layer==nullptr)
+//    {
+//        LIPWidgetManager::getInstance().showMessage("Для данного слоя перепроицирование невозможно", 2000, messageStatus::Error);
+//        return false;
+//    }
+//    if (mCRS==nullptr)
+//    {
+
+//        LIPWidgetManager::getInstance().showMessage("Перепроицирование невозможно так как для слоя не указана система координат,"
+//                                              "Необходимо сначала задать систему координат", 5000, messageStatus::Error);
+//        return false;
+//    }
+//    //auto *driver = GDALDriverManager::GetDriverByName("ESRI Shapefile");
+//    auto *driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+//    GDALDataset *targetDataset = driver->CreateDataSource(targetFile, nullptr);
+
+
+//    OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(mCRS, targetCRS);
+//    OGRFeature *shpFeature;
+//    layer->ResetReading();
+
+//    while ((shpFeature = layer->GetNextFeature()) != nullptr)
+//    {
+
+//        OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
+//        int count = shpFeature->GetGeomFieldCount();
+//        for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
+//        {
+//            if (poGeometry != nullptr)
+//            {
+//                OGRPoint *pointOGR=(OGRPoint*)poGeometry;
+
+//                double x=pointOGR->getX();
+//                double y=pointOGR->getY();
+//                //qDebug()<<x;
+
+//                crTr->Transform(1, &x, &y);
+//                //qDebug()<<x;
+//                pointOGR->setX(x);
+//                pointOGR->setY(y);
+//                //qDebug()<<shpFeature->SetGeometry(pointOGR);
+//                OGR_L_SetFeature(layer,shpFeature);
+
+//            }
+//        }
+//    }
+//    mCRS=targetCRS;
+//    OGRFeature::DestroyFeature(shpFeature);
+//    //layer->SyncToDisk();
+//    dS->StartTransaction();
+//    //GDALSetProjection(dS, targetCRS->ExportToWkt());
+//    dS->SetSpatialRef(targetCRS);
+//    dS->CommitTransaction();
+//    //TODO Для изменения слоя нужно создать новый OGRLayer в который скопировать все старые параметры
+
+//    update();
+//    return true;
+}
+void LIPPointLayer::flyReprojection()
+{
+
+    update();
+
+
+}
+
+
 
 void LIPPointLayer::update()
 {
@@ -115,12 +187,40 @@ void LIPPointLayer::update()
 
 QVector<LIPPoint *> LIPPointLayer::returnCords()
 {
+    for(LIPPoint* point: coordinates)
+    {
+        delete point;
+    }
     coordinates.clear();
     if (layer!=nullptr)
     {
-        layer->GetName();
+
         OGRFeature *shpFeature;
         layer->ResetReading();
+        OGRSpatialReference *targetCRS =  LIPProject::getInstance().getProjectCRS()->getOGRSpatialRef();
+        OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(layer->GetSpatialRef(), targetCRS);
+
+//        OGRSpatialReference* srs = new OGRSpatialReference;
+//        srs->importFromEPSG(4326);
+
+        if (targetCRS->IsSameGeogCS(layer->GetSpatialRef()))
+        {
+            qDebug()<<"coordinates are same";
+        }
+        qDebug()<<targetCRS->GetAuthorityCode(nullptr);
+        qDebug()<<layer->GetSpatialRef()->GetAuthorityCode(nullptr);
+//        for(auto point: coordinates)
+//        {
+//            //qDebug()<<x;
+//            double x=point->x();
+//            double y=point->y();
+//            //qDebug()<<x;
+//            //qDebug()<<
+//                       crTr->Transform(1, &x, &y);
+//            //qDebug()<<QString::number(x,'f',10);
+//            point->setX(x);
+//            point->setY(y);
+//        }
         int counter=0;
         //qDebug()<<shpLayer->GetSpatialRef()->GetEPSGGeogCS();
         while ((shpFeature = layer->GetNextFeature()) != NULL)
@@ -139,8 +239,16 @@ QVector<LIPPoint *> LIPPointLayer::returnCords()
 
                     //qDebug()<<"x_coordinate: "+ QString::number(point->getX()) + "; y_cooordinate: "+ QString::number(point->getY());
                     LIPPoint *point = new LIPPoint();
-                    point->setX(pointOGR->getX());
-                    point->setY(pointOGR->getY());
+
+
+                    double x=pointOGR->getX();
+                    double y=pointOGR->getY();
+                    //qDebug()<<x;
+                    //qDebug()<<
+                    crTr->Transform(1, &x, &y);
+                    //qDebug()<<QString::number(x,'f',10);
+                    point->setX(x);
+                    point->setY(y);
                     delete pointOGR;
 
                     coordinates.append(point);
@@ -150,7 +258,7 @@ QVector<LIPPoint *> LIPPointLayer::returnCords()
             }
 
         }
-        qDebug()<<"SIZE OF ARRAY"+ QString::number(coordinates.size());
+        OGRFeature::DestroyFeature(shpFeature);
         return coordinates;
 
     }
@@ -163,10 +271,12 @@ void LIPPointLayer::setMapFeatures()
     {
         LIPPointGraphicsItem* item = new LIPPointGraphicsItem;
         item->setVectorStyle(mStyle);
-        LIPPoint *point = new LIPPoint();
-        point->setX(coordinates.at(i)->x());
-        point->setY(coordinates.at(i)->y());
-        item->setPoint(point);
+//        LIPPoint *point = new LIPPoint();
+//        point->setX(coordinates.at(i)->x());
+
+
+//        point->setY(coordinates.at(i)->y());
+        item->setPoint(coordinates.at(i));
         item->setScaleFactor(mScaleFactor);
 
         mapFeatures.append(item);
@@ -291,3 +401,6 @@ void LIPPointLayer::setZValue(int zValue)
         feature->setZValue(zValue);
     }
 }
+
+
+

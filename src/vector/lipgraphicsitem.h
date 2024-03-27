@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 #include "lipvectorstyle.h"
 class LIPGraphicsItem : public QGraphicsItem
 {
@@ -10,6 +11,7 @@ class LIPGraphicsItem : public QGraphicsItem
 public:
     LIPGraphicsItem();
     ~LIPGraphicsItem();
+    /** idk */
     void setPen(QPen pen);
     void setBrush(QBrush brush);
     void setVectorStyle(LIPVectorStyle*);

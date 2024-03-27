@@ -160,17 +160,19 @@ std::unique_ptr<MultiLineString> LIPVectorConvertor::vectorPointstoGeosLine(QVec
 {
     auto geomFac = geos::geom::GeometryFactory::create();
     std::vector<std::unique_ptr<geos::geom::LineString>> geosLines;
+
     for (auto vec: lipPoints)
     {
-        if (vec.size()>=3) //проверка, что в слое нет некорректных полигонов
+        if (vec.size()>=2) //проверка, что в слое нет некорректных линий
         {
+
             geos::geom::CoordinateSequence points=LIPPointsToGeosCoordinateSequence(vec);
-            points.add(vec[0]->x(), vec[0]->y()); //ЗАКРЫВАЕМ ПОЛИГОН!!
-            qDebug()<<points.size();
+
             auto line=geomFac->createLineString(std::move(points));
             geosLines.push_back(std::move(line));
         }
     }
+
     return geomFac->createMultiLineString(std::move(geosLines));
 }
 

@@ -38,6 +38,10 @@ private:
     // LIPVectorLayer interface
 public:
     void setZValue(int zValue);
+
+    // LIPVectorLayer interface
+public:
+    void update();
 };
 
 #endif // LIPPOLYGONLAYER_H

@@ -1,13 +1,15 @@
 #include "lipvectorstyle.h"
 
 LIPVectorStyle::LIPVectorStyle()
+    : mImgSymbol{nullptr}
 {
 
 }
 
 LIPVectorStyle::~LIPVectorStyle()
 {
-
+    delete mImgSymbol;
+    mImgSymbol=nullptr;
 }
 
 void LIPVectorStyle::setStyleUnit(LIPStyleUnit unit)
@@ -40,6 +42,11 @@ void LIPVectorStyle::setPointSize(double sizeF)
     mPointSize=sizeF;
 }
 
+void LIPVectorStyle::setPointType(PointSymbolType type)
+{
+    mType=type;
+}
+
 void LIPVectorStyle::setBrush(QBrush brush)
 {
     mBrush=brush;
@@ -55,6 +62,17 @@ void LIPVectorStyle::setGeomType(LIPGeometryType type)
     mGeomType=type;
 }
 
+void LIPVectorStyle::setCustomImage(QImage *im)
+{
+    if (mImgSymbol!=nullptr)
+        delete mImgSymbol;
+    mImgSymbol = im;
+}
+QImage* LIPVectorStyle::getCustomImage()
+{
+    return mImgSymbol;
+}
+
 QPen LIPVectorStyle::getPen()
 {
     return mPen;
@@ -68,6 +86,11 @@ QBrush LIPVectorStyle::getBrush()
 double LIPVectorStyle::getPointSize()
 {
     return mPointSize;
+}
+
+PointSymbolType LIPVectorStyle::getPointType()
+{
+    return mType;
 }
 
 LIPGeometryType LIPVectorStyle::GetGeomType()
@@ -96,22 +119,23 @@ LIPVectorStyle* LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType type)
     {
         pen.setWidthF(0);
         QBrush brush;
-        brush.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256)));
+        brush.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255)));
         brush.setStyle(Qt::SolidPattern);
         st->setBrush(brush);
         st->setPen(pen);
         st->setPointSize(1);
         st->setGeomType(type);
+        st->setPointType(Circle);
         return st;
     }
     case LIPGeometryType::LIPLineString:
     {
         pen.setWidthF(LIPVectorStyle::MMToPixel(0.1));
-        pen.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256)));
+        pen.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255)));
         st->setGeomType(type);
         st->setPen(pen);
         return st;
@@ -120,9 +144,9 @@ LIPVectorStyle* LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType type)
     {
         QBrush brush;
         pen.setWidthF(0);
-        brush.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256),
-                                       QRandomGenerator::global()->bounded(0, 256)));
+        brush.setColor(QColor::fromRgb(QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255),
+                                       QRandomGenerator::global()->bounded(0, 255)));
         brush.setStyle(Qt::SolidPattern);
         st->setBrush(brush);
         st->setPen(pen);

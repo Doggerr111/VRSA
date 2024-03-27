@@ -28,9 +28,12 @@ public:
     QVector<QString> getAttributeNames();
     QStringList getAttributesNamesAsList();
     QRectF getBoundingBox();
+    LIPCoordinateSystem *getCRS();
+    void setCRS(LIPCoordinateSystem* crs);
     static QVector<LIPAttribute> stringValToAttrs(QVector<QString> names, QVector<QString> values, QVector<LIPAttributeType> types);
     LIPVectorStyle *getStyle();
     OGRLayer *getOGRLayer();
+    GDALDataset *getDataSet();
     std::map<int, QVector<LIPAttribute>> getAttributes();
     bool setCoordinateSystem(LIPCoordinateSystem *targetCRS);
 
@@ -47,16 +50,19 @@ public:
     virtual void setVisible(bool=true);
     virtual bool reproject(LIPCoordinateSystem *targetCRS);
     virtual bool reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSystem *targetCRS);
+    virtual bool reproject(LIPCoordinateSystem *targetCRS, QString fileName);
     virtual void update();
     virtual void setMapFeatures();
     virtual void selectFeature(int index);
     virtual void setZValue(int zValue);
+
 
 signals:
     void needRepaint();
 
 public slots:
     virtual void setSceneScaleFactor(double factor);
+    virtual void flyReprojection();
 
 protected:
     OGRLayer *layer;

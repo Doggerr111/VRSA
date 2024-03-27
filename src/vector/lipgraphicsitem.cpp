@@ -14,8 +14,8 @@ LIPGraphicsItem::LIPGraphicsItem()
 
 LIPGraphicsItem::~LIPGraphicsItem()
 {
-    mStyle=nullptr;
-    delete mStyle;
+    //mStyle=nullptr;
+    //delete mStyle;
 }
 
 void LIPGraphicsItem::setPen(QPen pen)
@@ -33,6 +33,7 @@ void LIPGraphicsItem::setVectorStyle(LIPVectorStyle *style)
     mStyle=style;
     setPen(mStyle->getPen());
     setBrush(mStyle->getBrush());
+
 }
 
 void LIPGraphicsItem::setScaleFactor(double f)

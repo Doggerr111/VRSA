@@ -11,6 +11,7 @@ class LIPPoint : public QPointF
 {
 public:
     LIPPoint();
+
     void draw(QPainter* painter);
 private:
     QRectF rect;

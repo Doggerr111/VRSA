@@ -12,7 +12,7 @@ class LIPLineLayer: public LIPVectorLayer
 {
 public:
     /**
-     * \brief Данный конструктор применяется, если мы создаем новый слой
+     *  Данный конструктор применяется, если мы создаем новый слой
      */
     LIPLineLayer(OGRLayer *l, QString name, QString fileName, GDALDataset* ds);
     ~LIPLineLayer();
@@ -27,6 +27,7 @@ public:
     QVector<LIPLineGraphicsItem*> returnMapFeatures();
 
     QVector<QVector<LIPPoint*>>  returnCords();
+    void update() override;
 
 
 

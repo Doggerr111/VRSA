@@ -21,12 +21,13 @@ LIPLineLayer::~LIPLineLayer()
     {
         delete mapFeatures.at(i);
     }
-    foreach(QVector<LIPPoint*> vec, coordinates)
+    for(QVector<LIPPoint*> vec: coordinates)
     {
-        foreach(LIPPoint* point, vec)
+        for(LIPPoint* point: vec)
         {
             delete point;
         }
+        vec.clear();
     }
     mapFeatures.clear();
     coordinates.clear();
@@ -47,7 +48,7 @@ LIPLineLayer::LIPLineLayer(QString fileName)
         delete this;
     }
     int c=shpDS->GetLayers().size();
-    qDebug()<<QString::number(c);
+
     layer = shpDS->GetLayer(0);
 }
 
@@ -59,43 +60,44 @@ QString LIPLineLayer::returnGISName()
 
 QVector<QVector<LIPPoint*>>  LIPLineLayer::returnCords()
 {
-    if (layer!=nullptr)
+    if (layer==nullptr)
     {
-        coordinates.clear();
+        return QVector<QVector<LIPPoint*>>();
+    }
+    for(QVector<LIPPoint*> points: coordinates)
+    {
+        for (LIPPoint *point: points)
+        {
+            delete point;
+            point=nullptr;
+        }
+        points.clear();
+    }
+    coordinates.clear();
+
         layer->GetName();
         OGRFeature *shpFeature;
         layer->ResetReading();
         int counter=0;
-        //qDebug()<<shpLayer->GetSpatialRef()->GetEPSGGeogCS();
         while ((shpFeature = layer->GetNextFeature()) != NULL)
         {
             counter++;
-//            OGRFeatureDefn *poFDefn = layer->GetLayerDefn();
-//            int iField;
-//            for (iField = 0; iField < poFDefn->GetFieldCount(); iField++)
-//            {
-//                OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn(iField);
-//                if (poFieldDefn->GetType() == OFTInteger)
-//                    qDebug()<<"%d, " +  QString::number(shpFeature->GetFieldAsInteger(iField));
-//                else if (poFieldDefn->GetType() == OFTInteger64)
-//                    qDebug()<<"%lld, "+QString::number( shpFeature->GetFieldAsInteger64(iField));
-//                else if (poFieldDefn->GetType() == OFTReal)
-//                    qDebug()<<"%.3f, "+QString::number(shpFeature->GetFieldAsDouble(iField));
-//                else if (poFieldDefn->GetType() == OFTString)
-//                    qDebug()<<"%s, " + QString(shpFeature->GetFieldAsString(iField));
-//                else
-//                    qDebug()<<"%s, " + QString(shpFeature->GetFieldAsString(iField));
-//            }
-            //printf("\n");
             OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
-            int count = shpFeature->GetGeomFieldCount();
 
-            for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
+
+            if (poGeometry==nullptr)
             {
-                if (poGeometry != NULL)
+                return QVector<QVector<LIPPoint*>>();
+            }
+            OGRwkbGeometryType type=poGeometry->getGeometryType();
+            if (type==OGRwkbGeometryType::wkbLineString)
+            {
+                for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
                 {
-                    OGRwkbGeometryType type=poGeometry->getGeometryType();
 
+                    OGRwkbGeometryType type=poGeometry->getGeometryType();
+                    qDebug()<<"geomLineTpe is:";
+                    qDebug()<<type;
                     QVector<LIPPoint*> vect;
                     OGRLineString *line = (OGRLineString *)poGeometry;
                     for (int i = 0; i < line->getNumPoints(); i++)
@@ -106,15 +108,74 @@ QVector<QVector<LIPPoint*>>  LIPLineLayer::returnCords()
                         vect.append(point);
                         //qDebug()<<"wkbLineString %d: x=%g y=%g z=%g\n", i, line->getX(i), line->getY(i), line->getZ(i);
                     }
-                    coordinates.append(vect);
 
+
+                    //qDebug()<<vect;
+                    coordinates.append(vect);
                 }
+
             }
+
+            if (type==OGRwkbGeometryType::wkbMultiLineString)
+            {
+                for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
+                {
+
+
+
+                    OGRMultiLineString *lines = (OGRMultiLineString *)poGeometry;
+                    for (int i=0; i<lines->getNumGeometries(); i++)
+                    {
+                        QVector<LIPPoint*> vect;
+                        OGRLineString *line = lines->getGeometryRef(i);
+                        for (int i = 0; i < line->getNumPoints(); i++)
+                        {
+                            LIPPoint *point = new LIPPoint();
+                            point->setX(line->getX(i));
+                            point->setY(line->getY(i));
+                            vect.append(point);
+                            //qDebug()<<"wkbLineString %d: x=%g y=%g z=%g\n", i, line->getX(i), line->getY(i), line->getZ(i);
+                        }
+                        //qDebug()<<vect;
+                        coordinates.append(vect);
+                    }
+                }
+
+            }
+
+            //qDebug()<<"line cords";
+            //qDebug()<<coordinates.size();
+
+            OGRFeature::DestroyFeature(shpFeature);
+
 
         }
         return coordinates;
+
+}
+
+void LIPLineLayer::update()
+{
+    for(int i=0; i<mapFeatures.size(); i++)
+    {
+        delete mapFeatures.at(i);
+        mapFeatures[i]=nullptr;
     }
 
+    for(QVector<LIPPoint*> points: coordinates)
+    {
+        for (LIPPoint *point: points)
+        {
+            delete point;
+            point=nullptr;
+        }
+        points.clear();
+    }
+
+    mapFeatures.clear();
+    coordinates.clear();
+    //setMapFeatures();
+    emit needRepaint();
 }
 
 void LIPLineLayer::setStyle(LIPVectorStyle *style)
@@ -150,7 +211,7 @@ void LIPLineLayer::setMapFeatures()
 {
     QVector<QVector<LIPPoint*>> vect = returnCords();
 
-
+    //qDebug()<<vect.size();
     for (int i=0; i<vect.size(); i++)
     {
         LIPLineGraphicsItem *el = new LIPLineGraphicsItem;

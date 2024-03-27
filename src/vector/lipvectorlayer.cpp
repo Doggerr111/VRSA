@@ -10,7 +10,9 @@ LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
       fileName{path},
       mScaleFactor{1.0},
       mStyle{nullptr},
+      mCRS{nullptr},
       mZValue{0}
+
       //mCRS{nullptr}
 {
     //получаем текущий масштаб виджета, чтобы при загрузке векторных данных (например) они сразу отображались в нужном масштабе
@@ -20,7 +22,9 @@ LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
     if (l!=nullptr)
     {
         //qDebug()<<l->GetSpatialRef()->GetEPSGGeogCS();
-        mCRS=static_cast<LIPCoordinateSystem*>(l->GetSpatialRef());
+        LIPCoordinateSystem* crs= new LIPCoordinateSystem;
+        crs->setOGRSpatialRef(l->GetSpatialRef());
+        mCRS=crs;
     }
 }
 
@@ -37,12 +41,27 @@ QString LIPVectorLayer::returnFileName()
 
 LIPVectorLayer::~LIPVectorLayer()
 {
-    mStyle=nullptr;
-    delete mStyle;
-    dS=nullptr;
-    GDALClose(dS);
-    layer=nullptr;
-    delete layer;
+    //mStyle=nullptr;
+//    delete mStyle;
+//    //dS=nullptr;
+//    delete dS;
+//    delete layer;
+    //layer=nullptr;
+    //qDebug()<<(dS->GetLayerCount());
+//    if (!LIPProject::getInstance().isDatasetInUse(dS))
+
+
+    //layer=nullptr;
+
+
+
+        //delete mStyle;
+        //mStyle=nullptr;
+        //dS=nullptr;
+        GDALClose(dS);
+        dS=nullptr;
+        layer=nullptr;
+
 }
 
 void LIPVectorLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
@@ -61,6 +80,11 @@ bool LIPVectorLayer::reproject(LIPCoordinateSystem *targetCRS)
 }
 
 bool LIPVectorLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSystem *targetCRS)
+{
+
+}
+
+bool LIPVectorLayer::reproject(LIPCoordinateSystem *targetCRS, QString fileName)
 {
 
 }
@@ -88,7 +112,7 @@ bool LIPVectorLayer::setCoordinateSystem(LIPCoordinateSystem *targetCRS)
     //dS->SetProjection(targetCRS->getProj());
     //layer->GetSpatialRef()->SetProjection(targetCRS->getProj());
     qDebug()<<layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->GetSpatialRef();
-    layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->SetSpatialRef(targetCRS);
+    layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->SetSpatialRef(targetCRS->getOGRSpatialRef());
     qDebug()<<layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->GetSpatialRef();
     layer->SyncToDisk();
 //    const char *originalString = layer->GetName();
@@ -138,6 +162,11 @@ void LIPVectorLayer::setZValue(int zValue)
 {
     mZValue=zValue;
     update();
+}
+
+void LIPVectorLayer::flyReprojection()
+{
+
 }
 
 LIPPointLayer *LIPVectorLayer::toPointLayer()
@@ -221,6 +250,16 @@ QRectF LIPVectorLayer::getBoundingBox()
     return QRectF(minX, minY, maxX - minX, maxY - minY);
 }
 
+LIPCoordinateSystem *LIPVectorLayer::getCRS()
+{
+    return mCRS;
+}
+
+void LIPVectorLayer::setCRS(LIPCoordinateSystem *crs)
+{
+    mCRS=crs;
+}
+
 QVector<LIPAttribute> LIPVectorLayer::stringValToAttrs(QVector<QString> names, QVector<QString> values, QVector<LIPAttributeType> types)
 {
     QVector<LIPAttribute> attributes;
@@ -282,6 +321,11 @@ void LIPVectorLayer::setMapFeatures()
 OGRLayer *LIPVectorLayer::getOGRLayer()
 {
     return layer;
+}
+
+GDALDataset *LIPVectorLayer::getDataSet()
+{
+    return dS;
 }
 
 void LIPVectorLayer::setSceneScaleFactor(double factor)

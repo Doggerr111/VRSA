@@ -11,6 +11,8 @@ public:
     static bool isPointLayer(LIPVectorLayer* layer);
     static bool isLineLayer(LIPVectorLayer* layer);
     static bool isPolygonLayer(LIPVectorLayer* layer);
+    static LIPGeometryType getType(LIPVectorLayer* layer);
+    static bool isSameType(LIPVectorLayer* layer1, LIPVectorLayer* layer2);
 
 };
 

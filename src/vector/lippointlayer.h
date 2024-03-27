@@ -29,11 +29,14 @@ public:
     QString returnGISName() override;
     bool reproject(LIPCoordinateSystem *targetCRS) override;
     bool reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSystem *targetCRS) override;
+    bool reproject(LIPCoordinateSystem *targetCRS, QString fileName) override;
+
     void update() override;
 
 
 public slots:
     void setSceneScaleFactor(double factor) override;
+    void flyReprojection() override;
 
 
 
@@ -58,6 +61,10 @@ public:
     // LIPVectorLayer interface
 public:
     void setZValue(int zValue);
+
+    // LIPVectorLayer interface
+public:
+
 };
 
 #endif // LIPPOINTLAYER_H

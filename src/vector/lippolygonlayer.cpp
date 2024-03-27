@@ -10,24 +10,50 @@ LIPPolygonLayer::LIPPolygonLayer(OGRLayer *l, QString name, QString path, GDALDa
 
     mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
     LIPWidgetManager::getInstance().getMainWindow()->addLayer(this);
-    qDebug()<<mStyle;
+
+    qDebug()<<"LAYER CRS IS:";
+    char *pszWKT = NULL;
+//    qDebug()<<l->GetSpatialRef()->exportToWkt(&pszWKT);
+//    qDebug()<<pszWKT;
+//    qDebug()<<l->GetSpatialRef()->GetAuthorityCode(nullptr);//jijlk
+
 }
 
 LIPPolygonLayer::~LIPPolygonLayer()
 {
-    for(int i=0; i<mapFeatures.size(); i++)
-    {
-        delete mapFeatures.at(i);
-    }
-    foreach(QVector<LIPPoint*> vec, coordinates)
-    {
-        foreach(LIPPoint* point, vec)
-        {
-            delete point;
-        }
-    }
+    qDeleteAll(mapFeatures);
     mapFeatures.clear();
+    //qDeleteAll(coordinates);
+
+    for(QVector<LIPPoint*> vec: coordinates)
+    {
+        qDeleteAll(vec);
+    }
     coordinates.clear();
+
+//    for(int i=0; i<mapFeatures.size(); i++)
+//    {
+//        delete mapFeatures.at(i);
+//        mapFeatures[i] = nullptr;
+//    }
+//    for(QVector<LIPPoint*> vec: coordinates)
+//    {
+//        for(LIPPoint* point: vec)
+//        {
+//            delete point;
+//            point=nullptr;
+//        }
+//        //vec.clear();
+
+//    }
+//    mapFeatures.clear();
+//    coordinates.clear();
+
+
+
+
+//    qDeleteAll(mapFeatures);
+//    qDeleteAll(coordinates);
 }
 
 QString LIPPolygonLayer::returnGISName()
@@ -53,12 +79,18 @@ QVector<QVector<LIPPoint *> > LIPPolygonLayer::returnCords()
 
             for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
             {
-                if (poGeometry != NULL)
+                if (poGeometry == nullptr)
                 {
-                    OGRwkbGeometryType type=poGeometry->getGeometryType();
+                    continue;
+                }
 
+                OGRwkbGeometryType type=poGeometry->getGeometryType();
+                if (type==OGRwkbGeometryType::wkbPolygon)
+                {
                     QVector<LIPPoint*> vect;
                     OGRPolygon *polygon = (OGRPolygon *)poGeometry;
+
+                    //qDebug()<<polygon->getExteriorRing();
                     OGRLinearRing* ring = polygon->getExteriorRing();
 
                     for (int i = 0; i < ring->getNumPoints(); i++)
@@ -74,11 +106,44 @@ QVector<QVector<LIPPoint *> > LIPPolygonLayer::returnCords()
                     }
 
                     coordinates.append(vect);
+                }
+                else if (type==OGRwkbGeometryType::wkbMultiPolygon)
+                {
+
+
+                    OGRMultiPolygon *polygons = (OGRMultiPolygon *)poGeometry;
+                    for (int i=0; i<polygons->getNumGeometries(); i++)
+                    {
+                        QVector<LIPPoint*> vect;
+                        auto polygon=polygons->getGeometryRef(i);
+                        //qDebug()<<polygon->getExteriorRing();
+                        OGRLinearRing* ring = polygon->getExteriorRing();
+
+                        for (int i = 0; i < ring->getNumPoints(); i++)
+                        {
+                            OGRPoint point;
+                            LIPPoint *pointN = new LIPPoint();
+                            ring->getPoint(i, &point);
+                            double x = point.getX();
+                            double y = point.getY();
+                            pointN->setX(x);
+                            pointN->setY(y);
+                            vect.append(pointN);
+                        }
+
+                        coordinates.append(vect);
+                    }
+
 
                 }
+
             }
+            //OGRFeature::DestroyFeature(shpFeature);
         }
+        qDebug()<<"polygon coords:";
+        qDebug()<<coordinates.size();
         return coordinates;
+
     }
 }
 
@@ -107,7 +172,7 @@ void LIPPolygonLayer::setMapFeatures()
 
         mapFeatures.append(el);
 
-        qDebug()<<mapFeatures.at(i);
+        //qDebug()<<mapFeatures.at(i);
     }
 
 }
@@ -134,64 +199,116 @@ QVector<LIPPolygonGraphicsItem*> LIPPolygonLayer::returnMapFeatures()
 void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
 {
     OGRFeature *newFeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
-    OGRPolygon *polygon = new OGRPolygon();
-    OGRLinearRing ring;// = new OGRLinearRing;// = polygon->getExteriorRing();
-    //layer->StartTransaction();
-    LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
-    QVector<LIPPoint*> pointPtrs;
-    for (int i = 0; i < coords.size(); i++)
+    OGRwkbGeometryType type= layer->GetLayerDefn()->GetGeomType();
+    if (type==OGRwkbGeometryType::wkbPolygon)
     {
-        LIPPoint* p = new LIPPoint;
-        p->setX(coords[i].x());
-        p->setY(coords[i].y());
-        pointPtrs.append(p);
-    }
-    el->setPoints(pointPtrs);
-    mapFeatures.append(el);
-    for (int i=0; i<coords.size(); i++)
-    {
-        ring.addPoint(coords.at(i).x(), coords.at(i).y());
-    }
-    ring.closeRings(); //ОБЯЗАТЕЛЬНО ПРИ СОЗДАНИИ ПОЛИГОНАЛЬНОГО ОБЬЕКТА!! ИНАЧЕ ОШИБКИ ПРИ РАБОТЕ СО СЛОЕМ
-    OGRErr R=polygon->addRingDirectly(&ring);
-
-
-    for (int i=0; i<attrs.size(); i++)
-    {
-        QString fieldName = attrs.at(i).getName();
-        QByteArray fieldNameBa = fieldName.toLocal8Bit();
-        const char *fieldNameChar = fieldNameBa.data();
-        switch (attrs.at(i).getType())
+        OGRPolygon *polygon = new OGRPolygon();
+        OGRLinearRing ring;// = new OGRLinearRing;// = polygon->getExteriorRing();
+        //layer->StartTransaction();
+        LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
+        QVector<LIPPoint*> pointPtrs;
+        for (int i = 0; i < coords.size(); i++)
         {
-        case LIPAttributeType::INT32:
-            newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toInt());
-            break;
-        case LIPAttributeType::Real:
-            newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toDouble());
-            break;
-        case LIPAttributeType::String:
-            const char *fieldValueChar=attrs.at(i).getValue().toString().toLocal8Bit().data();
-            newFeature->SetField(fieldNameChar, fieldValueChar);
-            break;
+            LIPPoint* p = new LIPPoint;
+            p->setX(coords[i].x());
+            p->setY(coords[i].y());
+            pointPtrs.append(p);
         }
+        el->setPoints(pointPtrs);
+        mapFeatures.append(el);
+        for (int i=0; i<coords.size(); i++)
+        {
+            ring.addPoint(coords.at(i).x(), coords.at(i).y());
+        }
+        ring.closeRings(); //ОБЯЗАТЕЛЬНО ПРИ СОЗДАНИИ ПОЛИГОНАЛЬНОГО ОБЬЕКТА!! ИНАЧЕ ОШИБКИ ПРИ РАБОТЕ СО СЛОЕМ
+        OGRErr R=polygon->addRingDirectly(&ring);
+
+
+        for (int i=0; i<attrs.size(); i++)
+        {
+            QString fieldName = attrs.at(i).getName();
+            QByteArray fieldNameBa = fieldName.toLocal8Bit();
+            const char *fieldNameChar = fieldNameBa.data();
+            switch (attrs.at(i).getType())
+            {
+            case LIPAttributeType::INT32:
+                newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toInt());
+                break;
+            case LIPAttributeType::Real:
+                newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toDouble());
+                break;
+            case LIPAttributeType::String:
+                const char *fieldValueChar=attrs.at(i).getValue().toString().toLocal8Bit().data();
+                newFeature->SetField(fieldNameChar, fieldValueChar);
+                break;
+            }
+        }
+
+        newFeature->SetGeometry(polygon);
+        newFeature->SetFID(layer->GetFeatureCount());
+
+        // Добавление объекта к слою
+        //OGRErr er1 = layer->StartTransaction();
+        OGRErr er = layer->CreateFeature(newFeature);
+        //layer->SetSpatialFilter(nullptr);
+        //er1= layer->CommitTransaction();
     }
+    if (type==OGRwkbGeometryType::wkbMultiPolygon)
+    {
+        OGRMultiPolygon *polygons = new OGRMultiPolygon();
+        OGRPolygon *polygon = new OGRPolygon();
+        OGRLinearRing ring;// = new OGRLinearRing;// = polygon->getExteriorRing();
+        //layer->StartTransaction();
+        LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
+        QVector<LIPPoint*> pointPtrs;
+        for (int i = 0; i < coords.size(); i++)
+        {
+            LIPPoint* p = new LIPPoint;
+            p->setX(coords[i].x());
+            p->setY(coords[i].y());
+            pointPtrs.append(p);
+        }
+        el->setPoints(pointPtrs);
+        mapFeatures.append(el);
+        for (int i=0; i<coords.size(); i++)
+        {
+            ring.addPoint(coords.at(i).x(), coords.at(i).y());
+        }
+        ring.closeRings(); //ОБЯЗАТЕЛЬНО ПРИ СОЗДАНИИ ПОЛИГОНАЛЬНОГО ОБЬЕКТА!! ИНАЧЕ ОШИБКИ ПРИ РАБОТЕ СО СЛОЕМ
+        OGRErr R=polygon->addRingDirectly(&ring);
+        polygons->addGeometry(polygon);
 
-    newFeature->SetGeometry(polygon);
-    newFeature->SetFID(layer->GetFeatureCount());
+        for (int i=0; i<attrs.size(); i++)
+        {
+            QString fieldName = attrs.at(i).getName();
+            QByteArray fieldNameBa = fieldName.toLocal8Bit();
+            const char *fieldNameChar = fieldNameBa.data();
+            switch (attrs.at(i).getType())
+            {
+            case LIPAttributeType::INT32:
+                newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toInt());
+                break;
+            case LIPAttributeType::Real:
+                newFeature->SetField(fieldNameChar, attrs.at(i).getValue().toDouble());
+                break;
+            case LIPAttributeType::String:
+                const char *fieldValueChar=attrs.at(i).getValue().toString().toLocal8Bit().data();
+                newFeature->SetField(fieldNameChar, fieldValueChar);
+                break;
+            }
+        }
 
-    // Добавление объекта к слою
-    OGRErr er1 = layer->StartTransaction();
-    OGRErr er = layer->CreateFeature(newFeature);
-    layer->GetLayerDefn()->SetGeomType(wkbPolygon);
-    layer->SetSpatialFilter(nullptr);
-    er1= layer->CommitTransaction();
+        newFeature->SetGeometry(polygons);
+        //newFeature->SetFID(layer->GetFeatureCount());
+
+        // Добавление объекта к слою
+        //OGRErr er1 = layer->StartTransaction();
+        OGRErr er = layer->CreateFeature(newFeature);
+        //layer->SetSpatialFilter(nullptr);
+        //er1= layer->CommitTransaction();
+    }
     layer->SyncToDisk();
-    //setMapFeatures();
-    //GDALClose(layer);
-
     OGRFeature::DestroyFeature(newFeature);
-    //emit needRepaint(); очень плохо...
 }
 
 void LIPPolygonLayer::setStyle(LIPVectorStyle *style)
@@ -226,4 +343,30 @@ void LIPPolygonLayer::setZValue(int zValue)
     {
         feature->setZValue(zValue);
     }
+}
+
+
+void LIPPolygonLayer::update()
+{
+
+    for(int i=0; i<mapFeatures.size(); i++)
+    {
+        delete mapFeatures.at(i);
+        mapFeatures[i]=nullptr;
+    }
+
+    for(QVector<LIPPoint*> points: coordinates)
+    {
+        for (LIPPoint *point: points)
+        {
+            delete point;
+            point=nullptr;
+        }
+    }
+
+    mapFeatures.clear();
+    coordinates.clear();
+    //setMapFeatures();
+    emit needRepaint();
+
 }

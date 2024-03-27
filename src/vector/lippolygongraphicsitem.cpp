@@ -6,6 +6,11 @@ LIPPolygonGraphicsItem::LIPPolygonGraphicsItem()
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 }
 
+LIPPolygonGraphicsItem::~LIPPolygonGraphicsItem()
+{
+
+}
+
 void LIPPolygonGraphicsItem::setPoints(QVector<LIPPoint *> points)
 {
     for (int i=0; i<points.size(); i++)
@@ -17,14 +22,18 @@ void LIPPolygonGraphicsItem::setPoints(QVector<LIPPoint *> points)
 
 QRectF LIPPolygonGraphicsItem::boundingRect() const
 {
+    //return QRectF();
     return(QPolygonF(vect).boundingRect());
 }
 
 void LIPPolygonGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPen pen = mStyle->getPen();
-    pen.setWidthF(pen.widthF()/mSceneScale);
+    pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
     painter->setPen(pen);
-    painter->setBrush(mStyle->getBrush());
+    QBrush brush = mStyle->getBrush();
+    //brush.setStyle(Qt::Dense5Pattern);
+    brush.setTransform(QTransform(painter->worldTransform().inverted())); //обязательно для корректного применения стилей кисти
+    painter->setBrush(brush);
     painter->drawPolygon(vect);
 }
