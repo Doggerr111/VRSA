@@ -2,6 +2,8 @@
 #define LIPMAPCALCULATIONS_H
 #include <QRect>
 #include <QObject>
+#include <QApplication>
+#include <QScreen>
 
 class LIPMapCalculations : public QObject
 {
@@ -72,7 +74,7 @@ private:
   double mDpi;
 
   //! map unit member
-  //QgsUnitTypes::DistanceUnit mMapUnits;
+
 signals:
 
 };
