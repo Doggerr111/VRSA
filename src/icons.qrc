@@ -17,5 +17,32 @@
         <file>../images/icons/addPointFeature2.png</file>
         <file>../images/icons/addPointFeature.png</file>
         <file>../images/icons/addLineFeature.png</file>
+        <file>../images/icons/raster.png</file>
+        <file>../images/icons/voronoiDiagram.png</file>
+        <file>../images/icons/union.png</file>
+        <file>../images/icons/addLayer.png</file>
+        <file>../images/icons/rasterTreeItem.png</file>
+        <file>../images/icons/map.png</file>
+        <file>../images/icons/diskette.png</file>
+        <file>../images/icons/folder.png</file>
+        <file>../images/icons/world.png</file>
+        <file>../images/icons/vector-and-raster-spatian-analysys(1).svg</file>
+        <file>../images/icons/vector-and-raster-spatian-analysys.png</file>
+        <file>../images/icons/dot.png</file>
+        <file>../images/icons/rhomb.png</file>
+        <file>../images/icons/square.png</file>
+        <file>../images/icons/triangle.png</file>
+        <file>../images/icons/invertedTriangle.png</file>
+        <file>../images/icons/qpen-flat.png</file>
+        <file>../images/icons/qpen-roundcap.png</file>
+        <file>../images/icons/qpen-square.png</file>
+        <file>../images/icons/beveled-corner.png</file>
+        <file>../images/icons/beveled-corner(1).png</file>
+        <file>../images/icons/miter-join.png</file>
+        <file>../images/icons/round-join.png</file>
+        <file>../images/icons/contour.png</file>
+        <file>../images/icons/setting.png</file>
+        <file>../images/icons/assign.png</file>
+        <file>../images/icons/transform.png</file>
     </qresource>
 </RCC>
