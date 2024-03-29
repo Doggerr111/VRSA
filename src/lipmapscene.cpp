@@ -101,6 +101,7 @@ void LIPMapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         vectPoints.removeLast();
 
     }
+    QGraphicsScene::mouseMoveEvent(event);
 }
 
 void LIPMapScene::wheelEvent(QGraphicsSceneWheelEvent *event)
@@ -111,6 +112,7 @@ void LIPMapScene::wheelEvent(QGraphicsSceneWheelEvent *event)
 void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     clickPos=event->scenePos();
+    //QGraphicsScene::mousePressEvent(event);
     if (event->button()==Qt::RightButton) //если ПКМ
     {
         if (isAddingFeaturesToMap) //если добавляем обьекты
@@ -237,13 +239,15 @@ void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         isDraging=true;
 
     }
-    event->accept();
+    //event->accept();
+    QGraphicsScene::mousePressEvent(event);
 }
 
 void LIPMapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 
     isDraging=false;
+    QGraphicsScene::mouseReleaseEvent(event);
 }
 
 void LIPMapScene::drawVectorLayer(LIPVectorLayer* layer)

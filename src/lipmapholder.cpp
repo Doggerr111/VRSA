@@ -42,30 +42,33 @@ void LIPMapHolder::wheelEvent(QWheelEvent *event)
         scale(scaleFactor, scaleFactor);
     }
     emit MapHolderZoomed(scaleFactor);
+    //QGraphicsView::wheelEvent(event);
 }
 
 void LIPMapHolder::mousePressEvent(QMouseEvent *event)
 {
-    QGraphicsView::mousePressEvent(event);
+
     if (event->button()==Qt::LeftButton && !isAddingFeatures)
         isDraging=true;
     else if (event->button()==Qt::MiddleButton && isAddingFeatures)
         isDraging=true;
     //clickPos=mapToScene(event->pos());
     clickPos=event->pos();
+    QGraphicsView::mousePressEvent(event);
 //    qDebug()<<clickPos;
 //    qDebug()<<mapToScene(event->pos());
 }
 
 void LIPMapHolder::mouseReleaseEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseReleaseEvent(event);
+
     isDraging=false;
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void LIPMapHolder::mouseMoveEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseMoveEvent(event);
+
     if (isDraging)
     {
 //        qDebug()<<"координаты клика";
@@ -108,6 +111,7 @@ void LIPMapHolder::mouseMoveEvent(QMouseEvent *event)
 //        this->fitInView(rect);
         //setSceneRect(rect);
     }
+    QGraphicsView::mouseMoveEvent(event);
 }
 
 
