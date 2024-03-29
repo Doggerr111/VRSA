@@ -167,6 +167,10 @@ private slots:
 
     void on_actionSettings_triggered();
 
+    void on_pushButtonSelectFeature_clicked();
+
+    void on_pushButtonSelectFeature_clicked(bool checked);
+
 signals:
     void start_add();
     void newVectorLayer(LIPVectorLayer*);

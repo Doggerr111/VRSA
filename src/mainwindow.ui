@@ -203,7 +203,7 @@ QPushButton:hover {
            </widget>
           </item>
           <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
-           <widget class="QPushButton" name="pushButton_6">
+           <widget class="QPushButton" name="pushButtonSelectFeature">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -226,7 +226,7 @@ QPushButton:hover {
              <string notr="true">QPushButton {
 border:none;
 }
-QPushButton:pressed { 
+QPushButton:checked { 
 background-color: gray;
 border: 1px solid
 }
@@ -249,13 +249,16 @@ QPushButton:hover {
               <height>35</height>
              </size>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
             <property name="autoRepeatDelay">
              <number>300</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="pushButtonShowAttributeTable">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>

@@ -2044,12 +2044,15 @@ void MainWindow::on_pushButton_addFeature_clicked(bool checked)
             ui->graphicsView->setCursor(Qt::CrossCursor);
             scene->startAddingFeatures(tL);
             ui->graphicsView->updateAddingFeaturesFlag(true);
+            ui->pushButtonSelectFeature->setChecked(false);
+            LIPProject::getInstance().setSelectFeatureFlag(false);
             return;
         }
         LIPWidgetManager::getInstance().showMessage("Для добавления новых объектов необходимо выбрать активный слой",
                                                     2000, messageStatus::Error);
         ui->graphicsView->updateAddingFeaturesFlag(false);
         ui->pushButton_addFeature->setChecked(false);
+
     }
     else
     {
@@ -2335,5 +2338,29 @@ void MainWindow::on_actionSettings_triggered()
     LIPSettingsForm* form = new LIPSettingsForm;
     form->exec();
     delete form;
+}
+
+
+void MainWindow::on_pushButtonSelectFeature_clicked()
+{
+
+}
+
+
+void MainWindow::on_pushButtonSelectFeature_clicked(bool checked)
+{
+    if (checked)
+    {
+        scene->stopAddingFeatures();
+        ui->graphicsView->updateAddingFeaturesFlag(false);
+        ui->pushButton_addFeature->setChecked(false);
+        LIPProject::getInstance().setSelectFeatureFlag(true);
+        ui->graphicsView->setCursor(Qt::WhatsThisCursor);
+    }
+    else
+    {
+        LIPProject::getInstance().setSelectFeatureFlag(false);
+        ui->graphicsView->setCursor(Qt::ArrowCursor);
+    }
 }
 
