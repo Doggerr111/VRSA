@@ -96,6 +96,7 @@ void LIPSettingsForm::setActionsTable()
             ui->tableWidgetToolBarSettings->insertRow(currentIndex);
             QLabel *iconLabel = new QLabel;
             iconLabel->setPixmap(action->icon().pixmap(16,16));
+            iconLabel->setAlignment(Qt::AlignCenter);
             ui->tableWidgetToolBarSettings->setCellWidget(currentIndex, 0, iconLabel);
 
             QTableWidgetItem *textItem = new QTableWidgetItem(action->text());
