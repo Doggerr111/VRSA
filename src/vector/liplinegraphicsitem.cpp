@@ -52,39 +52,21 @@ QRectF LIPLineGraphicsItem::boundingRect() const
 
 void LIPLineGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-//    QPen pen;
-////    QVector<QPointF> p;
-////    for(auto point:vect)
-////    {
-////        p.append(QPointF(point.x()-0.01, point.y()-0.01));
-////    }
-//    pen.setColor(Qt::black);
-//    pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF()+3)/mSceneScale);
-//    painter->setPen(pen);
-//    painter->drawPolyline(vect);
 
-    QPen pen = mStyle->getPen();
-    //painter->setRenderHint(QPainter::Antialiasing, false);
-    pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
-    //qDebug()<<"pen w";
-    //qDebug()<<QString::number(pen.widthF(), 'f', 20);
-    painter->setPen(pen);
-    //mPen.setWidthF((mPen.widthF())/mSceneScale);
-    //painter->setBrush(mBrush);
-
-//    for (int i=1; i< vect.size(); i++)
-//    {
-//        painter->drawLine(vect[i-1], vect[i]);
-//    }
+    if (mIsSelected)
+    {
+        LIPVectorStyle newStyle = LIPVectorStyle::getSelectedStyle(mStyle);
+        QPen pen = newStyle.getPen();
+        pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
+        painter->setPen(pen);
+    }
+    else
+    {
+        QPen pen = mStyle->getPen();
+        pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
+        painter->setPen(pen);
+    }
     painter->drawPolyline(vect);
-
-    //painter->drawPath(path);
-   //painter->drawPolygon(vect);
-    //painter->drawLines(vect);
-
-
-
-
 
 
 }

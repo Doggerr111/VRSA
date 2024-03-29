@@ -84,6 +84,11 @@ public:
     QColor getMapCanvasColor();
     bool isAntiAliasingOn();
 
+
+    //from mainwindow
+    void setSelectFeatureFlag(bool fl);
+    bool isSelectingFeatures();
+
 public slots:
     void redrawNeeded(double);
 
@@ -103,6 +108,9 @@ private:
     QString mRasterFolder;
     QColor mMapCanvasColor = Qt::white;
     bool mAntiAliasingFlag = false;
+    bool mIsSelectingFeatures = false;
+
+
 private:
     LIPProject() = default;
     ~LIPProject() = default;

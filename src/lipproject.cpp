@@ -378,6 +378,16 @@ bool LIPProject::isAntiAliasingOn()
     return mAntiAliasingFlag;
 }
 
+void LIPProject::setSelectFeatureFlag(bool fl)
+{
+    mIsSelectingFeatures=fl;
+}
+
+bool LIPProject::isSelectingFeatures()
+{
+    return mIsSelectingFeatures;
+}
+
 
 
 

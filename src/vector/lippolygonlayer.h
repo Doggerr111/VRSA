@@ -25,6 +25,7 @@ public:
     void setStyle(LIPVectorStyle *style);
 public slots:
     void setSceneScaleFactor(double factor) override;
+    void itemClicked(int ind);
 
 private:
     QVector<QVector<LIPPoint*>> coordinates;

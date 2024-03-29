@@ -7,6 +7,7 @@
 #include "vector/lipgraphicsitem.h"
 class LIPPointGraphicsItem: public LIPGraphicsItem
 {
+
 public:
     LIPPointGraphicsItem();
     ~LIPPointGraphicsItem();
@@ -28,6 +29,10 @@ private:
     // QGraphicsItem interface
 public:
     //QPainterPath shape() const;
+
+    // QGraphicsItem interface
+protected:
+    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // LIPPOINTGRAPHICSITEM_H

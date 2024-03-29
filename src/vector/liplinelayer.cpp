@@ -197,6 +197,8 @@ void LIPLineLayer::setSceneScaleFactor(double factor)
     }
 }
 
+
+
 void LIPLineLayer::setFileName(QString path)
 {
     fileName=path;
@@ -215,6 +217,8 @@ void LIPLineLayer::setMapFeatures()
     for (int i=0; i<vect.size(); i++)
     {
         LIPLineGraphicsItem *el = new LIPLineGraphicsItem;
+        el->setIndex(i);
+        connect(el, &LIPGraphicsItem::clicked, this, &LIPLineLayer::itemClicked);
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
         el->setScaleFactor(mScaleFactor);
@@ -223,6 +227,21 @@ void LIPLineLayer::setMapFeatures()
 
     }
 
+}
+
+void LIPLineLayer::itemClicked(int ind)
+{
+    if (LIPProject::getInstance().isSelectingFeatures())
+    {
+        if (mSelectedFeatureIndex!=-1)
+            mapFeatures.at(mSelectedFeatureIndex)->deselect();
+        mapFeatures.at(ind)->select();
+        mSelectedFeatureIndex=ind;
+        LIPFeatureAttributesForm* form = new LIPFeatureAttributesForm;
+        form->setFeature(layer, ind);
+        form->exec();
+        delete form;
+    }
 }
 
 QVector<LIPLineGraphicsItem *> LIPLineLayer::returnMapFeatures()

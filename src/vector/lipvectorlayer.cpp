@@ -11,7 +11,8 @@ LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
       mScaleFactor{1.0},
       mStyle{nullptr},
       mCRS{nullptr},
-      mZValue{0}
+      mZValue{0},
+      mSelectedFeatureIndex{-1}
 
       //mCRS{nullptr}
 {
@@ -156,6 +157,16 @@ bool LIPVectorLayer::setCoordinateSystem(LIPCoordinateSystem *targetCRS)
 //    newLayer->SyncToDisk();
 
     //GDALClose(dataSource);
+}
+
+void LIPVectorLayer::setSelectedFeatureIndex(int index)
+{
+    mSelectedFeatureIndex=index;
+}
+
+int LIPVectorLayer::getSelectedFeatureIndex()
+{
+    return mSelectedFeatureIndex;
 }
 
 void LIPVectorLayer::setZValue(int zValue)

@@ -37,6 +37,8 @@ public:
     std::map<int, QVector<LIPAttribute>> getAttributes();
     bool setCoordinateSystem(LIPCoordinateSystem *targetCRS);
 
+    void setSelectedFeatureIndex(int index);
+    int getSelectedFeatureIndex();
 
     LIPPointLayer* toPointLayer();
     LIPLineLayer* toLineLayer();
@@ -74,6 +76,7 @@ protected:
     LIPVectorStyle *mStyle;
     LIPCoordinateSystem* mCRS;
     int mZValue;
+    int mSelectedFeatureIndex;
 
 
 

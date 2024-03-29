@@ -1,7 +1,9 @@
 #include "lipgraphicsitem.h"
 #include "qmessagebox.h"
 LIPGraphicsItem::LIPGraphicsItem()
-    : mSceneScale{1.0}
+    : mSceneScale{1.0},
+      mIndex{-1},
+      mIsSelected{false}
 {
     mPen.setWidthF(0);
     mBrush.setColor(Qt::blue);
@@ -43,6 +45,50 @@ void LIPGraphicsItem::setScaleFactor(double f)
 
 void LIPGraphicsItem::select()
 {
-    mStyle->setPenColor(Qt::red);
-    mStyle->setBrushColor(Qt::red);
+    mIsSelected=true;
+    update();
 }
+
+void LIPGraphicsItem::deselect()
+{
+    mIsSelected=false;
+    update();
+}
+
+bool LIPGraphicsItem::isSelected()
+{
+    return mIsSelected;
+
+}
+
+void LIPGraphicsItem::setIndex(int ind)
+{
+    mIndex=ind;
+}
+
+int LIPGraphicsItem::getIndex()
+{
+    return mIndex;
+}
+
+
+QRectF LIPGraphicsItem::boundingRect() const
+{
+}
+
+void LIPGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+}
+
+void LIPGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mousePressEvent(event);
+    emit clicked(mIndex);
+
+}
+
+//void LIPGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    emit clicked(mIndex);
+//    QGraphicsItem::mousePressEvent(event);
+//}

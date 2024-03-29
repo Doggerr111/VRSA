@@ -166,6 +166,8 @@ void LIPPointLayer::flyReprojection()
 
 
 
+
+
 void LIPPointLayer::update()
 {
     for(int i=0; i<mapFeatures.size(); i++)
@@ -270,6 +272,8 @@ void LIPPointLayer::setMapFeatures()
     for (int i=0; i<coordinates.size(); i++)
     {
         LIPPointGraphicsItem* item = new LIPPointGraphicsItem;
+        item->setIndex(i);
+        connect(item, &LIPGraphicsItem::clicked, this, &LIPPointLayer::itemClicked);
         item->setVectorStyle(mStyle);
 //        LIPPoint *point = new LIPPoint();
 //        point->setX(coordinates.at(i)->x());
@@ -280,6 +284,21 @@ void LIPPointLayer::setMapFeatures()
         item->setScaleFactor(mScaleFactor);
 
         mapFeatures.append(item);
+    }
+}
+void LIPPointLayer::itemClicked(int ind)
+{
+    if (LIPProject::getInstance().isSelectingFeatures())
+    {
+        if (mSelectedFeatureIndex!=-1)
+            mapFeatures.at(mSelectedFeatureIndex)->deselect();
+        mapFeatures.at(ind)->select();
+        mSelectedFeatureIndex=ind;
+        LIPFeatureAttributesForm* form = new LIPFeatureAttributesForm;
+        form->setFeature(layer, ind);
+        form->exec();
+
+        delete form;
     }
 }
 

@@ -9,6 +9,7 @@
 #include "vector/lippointgraphicsitem.h"
 #include <QObject>
 #include "lipwidgetmanager.h"
+#include "lipfeatureattributesform.h"
 
 class LIPPointLayer: public LIPVectorLayer
 {
@@ -37,6 +38,7 @@ public:
 public slots:
     void setSceneScaleFactor(double factor) override;
     void flyReprojection() override;
+    void itemClicked(int ind);
 
 
 

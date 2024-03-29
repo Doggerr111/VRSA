@@ -166,6 +166,8 @@ void LIPPolygonLayer::setMapFeatures()
     for (int i=0; i<vect.size(); i++)
     {
         LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
+        el->setIndex(i);
+        connect(el, &LIPGraphicsItem::clicked, this, &LIPPolygonLayer::itemClicked);
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
         el->setScaleFactor(mScaleFactor);
@@ -175,6 +177,22 @@ void LIPPolygonLayer::setMapFeatures()
         //qDebug()<<mapFeatures.at(i);
     }
 
+}
+
+void LIPPolygonLayer::itemClicked(int ind)
+{
+    if (LIPProject::getInstance().isSelectingFeatures())
+    {
+        if (mSelectedFeatureIndex!=-1)
+            mapFeatures.at(mSelectedFeatureIndex)->deselect();
+        mapFeatures.at(ind)->select();
+        mSelectedFeatureIndex=ind;
+        //mapFeatures.at(ind)->update();
+        LIPFeatureAttributesForm* form = new LIPFeatureAttributesForm;
+        form->setFeature(layer, ind);
+        form->exec();
+        delete form;
+    }
 }
 
 void LIPPolygonLayer::setVisible(bool isVisible)
@@ -329,6 +347,8 @@ void LIPPolygonLayer::setSceneScaleFactor(double factor)
         item->setScaleFactor(mScaleFactor);
     }
 }
+
+
 
 void LIPPolygonLayer::selectFeature(int index)
 {

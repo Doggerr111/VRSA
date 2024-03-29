@@ -28,12 +28,27 @@ QRectF LIPPolygonGraphicsItem::boundingRect() const
 
 void LIPPolygonGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QPen pen = mStyle->getPen();
-    pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
-    painter->setPen(pen);
-    QBrush brush = mStyle->getBrush();
-    //brush.setStyle(Qt::Dense5Pattern);
-    brush.setTransform(QTransform(painter->worldTransform().inverted())); //обязательно для корректного применения стилей кисти
-    painter->setBrush(brush);
+    if (mIsSelected)
+    {
+        LIPVectorStyle newStyle = LIPVectorStyle::getSelectedStyle(mStyle);
+        QPen pen = newStyle.getPen();
+        pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
+        painter->setPen(pen);
+        QBrush brush = newStyle.getBrush();
+        //brush.setStyle(Qt::Dense5Pattern);
+        brush.setTransform(QTransform(painter->worldTransform().inverted())); //обязательно для корректного применения стилей кисти
+        painter->setBrush(brush);
+    }
+    else
+    {
+        QPen pen = mStyle->getPen();
+        pen.setWidthF(LIPVectorStyle::MMToPixel(pen.widthF())/mSceneScale);
+        painter->setPen(pen);
+        QBrush brush = mStyle->getBrush();
+        //brush.setStyle(Qt::Dense5Pattern);
+        brush.setTransform(QTransform(painter->worldTransform().inverted())); //обязательно для корректного применения стилей кисти
+        painter->setBrush(brush);
+    }
+
     painter->drawPolygon(vect);
 }

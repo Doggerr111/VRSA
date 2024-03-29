@@ -154,7 +154,60 @@ LIPVectorStyle* LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType type)
         st->setGeomType(type);
         return st;
     }
+    default:
+        break;
     }
+
+    delete st;
+    st=nullptr;
+    return nullptr;
+}
+
+LIPVectorStyle LIPVectorStyle::getSelectedStyle(LIPVectorStyle *currentStyle)
+{
+    if (currentStyle==nullptr)
+        return LIPVectorStyle();
+    QPen pen;
+    LIPVectorStyle selectStyle;
+    switch (currentStyle->GetGeomType())
+    {
+    case LIPGeometryType::LIPPoint:
+    {
+        pen.setWidthF(currentStyle->getPen().widthF()+1);
+        pen.setColor(Qt::red);
+        QBrush brush;
+        brush.setColor(Qt::red);
+        brush.setStyle(Qt::SolidPattern);
+        selectStyle.setBrush(brush);
+        selectStyle.setPen(pen);
+        selectStyle.setPointSize(currentStyle->getPointSize()+1);
+        selectStyle.setGeomType(LIPGeometryType::LIPPoint);
+        selectStyle.setPointType(currentStyle->getPointType());
+        return selectStyle;
+    }
+    case LIPGeometryType::LIPLineString:
+    {
+        pen.setWidthF(currentStyle->getPen().widthF()+1);
+        pen.setColor(Qt::red);
+        selectStyle.setGeomType(LIPGeometryType::LIPLineString);
+        selectStyle.setPen(pen);
+        return selectStyle;
+    }
+    case LIPGeometryType::LIPPolygon:
+    {
+        pen.setWidthF(currentStyle->getPen().widthF()+1);
+        pen.setColor(Qt::red);
+        selectStyle.setBrush(currentStyle->getBrush());
+        selectStyle.setPen(pen);
+        //selectStyle.setPointSize(1);
+        selectStyle.setGeomType(LIPGeometryType::LIPPolygon);
+        return selectStyle;
+    }
+    default:
+        break;
+    }
+
+    return selectStyle;
 }
 
 //LIPVectorStyle *LIPVectorStyle::selectedStyle(LIPVectorStyle* style)

@@ -48,6 +48,8 @@ public:
     /** Формирует стандарnный стиль для векторного слоя в
      *  зависсимости от типа геометрии*/
     static LIPVectorStyle* createDefaultVectorStyle(LIPGeometryType type);
+    /** Возвращает стиль, применяемый к выделенному объекту векторного слоя*/
+    static LIPVectorStyle getSelectedStyle(LIPVectorStyle *currentStyle);
     LIPVectorStyle selectedStyle(LIPVectorStyle* style);
 private:
 
