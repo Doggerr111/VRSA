@@ -56,6 +56,7 @@ SOURCES += \
     customWidgets/lippentypecombobox.cpp \
     customWidgets/liprasterlayerscombobox.cpp \
     lipcutrasterlayerform.cpp \
+    lipfeatureattributesform.cpp \
     liprastercontoursform.cpp \
     lipreprojectrasterlayerform.cpp \
     lipsettingsform.cpp \
@@ -104,6 +105,7 @@ HEADERS += \
     customWidgets/lippentypecombobox.h \
     customWidgets/liprasterlayerscombobox.h \
     lipcutrasterlayerform.h \
+    lipfeatureattributesform.h \
     liprastercontoursform.h \
     lipreprojectrasterlayerform.h \
     lipsettingsform.h \
@@ -124,6 +126,7 @@ FORMS += \
     $$PWD/lipvectorstyleform.ui \
     $$PWD/mainwindow.ui \
     lipcutrasterlayerform.ui \
+    lipfeatureattributesform.ui \
     liprastercontoursform.ui \
     lipreprojectrasterlayerform.ui \
     lipsettingsform.ui \
