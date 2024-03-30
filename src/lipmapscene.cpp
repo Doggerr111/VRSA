@@ -261,28 +261,9 @@ void LIPMapScene::drawVectorLayer(LIPVectorLayer* layer)
             auto features=new_layer->returnMapFeatures();
             for (int i=0; i<features.size(); i++)
             {
-                //if (!items().contains(features.at(i)))
-                    addItem(features.at(i));
+                addItem(features.at(i));
             }
 
-//            for (int i=0; i<new_layer->returnMapFeatures().size(); i++)
-//            {
-//                if (!items().contains(new_layer->returnMapFeatures().at(i)))
-//                    addItem(new_layer->returnMapFeatures().at(i));
-//            }
-//            QVector<LIPPoint*> vect = new_layer->returnCords();
-//            for (int i=0; i<vect.size(); i++)
-//            {
-//                //addEllipse(vect.at(i)->x(), vect.at(i)->y(),0.1,0.1);
-
-//                LIPPointGraphicsItem *el = new LIPPointGraphicsItem;
-//                LIPPoint point;
-//                point.setX(vect.at(i)->x());
-//                point.setY(vect.at(i)->y());
-//                el->setPoint(point);
-//                addItem(el);
-//                    //addItem(el);
-//            }
         }
         else
         {
@@ -293,8 +274,7 @@ void LIPMapScene::drawVectorLayer(LIPVectorLayer* layer)
                 auto features=new_line_layer->returnMapFeatures();
                 for (int i=0; i<features.size(); i++)
                 {
-                    if (!items().contains(features.at(i)))
-                        addItem(features.at(i));
+                    addItem(features.at(i));
                 }
 
             }
@@ -307,8 +287,7 @@ void LIPMapScene::drawVectorLayer(LIPVectorLayer* layer)
                     auto features=new_poly_layer->returnMapFeatures();
                     for (int i=0; i<features.size(); i++)
                     {
-                        if (!items().contains(features.at(i)))
-                            addItem(features.at(i));
+                        addItem(features.at(i));
                     }
 
                 }
@@ -333,9 +312,10 @@ void LIPMapScene::updateVectorLayer()
         {
             pointLayer->setMapFeatures(); //для создания графических айтемов
             auto features=pointLayer->returnMapFeatures();
+            auto list = items();
             for (int i=0; i<features.size(); i++)
             {
-                if (!items().contains(pointLayer->returnMapFeatures().at(i)))
+                if (!list.contains(features.at(i)))
                     addItem(features.at(i));
             }
 
@@ -345,13 +325,12 @@ void LIPMapScene::updateVectorLayer()
             LIPLineLayer* lineLayer=dynamic_cast<LIPLineLayer*>(layer);
             if(lineLayer!=nullptr)
             {
-                //TODO проходим по всем айтемам очень долго, нужно сделать флаги (возможно) для объектов, которые показывают
-                //добавлены ли объекты или нет
                 lineLayer->setMapFeatures(); //для создания графических айтемов
                 auto features=lineLayer->returnMapFeatures();
+                auto list  = items();
                 for (int i=0; i<features.size(); i++)
                 {
-                    if (!items().contains(features.at(i)))
+                    if (!list.contains(features.at(i)))
                         addItem(features.at(i));
                 }
 
@@ -363,9 +342,10 @@ void LIPMapScene::updateVectorLayer()
                 {
                     polyLayer->setMapFeatures(); //для создания графических айтемов
                     auto features=polyLayer->returnMapFeatures();
+                    auto list = items();
                     for (int i=0; i<features.size(); i++)
                     {
-                        if (!items().contains(polyLayer->returnMapFeatures().at(i)))
+                        if (!list.contains(polyLayer->returnMapFeatures().at(i)))
                             addItem(features.at(i));
                     }
 
