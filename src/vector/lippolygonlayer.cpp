@@ -13,9 +13,9 @@ LIPPolygonLayer::LIPPolygonLayer(OGRLayer *l, QString name, QString path, GDALDa
 
     qDebug()<<"LAYER CRS IS:";
     char *pszWKT = NULL;
-//    qDebug()<<l->GetSpatialRef()->exportToWkt(&pszWKT);
-//    qDebug()<<pszWKT;
-//    qDebug()<<l->GetSpatialRef()->GetAuthorityCode(nullptr);//jijlk
+    //    qDebug()<<l->GetSpatialRef()->exportToWkt(&pszWKT);
+    //    qDebug()<<pszWKT;
+    //    qDebug()<<l->GetSpatialRef()->GetAuthorityCode(nullptr);//jijlk
 
 }
 
@@ -31,29 +31,29 @@ LIPPolygonLayer::~LIPPolygonLayer()
     }
     coordinates.clear();
 
-//    for(int i=0; i<mapFeatures.size(); i++)
-//    {
-//        delete mapFeatures.at(i);
-//        mapFeatures[i] = nullptr;
-//    }
-//    for(QVector<LIPPoint*> vec: coordinates)
-//    {
-//        for(LIPPoint* point: vec)
-//        {
-//            delete point;
-//            point=nullptr;
-//        }
-//        //vec.clear();
+    //    for(int i=0; i<mapFeatures.size(); i++)
+    //    {
+    //        delete mapFeatures.at(i);
+    //        mapFeatures[i] = nullptr;
+    //    }
+    //    for(QVector<LIPPoint*> vec: coordinates)
+    //    {
+    //        for(LIPPoint* point: vec)
+    //        {
+    //            delete point;
+    //            point=nullptr;
+    //        }
+    //        //vec.clear();
 
-//    }
-//    mapFeatures.clear();
-//    coordinates.clear();
-
-
+    //    }
+    //    mapFeatures.clear();
+    //    coordinates.clear();
 
 
-//    qDeleteAll(mapFeatures);
-//    qDeleteAll(coordinates);
+
+
+    //    qDeleteAll(mapFeatures);
+    //    qDeleteAll(coordinates);
 }
 
 QString LIPPolygonLayer::returnGISName()
@@ -65,31 +65,55 @@ QString LIPPolygonLayer::returnGISName()
 
 QVector<QVector<LIPPoint *> > LIPPolygonLayer::returnCords()
 {
-    if (layer!=nullptr)
-    {
-        layer->GetName();
-        OGRFeature *shpFeature;
-        layer->ResetReading();
-        int counter=0;
-        while ((shpFeature = layer->GetNextFeature()) != NULL)
-        {
-            counter++;
-            OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
-            int count = shpFeature->GetGeomFieldCount();
+    if (layer==nullptr)
+        return QVector<QVector<LIPPoint*>>();
 
-            for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
+    layer->GetName();
+    OGRFeature *shpFeature;
+    layer->ResetReading();
+    int counter=0;
+    while ((shpFeature = layer->GetNextFeature()) != NULL)
+    {
+        counter++;
+        if (counter-1<coordinates.size())
+            continue;
+        OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
+        if (poGeometry == nullptr)
+            continue;
+        for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
+        {
+            OGRwkbGeometryType type=poGeometry->getGeometryType();
+            if (type==OGRwkbGeometryType::wkbPolygon)
             {
-                if (poGeometry == nullptr)
+                QVector<LIPPoint*> vect;
+                OGRPolygon *polygon = (OGRPolygon *)poGeometry;
+
+                //qDebug()<<polygon->getExteriorRing();
+                OGRLinearRing* ring = polygon->getExteriorRing();
+
+                for (int i = 0; i < ring->getNumPoints(); i++)
                 {
-                    continue;
+                    OGRPoint point;
+                    LIPPoint *pointN = new LIPPoint();
+                    ring->getPoint(i, &point);
+                    double x = point.getX();
+                    double y = point.getY();
+                    pointN->setX(x);
+                    pointN->setY(y);
+                    vect.append(pointN);
                 }
 
-                OGRwkbGeometryType type=poGeometry->getGeometryType();
-                if (type==OGRwkbGeometryType::wkbPolygon)
+                coordinates.append(vect);
+            }
+            else if (type==OGRwkbGeometryType::wkbMultiPolygon)
+            {
+
+
+                OGRMultiPolygon *polygons = (OGRMultiPolygon *)poGeometry;
+                for (int i=0; i<polygons->getNumGeometries(); i++)
                 {
                     QVector<LIPPoint*> vect;
-                    OGRPolygon *polygon = (OGRPolygon *)poGeometry;
-
+                    auto polygon=polygons->getGeometryRef(i);
                     //qDebug()<<polygon->getExteriorRing();
                     OGRLinearRing* ring = polygon->getExteriorRing();
 
@@ -107,44 +131,18 @@ QVector<QVector<LIPPoint *> > LIPPolygonLayer::returnCords()
 
                     coordinates.append(vect);
                 }
-                else if (type==OGRwkbGeometryType::wkbMultiPolygon)
-                {
 
-
-                    OGRMultiPolygon *polygons = (OGRMultiPolygon *)poGeometry;
-                    for (int i=0; i<polygons->getNumGeometries(); i++)
-                    {
-                        QVector<LIPPoint*> vect;
-                        auto polygon=polygons->getGeometryRef(i);
-                        //qDebug()<<polygon->getExteriorRing();
-                        OGRLinearRing* ring = polygon->getExteriorRing();
-
-                        for (int i = 0; i < ring->getNumPoints(); i++)
-                        {
-                            OGRPoint point;
-                            LIPPoint *pointN = new LIPPoint();
-                            ring->getPoint(i, &point);
-                            double x = point.getX();
-                            double y = point.getY();
-                            pointN->setX(x);
-                            pointN->setY(y);
-                            vect.append(pointN);
-                        }
-
-                        coordinates.append(vect);
-                    }
-
-
-                }
 
             }
-            //OGRFeature::DestroyFeature(shpFeature);
-        }
-        qDebug()<<"polygon coords:";
-        qDebug()<<coordinates.size();
-        return coordinates;
 
+        }
+        OGRFeature::DestroyFeature(shpFeature);
     }
+    qDebug()<<"polygon coords:";
+    qDebug()<<coordinates.size();
+    return coordinates;
+
+
 }
 
 void LIPPolygonLayer::setFileName(QString path)
@@ -159,22 +157,18 @@ QString LIPPolygonLayer::getFileName()
 
 void LIPPolygonLayer::setMapFeatures()
 {
-    mapFeatures.clear();
     QVector<QVector<LIPPoint*>> vect = returnCords();
-    //if (mStyle==nullptr)
-        //mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
     for (int i=0; i<vect.size(); i++)
     {
+        if (i<mapFeatures.size())
+            continue;
         LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
         el->setIndex(i);
         connect(el, &LIPGraphicsItem::clicked, this, &LIPPolygonLayer::itemClicked);
         el->setVectorStyle(mStyle);
         el->setPoints(vect.at(i));
         el->setScaleFactor(mScaleFactor);
-
         mapFeatures.append(el);
-
-        //qDebug()<<mapFeatures.at(i);
     }
 
 }
@@ -223,7 +217,7 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
         OGRPolygon *polygon = new OGRPolygon();
         OGRLinearRing ring;// = new OGRLinearRing;// = polygon->getExteriorRing();
         //layer->StartTransaction();
-        LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
+        //LIPPolygonGraphicsItem *el = new LIPPolygonGraphicsItem();
         QVector<LIPPoint*> pointPtrs;
         for (int i = 0; i < coords.size(); i++)
         {
@@ -232,8 +226,8 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
             p->setY(coords[i].y());
             pointPtrs.append(p);
         }
-        el->setPoints(pointPtrs);
-        mapFeatures.append(el);
+        //el->setPoints(pointPtrs);
+        //mapFeatures.append(el);
         for (int i=0; i<coords.size(); i++)
         {
             ring.addPoint(coords.at(i).x(), coords.at(i).y());
@@ -369,23 +363,24 @@ void LIPPolygonLayer::setZValue(int zValue)
 void LIPPolygonLayer::update()
 {
 
-    for(int i=0; i<mapFeatures.size(); i++)
-    {
-        delete mapFeatures.at(i);
-        mapFeatures[i]=nullptr;
-    }
+//    for(int i=0; i<mapFeatures.size(); i++)
+//    {
+//        delete mapFeatures.at(i);
+//        mapFeatures[i]=nullptr;
+//    }
 
-    for(QVector<LIPPoint*> points: coordinates)
-    {
-        for (LIPPoint *point: points)
-        {
-            delete point;
-            point=nullptr;
-        }
-    }
+//    for(QVector<LIPPoint*> points: coordinates)
+//    {
+//        for (LIPPoint *point: points)
+//        {
+//            delete point;
+//            point=nullptr;
+//        }
+//    }
 
-    mapFeatures.clear();
-    coordinates.clear();
+//    mapFeatures.clear();
+//    coordinates.clear();
+
     //setMapFeatures();
     emit needRepaint();
 

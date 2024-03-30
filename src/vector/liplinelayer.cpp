@@ -64,16 +64,16 @@ QVector<QVector<LIPPoint*>>  LIPLineLayer::returnCords()
     {
         return QVector<QVector<LIPPoint*>>();
     }
-    for(QVector<LIPPoint*> points: coordinates)
-    {
-        for (LIPPoint *point: points)
-        {
-            delete point;
-            point=nullptr;
-        }
-        points.clear();
-    }
-    coordinates.clear();
+//    for(QVector<LIPPoint*> points: coordinates)
+//    {
+//        for (LIPPoint *point: points)
+//        {
+//            delete point;
+//            point=nullptr;
+//        }
+//        points.clear();
+//    }
+//    coordinates.clear();
 
         layer->GetName();
         OGRFeature *shpFeature;
@@ -82,13 +82,11 @@ QVector<QVector<LIPPoint*>>  LIPLineLayer::returnCords()
         while ((shpFeature = layer->GetNextFeature()) != NULL)
         {
             counter++;
+            if (counter-1<coordinates.size())
+                continue;
             OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
-
-
             if (poGeometry==nullptr)
-            {
-                return QVector<QVector<LIPPoint*>>();
-            }
+                continue;
             OGRwkbGeometryType type=poGeometry->getGeometryType();
             if (type==OGRwkbGeometryType::wkbLineString)
             {
@@ -156,24 +154,25 @@ QVector<QVector<LIPPoint*>>  LIPLineLayer::returnCords()
 
 void LIPLineLayer::update()
 {
-    for(int i=0; i<mapFeatures.size(); i++)
-    {
-        delete mapFeatures.at(i);
-        mapFeatures[i]=nullptr;
-    }
+//    for(int i=0; i<mapFeatures.size(); i++)
+//    {
+//        delete mapFeatures.at(i);
+//        mapFeatures[i]=nullptr;
+//    }
 
-    for(QVector<LIPPoint*> points: coordinates)
-    {
-        for (LIPPoint *point: points)
-        {
-            delete point;
-            point=nullptr;
-        }
-        points.clear();
-    }
+//    for(QVector<LIPPoint*> points: coordinates)
+//    {
+//        for (LIPPoint *point: points)
+//        {
+//            delete point;
+//            point=nullptr;
+//        }
+//        points.clear();
+//    }
 
-    mapFeatures.clear();
-    coordinates.clear();
+//    mapFeatures.clear();
+//    coordinates.clear();
+
     //setMapFeatures();
     emit needRepaint();
 }
@@ -216,6 +215,8 @@ void LIPLineLayer::setMapFeatures()
     //qDebug()<<vect.size();
     for (int i=0; i<vect.size(); i++)
     {
+        if (i<mapFeatures.size())
+            continue;
         LIPLineGraphicsItem *el = new LIPLineGraphicsItem;
         el->setIndex(i);
         connect(el, &LIPGraphicsItem::clicked, this, &LIPLineLayer::itemClicked);
@@ -256,7 +257,7 @@ void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> att
     OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
     //OGRPolygon *polygon = new OGRPolygon();
     OGRLineString *lineString = new OGRLineString();
-    LIPLineGraphicsItem *line = new LIPLineGraphicsItem();
+    //LIPLineGraphicsItem *line = new LIPLineGraphicsItem();
     QVector<LIPPoint*> pointPtrs;
     for (int i = 0; i < coords.size(); i++)
     {
@@ -265,8 +266,8 @@ void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> att
         p->setY(coords[i].y());
         pointPtrs.append(p);
     }
-    line->setPoints(pointPtrs);
-    mapFeatures.append(line);
+    //line->setPoints(pointPtrs);
+    //mapFeatures.append(line);
     for (int i=0; i<coords.size(); i++)
     {
         lineString->addPoint(coords.at(i).x(), coords.at(i).y());
@@ -299,11 +300,11 @@ void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> att
     newFeature->SetFID(layer->GetFeatureCount());
 
     // Добавление объекта к слою
-    OGRErr er1 = layer->StartTransaction();
+    //OGRErr er1 = layer->StartTransaction();
     OGRErr er = layer->CreateFeature(newFeature);
     layer->GetLayerDefn()->SetGeomType(wkbPolygon);
     layer->SetSpatialFilter(nullptr);
-    er1= layer->CommitTransaction();
+    //layer->CommitTransaction();
     layer->SyncToDisk();
     //setMapFeatures();
     //GDALClose(layer);
