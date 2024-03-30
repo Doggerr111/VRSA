@@ -2364,3 +2364,23 @@ void MainWindow::on_pushButtonSelectFeature_clicked(bool checked)
     }
 }
 
+
+void MainWindow::on_pushButtonShowAttributeTable_clicked()
+{
+
+    LIPVectorLayer *tL = LIPProject::getInstance().getActiveLayer();
+    if (tL!=nullptr)
+    {
+        LIPAttributesTableForm* form = new LIPAttributesTableForm();
+        form->setLayer(tL);
+        form->exec();
+        delete form;
+        return;
+    }
+    LIPWidgetManager::getInstance().showMessage("Для просмотра атрибутов выберите активный слой",
+                                                2000, messageStatus::Error);
+
+
+
+}
+
