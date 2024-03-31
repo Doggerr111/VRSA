@@ -59,6 +59,10 @@ public:
     // LIPVectorLayer interface
 public:
     void setZValue(int zValue);
+
+    // LIPVectorLayer interface
+public:
+    void deselectItems();
 };
 
 #endif // LIPLINELAYER_H

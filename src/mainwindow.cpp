@@ -1585,6 +1585,9 @@ void MainWindow::layersOrderChanged() //срабатывает при перем
 void MainWindow::on_LayerTree_itemActivated(QTreeWidgetItem *item, int column) //выбор пользователем активного слоя
 {
     //LIPVectorLayer *layer = LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0)); //получаем элемент по пути к файлу
+    auto prevActiveLayer = LIPProject::getInstance().getActiveLayer();
+    if (prevActiveLayer)
+        prevActiveLayer->deselectItems();
     auto activeLayer = LIPProject::getInstance().getVectorLayerByPath(item->toolTip(0));
     if (activeLayer==nullptr)
         return;
@@ -2361,6 +2364,9 @@ void MainWindow::on_pushButtonSelectFeature_clicked(bool checked)
     {
         LIPProject::getInstance().setSelectFeatureFlag(false);
         ui->graphicsView->setCursor(Qt::ArrowCursor);
+        LIPVectorLayer* aL = LIPProject::getInstance().getActiveLayer();
+        if (aL!=nullptr)
+            aL->deselectItems();
     }
 }
 

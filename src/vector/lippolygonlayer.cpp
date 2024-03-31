@@ -189,6 +189,12 @@ void LIPPolygonLayer::itemClicked(int ind)
     }
 }
 
+void LIPPolygonLayer::deselectItems()
+{
+    if (mSelectedFeatureIndex!=-1)
+        mapFeatures.at(mSelectedFeatureIndex)->deselect();
+}
+
 void LIPPolygonLayer::setVisible(bool isVisible)
 {
     if (isVisible)
@@ -385,3 +391,5 @@ void LIPPolygonLayer::update()
     emit needRepaint();
 
 }
+
+

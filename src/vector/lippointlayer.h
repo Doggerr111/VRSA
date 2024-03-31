@@ -67,6 +67,10 @@ public:
     // LIPVectorLayer interface
 public:
 
+
+    // LIPVectorLayer interface
+public:
+    void deselectItems() override;
 };
 
 #endif // LIPPOINTLAYER_H

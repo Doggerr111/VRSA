@@ -43,6 +43,10 @@ public:
     // LIPVectorLayer interface
 public:
     void update();
+
+    // LIPVectorLayer interface
+public:
+    void deselectItems();
 };
 
 #endif // LIPPOLYGONLAYER_H

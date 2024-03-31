@@ -245,6 +245,12 @@ void LIPLineLayer::itemClicked(int ind)
     }
 }
 
+void LIPLineLayer::deselectItems()
+{
+    if (mSelectedFeatureIndex!=-1)
+        mapFeatures.at(mSelectedFeatureIndex)->deselect();
+}
+
 QVector<LIPLineGraphicsItem *> LIPLineLayer::returnMapFeatures()
 {
     return mapFeatures;
@@ -335,3 +341,6 @@ void LIPLineLayer::setZValue(int zValue)
         feature->setZValue(zValue);
     }
 }
+
+
+

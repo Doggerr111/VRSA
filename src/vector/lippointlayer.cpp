@@ -166,8 +166,6 @@ void LIPPointLayer::flyReprojection()
 
 
 
-
-
 void LIPPointLayer::update()
 {
     //    for(int i=0; i<mapFeatures.size(); i++)
@@ -265,6 +263,8 @@ void LIPPointLayer::itemClicked(int ind)
 {
     if (LIPProject::getInstance().isSelectingFeatures())
     {
+        if (LIPProject::getInstance().getActiveLayer() != this)
+            return;
         if (mSelectedFeatureIndex!=-1)
             mapFeatures.at(mSelectedFeatureIndex)->deselect();
         mapFeatures.at(ind)->select();
@@ -275,6 +275,12 @@ void LIPPointLayer::itemClicked(int ind)
 
         delete form;
     }
+}
+
+void LIPPointLayer::deselectItems()
+{
+    if (mSelectedFeatureIndex!=-1)
+        mapFeatures.at(mSelectedFeatureIndex)->deselect();
 }
 
 QVector<LIPPointGraphicsItem *> LIPPointLayer::returnMapFeatures()
@@ -396,5 +402,8 @@ void LIPPointLayer::setZValue(int zValue)
         feature->setZValue(zValue);
     }
 }
+
+
+
 
 

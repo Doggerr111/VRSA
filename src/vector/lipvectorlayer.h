@@ -40,9 +40,14 @@ public:
     void setSelectedFeatureIndex(int index);
     int getSelectedFeatureIndex();
 
+    void setSelected(bool isSelected);
+    bool isSelected();
+
     LIPPointLayer* toPointLayer();
     LIPLineLayer* toLineLayer();
     LIPPolygonLayer* toPolygonLayer();
+
+
 
 
 public:
@@ -57,6 +62,7 @@ public:
     virtual void setMapFeatures();
     virtual void selectFeature(int index);
     virtual void setZValue(int zValue);
+    virtual void deselectItems();
 
 
 signals:
@@ -77,6 +83,7 @@ protected:
     LIPCoordinateSystem* mCRS;
     int mZValue;
     int mSelectedFeatureIndex;
+    bool mIsSelected;
 
 
 

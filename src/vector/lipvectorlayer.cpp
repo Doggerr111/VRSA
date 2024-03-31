@@ -12,7 +12,8 @@ LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
       mStyle{nullptr},
       mCRS{nullptr},
       mZValue{0},
-      mSelectedFeatureIndex{-1}
+      mSelectedFeatureIndex{-1},
+      mIsSelected{false}
 
       //mCRS{nullptr}
 {
@@ -169,10 +170,25 @@ int LIPVectorLayer::getSelectedFeatureIndex()
     return mSelectedFeatureIndex;
 }
 
+void LIPVectorLayer::setSelected(bool isSelected)
+{
+    mIsSelected=isSelected;
+}
+
+bool LIPVectorLayer::isSelected()
+{
+    return mIsSelected;
+}
+
 void LIPVectorLayer::setZValue(int zValue)
 {
     mZValue=zValue;
     update();
+}
+
+void LIPVectorLayer::deselectItems()
+{
+
 }
 
 void LIPVectorLayer::flyReprojection()
