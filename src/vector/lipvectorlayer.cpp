@@ -258,7 +258,7 @@ QRectF LIPVectorLayer::getBoundingBox()
     qreal minY = envelope.MinY;
     qreal maxX = envelope.MaxX;
     qreal maxY = envelope.MaxY;
-    return QRectF(minX, minY, maxX - minX, maxY - minY);
+    return QRectF(QPointF(minX, minY), QSizeF(maxX - minX, maxY - minY));
 }
 
 LIPCoordinateSystem *LIPVectorLayer::getCRS()
