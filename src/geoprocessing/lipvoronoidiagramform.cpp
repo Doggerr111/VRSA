@@ -27,8 +27,10 @@ void LIPVoronoiDiagramForm::on_buttonBox_accepted()
     if (!LIPVectorTypeChecker::isPointLayer(inputLayer))
         return;
     const auto polygons = LIPTriangulationGeos::getVoronoiDiagram(inputLayer);
+    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+    crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
     LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
-                                             dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+                                             crs.get());
     outputLayer=lCr->returnLayer();
     for (auto polygon : polygons)
     {

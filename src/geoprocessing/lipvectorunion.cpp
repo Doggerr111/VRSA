@@ -110,7 +110,7 @@ QVector<QVector<QPointF> > LIPVectorUnion::getUnion(LIPVectorLayer *inputLayer, 
                 auto geosCords = polygon->getCoordinates();
                 for (std::size_t i=0; i<geosCords->size(); i++)
                 {
-                    if (i==geosCords->size()-1)
+                    if (i==geosCords->size())
                         break;
                     polyCords.append(QPointF(geosCords->getAt(i).x, geosCords->getAt(i).y));
                 }

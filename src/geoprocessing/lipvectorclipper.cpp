@@ -29,10 +29,11 @@ OGRLayer* LIPVectorClipper::clip(LIPVectorLayer *layer, LIPVectorLayer *polyLaye
         return nullptr;
     }
 
-
+    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+    crs->setOGRSpatialRef(layer->getOGRLayer()->GetSpatialRef());
 
     LIPLayerCreator *newLayer = new LIPLayerCreator(LIPGeometryType::LIPPoint, "/home/doger/Documents/GepPortal/testCutting.shp",
-                                                    "outputLayer", dynamic_cast<LIPCoordinateSystem*>(layer->getOGRLayer()->GetSpatialRef()));
+                                                    "outputLayer", crs.get());
     OGRLayer* outputLayer=newLayer->returnOGRLayer();
 
     inputLayer->Intersection(clipOGRLayer,outputLayer);

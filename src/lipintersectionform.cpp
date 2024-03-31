@@ -38,8 +38,11 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
     //LIPPointLayer *layer = inputLayer->top
     if (inputLayer->toPointLayer()!=nullptr)
     {
+        std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+        crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
+
         LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPoint, fileName, "outputLayer",
-                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+                                                 crs.get());
         outputLayer=lCr->returnLayer();
         for (auto pointFeatureCord : coordinatesVect)
         {
@@ -55,8 +58,10 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
 
     else if (inputLayer->toLineLayer()!=nullptr)
     {
+        std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+        crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
         LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPLineString, fileName, "outputLayer",
-                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+                                                 crs.get());
         outputLayer=lCr->returnLayer();
         for (auto lineFeatureCords : coordinatesVect)
         {
@@ -67,8 +72,10 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
 
     else if (inputLayer->toPointLayer()!=nullptr)
     {
+        std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+        crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
         LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
-                                                 dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+                                                 crs.get());
         outputLayer=lCr->returnLayer();
         for (auto polyFeatureCoord : coordinatesVect)
         {

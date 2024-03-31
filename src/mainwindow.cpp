@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //LIPProject::getInstance();
     LIPCoordinateSystemLibrary *lib = new LIPCoordinateSystemLibrary();
-    foreach(LIPCoordinateSystem *CRS, lib->getCRSLib())
+    for(LIPCoordinateSystem *CRS: lib->getCRSLib())
     {
         OGRCoordinateTransformation* ref = OGRCreateCoordinateTransformation(CRS->getOGRSpatialRef(), CRS->getOGRSpatialRef());
         //f->transform(ref);

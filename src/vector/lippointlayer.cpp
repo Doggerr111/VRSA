@@ -200,6 +200,7 @@ QVector<LIPPoint *> LIPPointLayer::returnCords()
     OGRFeature *shpFeature;
     layer->ResetReading();
     OGRSpatialReference *targetCRS =  LIPProject::getInstance().getProjectCRS()->getOGRSpatialRef();
+    auto sou = layer->GetSpatialRef();
     OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(layer->GetSpatialRef(), targetCRS);
 //    if (targetCRS->IsSameGeogCS(layer->GetSpatialRef()))
 //        qDebug()<<"coordinates are same";

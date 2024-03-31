@@ -42,8 +42,9 @@ void LIPTriangulationGeosForm::on_pushButtonOk_clicked()
     if (!LIPVectorTypeChecker::isPointLayer(inputLayer))
         return;
     const auto triangles = LIPTriangulationGeos::getTriangulation(inputLayer);
-    LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
-                                             dynamic_cast<LIPCoordinateSystem*>(inputLayer->getOGRLayer()->GetSpatialRef()));
+    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+    crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
+    LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",crs.get());
     outputLayer=lCr->returnLayer();
     for (auto triangle : triangles)
     {
