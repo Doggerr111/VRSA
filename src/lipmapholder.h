@@ -15,7 +15,7 @@ class LIPMapHolder : public QGraphicsView
     Q_OBJECT
 public:
     LIPMapHolder(QObject *parent);
-
+    void zoomToRect(QRectF bRect);
 public slots:
     void onAddingFeatures();
     void onStopAddingFeatures();

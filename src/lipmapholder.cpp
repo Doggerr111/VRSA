@@ -7,6 +7,13 @@ LIPMapHolder::LIPMapHolder(QObject *parent)
 
 }
 
+void LIPMapHolder::zoomToRect(QRectF targetRect)
+{
+
+//    fitInView(targetRect, Qt::KeepAspectRatio);
+//    centerOn(targetRect.center());
+}
+
 void LIPMapHolder::onAddingFeatures()
 {
     isAddingFeatures=true;
@@ -41,7 +48,11 @@ void LIPMapHolder::wheelEvent(QWheelEvent *event)
         scaleFactor=2;
         scale(scaleFactor, scaleFactor);
     }
-    emit MapHolderZoomed(scaleFactor);
+    //emit MapHolderZoomed(scaleFactor);
+    //QTransform currentTransform = transform();
+    //qreal scaleX = currentTransform.m11(); // Масштаб по горизонтали
+    //qreal scaleY = currentTransform.m22();
+    //qDebug()<<scaleFactor<<scaleX<<scaleY;
     //QGraphicsView::wheelEvent(event);
 }
 
