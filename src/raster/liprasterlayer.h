@@ -35,11 +35,13 @@ public:
     bool applyRGB();
     bool composeRGBImage();
     int getBandCount();
+
     QPixmap getPixmap();
     QGraphicsPixmapItem *getPixmapItem();
     QString getGISName();
     QString getFileName();
     GDALDataset *getDataSet();
+    QRectF getBoundingBox();
     bool setRasterStyle(LIPRasterStyle *style);
     LIPRasterStyle *getStyle();
     void setVisible(bool fl);

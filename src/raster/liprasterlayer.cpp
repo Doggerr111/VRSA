@@ -273,6 +273,18 @@ GDALDataset *LIPRasterLayer::getDataSet()
     return mDs;
 }
 
+QRectF LIPRasterLayer::getBoundingBox()
+{
+    double geoTransform[6];
+    mDs->GetGeoTransform(geoTransform);
+    double minX = geoTransform[0];
+    double maxY = geoTransform[3];
+    double maxX = geoTransform[0] + geoTransform[1] * mDs->GetRasterXSize();
+    double minY = geoTransform[3] + geoTransform[5] * mDs->GetRasterYSize();
+    return QRectF(QPointF(minX, minY), QSizeF(maxX - minX, maxY - minY));
+
+}
+
 bool LIPRasterLayer::setRasterStyle(LIPRasterStyle *style)
 {
     mStyle=style;
