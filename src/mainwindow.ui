@@ -111,7 +111,7 @@ border-bottom: 3px solid black
          </property>
          <property name="maximumSize">
           <size>
-           <width>147</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -133,7 +133,7 @@ QPushButton:hover {
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <property name="spacing">
-           <number>6</number>
+           <number>0</number>
           </property>
           <property name="leftMargin">
            <number>9</number>
