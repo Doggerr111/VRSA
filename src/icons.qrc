@@ -44,5 +44,6 @@
         <file>../images/icons/setting.png</file>
         <file>../images/icons/assign.png</file>
         <file>../images/icons/transform.png</file>
+        <file>../images/icons/zoomToLayer.png</file>
     </qresource>
 </RCC>
