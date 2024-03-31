@@ -350,7 +350,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::redrawNeeded(double f)
 {
-
+    emit scaleFactorChanged(ui->graphicsView->transform().m11());
 }
 
 void MainWindow::showLayerContextMenu(const QPoint &f)
@@ -2379,8 +2379,35 @@ void MainWindow::on_pushButtonShowAttributeTable_clicked()
     }
     LIPWidgetManager::getInstance().showMessage("Для просмотра атрибутов выберите активный слой",
                                                 2000, messageStatus::Error);
+}
 
 
+void MainWindow::on_pushButtonZoomToLayer_clicked()
+{
+    QTreeWidgetItem* clickedItem = ui->LayerTree->currentItem(); //получаем первый выбранный элемент
+    if (clickedItem == nullptr)
+        return;
+    QString path = clickedItem->toolTip(0); //получаем имя файла
+    LIPVectorLayer *selectedLayer = LIPProject::getInstance().getVectorLayerByPath(path);
+    if (selectedLayer!=nullptr)
+    {
+        QRectF targetRect = selectedLayer->getBoundingBox();
+        ui->graphicsView->fitInView(targetRect, Qt::KeepAspectRatio);
+        ui->graphicsView->centerOn(targetRect.center());
+        emit scaleFactorChanged(ui->graphicsView->transform().m11());
+        //ui->graphicsView->zoomToRect(selectedLayer->getBoundingBox());
+    }
+    else
+    {
+        LIPRasterLayer* selectedRasterLayer = LIPProject::getInstance().getRasterLayerByPath(path);
+        if (!selectedRasterLayer)
+            return;
+        QRectF targetRect = selectedRasterLayer->getBoundingBox();
+        ui->graphicsView->fitInView(targetRect, Qt::KeepAspectRatio);
+        ui->graphicsView->centerOn(targetRect.center());
+        emit scaleFactorChanged(ui->graphicsView->transform().m11());
+
+    }
 
 }
 

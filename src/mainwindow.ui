@@ -543,6 +543,17 @@ QPushButton:hover {
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonZoomToLayer">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons.qrc">
+                 <normaloff>:/images/icons/zoomToLayer.png</normaloff>:/images/icons/zoomToLayer.png</iconset>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

@@ -173,6 +173,8 @@ private slots:
 
     void on_pushButtonShowAttributeTable_clicked();
 
+    void on_pushButtonZoomToLayer_clicked();
+
 signals:
     void start_add();
     void newVectorLayer(LIPVectorLayer*);
