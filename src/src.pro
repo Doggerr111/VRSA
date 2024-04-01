@@ -158,8 +158,4 @@ RESOURCES += \
     $$PWD/icons.qrc
 
 DISTFILES += \
-    ../images/icons/folder.png \
-    geoprocessing/geoprocessing.pri \
-    treeView/treeView.pri \
-    ui/icons/selectFeature2.png \
     vector/test.pri
