@@ -4,14 +4,12 @@ LIPMapHolder::LIPMapHolder(QObject *parent)
     : QGraphicsView{},
       isDraging{false}
 {
-
+    Q_UNUSED(parent);
 }
 
 void LIPMapHolder::zoomToRect(QRectF targetRect)
 {
-
-//    fitInView(targetRect, Qt::KeepAspectRatio);
-//    centerOn(targetRect.center());
+    Q_UNUSED(targetRect);
 }
 
 void LIPMapHolder::onAddingFeatures()
@@ -96,31 +94,8 @@ void LIPMapHolder::mouseMoveEvent(QMouseEvent *event)
 
         QPointF delta=clickPos-event->pos();
         clickPos=event->pos();
-        QPoint rect=viewport()->rect().center();
+        //QPoint rect=viewport()->rect().center();
         this->centerOn(mapToScene(this->viewport()->rect().center()+delta.toPoint()));
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //scene()->setSceneRect(sceneRect().translated(-delta));
-//        QMatrix const matrix = this->matrix().inverted();
-//        QRectF visibleRect = matrix.mapRect(this->viewport()->rect());
-//        visibleRect.moveTopLeft(matrix.map(QPoint(this->horizontalScrollBar()->value(),
-//                                                this->verticalScrollBar()->value())));
-//        int x=visibleRect.x()+mapToScene(event->pos()).x()-mapToScene(clickPos).x();
-//        int y=visibleRect.y()+mapToScene(event->pos()).y()-mapToScene(clickPos).y();
-//        QRectF rect(x,y,visibleRect.width(), visibleRect.height());
-//        this->fitInView(rect);
-        //setSceneRect(rect);
     }
     QGraphicsView::mouseMoveEvent(event);
 }

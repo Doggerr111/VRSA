@@ -106,7 +106,7 @@ void LIPMapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void LIPMapScene::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
-
+    Q_UNUSED(event);
 }
 
 void LIPMapScene::mousePressEvent(QGraphicsSceneMouseEvent *event)

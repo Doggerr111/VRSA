@@ -202,6 +202,7 @@ bool LIPProject::addCoordinateSystem(LIPCoordinateSystem *crs)
     //TODO добавить проверку на корректность системы
     CRSystems.append(crs);
     emit newCRS();
+    return true;
 }
 
 QVector<LIPCoordinateSystem*> LIPProject::getCoordinateSystems()
