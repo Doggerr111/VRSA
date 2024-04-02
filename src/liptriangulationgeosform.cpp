@@ -8,6 +8,7 @@ LIPTriangulationGeosForm::LIPTriangulationGeosForm(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->lineEditFileName->setReadOnly(true);
+    setWindowTitle("Триангуляция");
 }
 
 LIPTriangulationGeosForm::~LIPTriangulationGeosForm()
@@ -19,16 +20,29 @@ LIPTriangulationGeosForm::~LIPTriangulationGeosForm()
 
 void LIPTriangulationGeosForm::on_pushButtonFileDialog_clicked()
 {
-    fileName=QFileDialog::getSaveFileName(this, "", "");
+    fileName=QFileDialog::getSaveFileName(this, "Выберите путь для сохранения результата", LIPProject::getInstance().getVectorDataFolder(),
+                                          "Shape files (*.shp)");
     if (fileName.isEmpty())
+    {
         QMessageBox::warning(this,"Ошибка", "Указан неверный путь");
-    else{
-        ui->lineEditFileName->setText(fileName);
+        return;
     }
+
+    if (!fileName.endsWith(".shp"))
+        fileName.append(".shp");
+    ui->lineEditFileName->setText(fileName);
 }
 
 
-void LIPTriangulationGeosForm::on_pushButtonOk_clicked()
+
+
+LIPVectorLayer *LIPTriangulationGeosForm::getTriangulationLayer()
+{
+    return outputLayer;
+}
+
+
+void LIPTriangulationGeosForm::on_buttonBox_accepted()
 {
     if (fileName.isEmpty())
     {
@@ -40,7 +54,10 @@ void LIPTriangulationGeosForm::on_pushButtonOk_clicked()
     if (inputLayer==nullptr)
         return;
     if (!LIPVectorTypeChecker::isPointLayer(inputLayer))
+    {
+        QMessageBox::warning(this,"Ошибка", "В качестве исходного слоя должен быть выбрать слой с точечной геометрией");
         return;
+    }
     const auto triangles = LIPTriangulationGeos::getTriangulation(inputLayer);
     std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
     crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
@@ -51,23 +68,13 @@ void LIPTriangulationGeosForm::on_pushButtonOk_clicked()
         outputLayer->addFeature(triangle, QVector<LIPAttribute>());
     }
     outputLayer->update();
-
-    close();
-
-
-
-
-}
-
-
-void LIPTriangulationGeosForm::on_pushButtonCancel_clicked()
-{
-
+    delete lCr;
     close();
 }
 
-LIPVectorLayer *LIPTriangulationGeosForm::getTriangulationLayer()
+
+void LIPTriangulationGeosForm::on_buttonBox_rejected()
 {
-    return outputLayer;
+    close();
 }
 

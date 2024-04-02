@@ -6,6 +6,7 @@ LIPIntersectionForm::LIPIntersectionForm(QWidget *parent) :
     ui(new Ui::LIPIntersectionForm)
 {
     ui->setupUi(this);
+    setWindowTitle("Пересечение");
 }
 
 LIPIntersectionForm::~LIPIntersectionForm()
@@ -13,7 +14,26 @@ LIPIntersectionForm::~LIPIntersectionForm()
     delete ui;
 }
 
-void LIPIntersectionForm::on_pushButtonOk_clicked()
+
+
+
+void LIPIntersectionForm::on_pushButtonFileDialog_clicked()
+{
+    fileName=QFileDialog::getSaveFileName(this, "Выберите путь для сохранения результата", LIPProject::getInstance().getVectorDataFolder(),
+                                          "Shape files (*.shp)");
+    if (fileName.isEmpty())
+    {
+        QMessageBox::warning(this,"Ошибка", "Указан неверный путь");
+        return;
+    }
+
+    if (!fileName.endsWith(".shp"))
+        fileName.append(".shp");
+    ui->lineEditFileName->setText(fileName);
+}
+
+
+void LIPIntersectionForm::on_buttonBox_accepted()
 {
     if (fileName.isEmpty())
     {
@@ -29,11 +49,19 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
                 ui->comboBoxIntersectLayer->itemData(ui->comboBoxIntersectLayer->currentIndex()).toString());
     if (intersectLayer==nullptr)
         return;
+    if (inputLayer==intersectLayer)
+    {
+        QMessageBox::warning(this,"Ошибка", "Указаны 2 одинаковых слоя");
+        return;
+    }
     //if (!LIPVectorTypeChecker::isPolygonLayer(intersectLayer))
     //    return;
     auto polyLayer = intersectLayer->toPolygonLayer();
     if (polyLayer==nullptr)
+    {
+        QMessageBox::warning(this,"Ошибка", "Слой наложения должен быть полигональным!");
         return;
+    }
     auto coordinatesVect = LIPVectorIntersection::getIntersection(inputLayer, polyLayer);
     //LIPPointLayer *layer = inputLayer->top
     if (inputLayer->toPointLayer()!=nullptr)
@@ -70,7 +98,7 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
         outputLayer->update();
     }
 
-    else if (inputLayer->toPointLayer()!=nullptr)
+    else if (inputLayer->toPolygonLayer()!=nullptr)
     {
         std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
         crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
@@ -88,13 +116,8 @@ void LIPIntersectionForm::on_pushButtonOk_clicked()
 }
 
 
-void LIPIntersectionForm::on_pushButtonFileDialog_clicked()
+void LIPIntersectionForm::on_buttonBox_rejected()
 {
-    fileName=QFileDialog::getSaveFileName(this, "", "");
-    if (fileName.isEmpty())
-        QMessageBox::warning(this,"Ошибка", "Указан неверный путь");
-    else{
-        ui->lineEditFileName->setText(fileName);
-    }
+    close();
 }
 

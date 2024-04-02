@@ -14,6 +14,7 @@ LIPCoordinateSystem::~LIPCoordinateSystem()
 bool LIPCoordinateSystem::setName(QString name)
 {
     mName=name;
+    return true;
 }
 
 bool LIPCoordinateSystem::setProj(QString proj)
@@ -23,12 +24,11 @@ bool LIPCoordinateSystem::setProj(QString proj)
     mProjString=proj;
     QByteArray ba = proj.toLocal8Bit();
     const char *projChar = ba.data();
+    qDebug()<<"f";
     if (mSR->importFromProj4(projChar) == OGRERR_NONE)
     {
         qDebug()<<"import ok";
         return true;
-
-
     }
     else
     {

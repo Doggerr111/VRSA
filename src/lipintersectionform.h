@@ -19,9 +19,13 @@ public:
     ~LIPIntersectionForm();
 
 private slots:
-    void on_pushButtonOk_clicked();
+    //void on_pushButtonOk_clicked();
 
     void on_pushButtonFileDialog_clicked();
+
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_rejected();
 
 private:
     Ui::LIPIntersectionForm *ui;

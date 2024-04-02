@@ -6,6 +6,7 @@ LIPVectorAssignProjectForm::LIPVectorAssignProjectForm(QWidget *parent) :
     ui(new Ui::LIPVectorAssignProjectForm)
 {
     ui->setupUi(this);
+    setWindowTitle("Назначить проекцию");
 }
 
 LIPVectorAssignProjectForm::~LIPVectorAssignProjectForm()

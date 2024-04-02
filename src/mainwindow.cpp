@@ -19,11 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("VRSA");
     setWindowIcon(QIcon(":/images/icons/vector-and-raster-spatian-analysys.png"));
-    OGRGeometry *f;
-
-
-
-    //LIPProject::getInstance();
     LIPCoordinateSystemLibrary *lib = new LIPCoordinateSystemLibrary();
     for(LIPCoordinateSystem *CRS: lib->getCRSLib())
     {
@@ -2021,7 +2016,8 @@ void MainWindow::on_actionGeosTriangulation_triggered()
     LIPTriangulationGeosForm *form = new LIPTriangulationGeosForm;
     form->exec();
     auto layer=form->getTriangulationLayer();
-    connect(this, SIGNAL(scaleFactorChanged(double)), layer, SLOT(setSceneScaleFactor(double)));
+    if (layer!=nullptr)
+        connect(this, SIGNAL(scaleFactorChanged(double)), layer, SLOT(setSceneScaleFactor(double)));
     delete form;
     form=nullptr;
 }

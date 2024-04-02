@@ -7,6 +7,7 @@ LIPVectorUnionForm::LIPVectorUnionForm(QWidget *parent) :
     outputLayer{nullptr}
 {
     ui->setupUi(this);
+    setWindowTitle("Объединение");
 }
 
 LIPVectorUnionForm::~LIPVectorUnionForm()
@@ -90,17 +91,22 @@ void LIPVectorUnionForm::on_buttonBox_accepted()
 
 void LIPVectorUnionForm::on_buttonBox_rejected()
 {
-
+    close();
 }
 
 
 void LIPVectorUnionForm::on_pushButtonFileDialog_clicked()
 {
-    fileName=QFileDialog::getSaveFileName(this, "", "");
+    fileName=QFileDialog::getSaveFileName(this, "Выберите путь для сохранения результата", LIPProject::getInstance().getVectorDataFolder(),
+                                          "Shape files (*.shp)");
     if (fileName.isEmpty())
+    {
         QMessageBox::warning(this,"Ошибка", "Указан неверный путь");
-    else{
-        ui->lineEditFileName->setText(fileName);
+        return;
     }
+
+    if (!fileName.endsWith(".shp"))
+        fileName.append(".shp");
+    ui->lineEditFileName->setText(fileName);
 }
 

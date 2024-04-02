@@ -6,6 +6,7 @@ LIPVoronoiDiagramForm::LIPVoronoiDiagramForm(QWidget *parent) :
     ui(new Ui::LIPVoronoiDiagramForm)
 {
     ui->setupUi(this);
+    setWindowTitle("Диаграмма Вороного");
 }
 
 LIPVoronoiDiagramForm::~LIPVoronoiDiagramForm()
@@ -25,7 +26,10 @@ void LIPVoronoiDiagramForm::on_buttonBox_accepted()
     if (inputLayer==nullptr)
         return;
     if (!LIPVectorTypeChecker::isPointLayer(inputLayer))
+    {
+        QMessageBox::warning(this, "Ошибка", "В качестве исходного слоя необходимо выбрать слой с точечной геометрией");
         return;
+    }
     const auto polygons = LIPTriangulationGeos::getVoronoiDiagram(inputLayer);
     std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
     crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
@@ -44,11 +48,16 @@ void LIPVoronoiDiagramForm::on_buttonBox_accepted()
 
 void LIPVoronoiDiagramForm::on_pushButtonPath_clicked()
 {
-    fileName=QFileDialog::getSaveFileName(this, "", "");
+    fileName=QFileDialog::getSaveFileName(this, "Выберите путь для сохранения результата", LIPProject::getInstance().getVectorDataFolder(),
+                                          "Shape files (*.shp)");
     if (fileName.isEmpty())
+    {
         QMessageBox::warning(this,"Ошибка", "Указан неверный путь");
-    else{
-        ui->lineEditPath->setText(fileName);
+        return;
     }
+
+    if (!fileName.endsWith(".shp"))
+        fileName.append(".shp");
+    ui->lineEditPath->setText(fileName);
 }
 
