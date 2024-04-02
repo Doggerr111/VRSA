@@ -34,6 +34,7 @@ LIPRasterLayer::LIPRasterLayer(QString fName):
     mHeight = mDs->GetRasterYSize();
     mNumPixels = mWidth*mHeight;
     mImage= QImage(mWidth, mHeight, QImage::Format_ARGB32_Premultiplied);
+    //QMessageBox::warning(nullptr,"","");
     for (int i=0; i<mDs->GetRasterCount(); i++)
     {
         auto band = mDs->GetRasterBand(i+1);
@@ -114,6 +115,7 @@ LIPRasterLayer::LIPRasterLayer(QString fName):
     mPixmapItem->setTransform(transform);
     composeRGBImage();
     LIPWidgetManager::getInstance().getMainWindow()->addRasterLayer(this);
+    //QMessageBox::warning(nullptr,"","");
     //pixmapItem->setTransform(transform);
 }
 
@@ -163,54 +165,17 @@ bool LIPRasterLayer::readGeoTransform()
     }
     mGeoTransform.translate(geoTransform[0], geoTransform[3]);
     mGeoTransform.scale(geoTransform[1], geoTransform[5]);
+    return true;
 }
 
 bool LIPRasterLayer::composeRGBImage()
 {
     if (mBands.isEmpty())
         return false;
-//    if (mBands.count()==1)
-//    {
-//        double* minMaxValue = new double[1];
-//        mBands.at(0)->ComputeRasterMinMax(false, minMaxValue);
-//        for (int i = 0; i < mNumPixels; i++)
-//        {
-//            auto pixelValue1 = mRasterData[0][i];
-//            int normalizedBrightness = (pixelValue1 - minMaxValue[0]) * 255 / (minMaxValue[1] - minMaxValue[0]);
-//            if (normalizedBrightness>255)
-//                normalizedBrightness=255;
-//            QRgb color = qRgb(normalizedBrightness, normalizedBrightness, normalizedBrightness);
-//            mImage.setPixel(i % mWidth, i / mWidth, color);
-//        }
-//        return true;
-//    }
-//    else if (mBands.count()==2)
-//    {
-//        double* minMaxValue1 = new double[1];
-//        mBands.at(0)->ComputeRasterMinMax(false, minMaxValue1);
-//        double* minMaxValue2 = new double[1];
-//        mBands.at(1)->ComputeRasterMinMax(false, minMaxValue2);
-//        for (int i = 0; i < mNumPixels; i++)
-//        {
-//            auto pixelValue1 = mRasterData[0][i];
-//            auto pixelValue2 = mRasterData[1][i];
-//            int normalizedBrightness1 = (pixelValue1 - minMaxValue1[0]) * 255 / (minMaxValue1[1] - minMaxValue1[0]);
-//            int normalizedBrightness2 = (pixelValue2 - minMaxValue2[0]) * 255 / (minMaxValue2[1] - minMaxValue2[0]);
-//            if (normalizedBrightness1>255)
-//                normalizedBrightness1=255;
-//            if (normalizedBrightness2>255)
-//                normalizedBrightness2=255;
-//            QRgb color = qRgb(normalizedBrightness1, normalizedBrightness2, normalizedBrightness2);
-//            mImage.setPixel(i % mWidth, i / mWidth, color);
-
-//            }
-
-//    }
-//    else if (mBands.count()>=3)
-//    {
 
     for (int i = 0; i < mNumPixels; i++)
     {
+
         auto pixelValue1 = mRasterData[mRGBStyle->bandIndex1-1][i];
         auto pixelValue2 = mRasterData[mRGBStyle->bandIndex2-1][i];
         auto pixelValue3 = mRasterData[mRGBStyle->bandIndex3-1][i];
@@ -237,6 +202,7 @@ bool LIPRasterLayer::composeRGBImage()
 
     }
     mPixmapItem->setPixmap(QPixmap::fromImage(mImage));
+    return true;
 
 
 
@@ -292,8 +258,10 @@ bool LIPRasterLayer::setRasterStyle(LIPRasterStyle *style)
     if (rgbStyle!=nullptr)
     {
         mRGBStyle=rgbStyle;
+        return true;
         //composeRGBImage();
     }
+    return false;
 }
 
 LIPRasterStyle *LIPRasterLayer::getStyle()

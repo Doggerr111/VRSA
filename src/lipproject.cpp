@@ -251,6 +251,7 @@ bool LIPProject::saveProject(QString fileName)
     }
 
     file.close();
+    return true;
 
 }
 

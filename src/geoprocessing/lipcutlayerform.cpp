@@ -61,6 +61,10 @@ void LIPCutLayerForm::on_pushButtonOk_clicked()
         resultLIPLayer = new LIPPolygonLayer(layer,"intersectionOutput", fileName, nullptr);
         break;
     }
+    case LIPGeometryType::LIPUnknown:
+    {
+        break;
+    }
     }
 }
 

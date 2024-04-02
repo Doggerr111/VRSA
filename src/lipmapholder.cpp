@@ -2,7 +2,8 @@
 #include <QDebug>
 LIPMapHolder::LIPMapHolder(QObject *parent)
     : QGraphicsView{},
-      isDraging{false}
+      isDraging{false},
+      isAddingFeatures{false}
 {
     Q_UNUSED(parent);
 }
@@ -63,6 +64,7 @@ void LIPMapHolder::mousePressEvent(QMouseEvent *event)
         isDraging=true;
     //clickPos=mapToScene(event->pos());
     clickPos=event->pos();
+    qDebug()<<isDraging;
     QGraphicsView::mousePressEvent(event);
 //    qDebug()<<clickPos;
 //    qDebug()<<mapToScene(event->pos());

@@ -9,7 +9,7 @@ bool LIPRasterTransform::reproject(LIPRasterLayer *layer, LIPCoordinateSystem *t
 {
     GDALDataset *poDataset = layer->getDataSet();
 
-
+    Q_UNUSED(targetCRS)
     //OGRSpatialReference *oSRS = targetCRS->getOGRSpatialRef();
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff"); // Формат результата (может быть другой)
     GDALDataset *poReprojectedDS;

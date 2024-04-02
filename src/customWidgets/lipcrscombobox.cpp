@@ -32,6 +32,7 @@ LIPCoordinateSystem *LIPCRSComboBox::getCurrentCRS()
             return crs;
         }
     }
+    return nullptr;
 }
 
 void LIPCRSComboBox::updateCRS()

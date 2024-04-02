@@ -47,8 +47,6 @@ LIPLineLayer::LIPLineLayer(QString fileName)
         qDebug()<<"Error:cant read this shp file: " + QString(fileName);
         delete this;
     }
-    int c=shpDS->GetLayers().size();
-
     layer = shpDS->GetLayer(0);
 }
 
@@ -260,7 +258,6 @@ QVector<LIPLineGraphicsItem *> LIPLineLayer::returnMapFeatures()
 void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
 {
     OGRFeature *newFeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
     //OGRPolygon *polygon = new OGRPolygon();
     OGRLineString *lineString = new OGRLineString();
     //LIPLineGraphicsItem *line = new LIPLineGraphicsItem();
@@ -308,6 +305,8 @@ void LIPLineLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> att
     // Добавление объекта к слою
     //OGRErr er1 = layer->StartTransaction();
     OGRErr er = layer->CreateFeature(newFeature);
+    if (er != OGRERR_NONE)
+        LIPWidgetManager::getInstance().showMessage("Ошибка создания объекта", 1000, Error);
     layer->GetLayerDefn()->SetGeomType(wkbPolygon);
     layer->SetSpatialFilter(nullptr);
     //layer->CommitTransaction();

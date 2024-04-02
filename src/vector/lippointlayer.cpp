@@ -39,7 +39,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
     if (layer==nullptr || targetCRS==nullptr)
         return false;
     OGRSpatialReference *sourceCRS = layer->GetSpatialRef();
-    OGRLayer* newLayer=dS->CreateLayer("layerRep", targetCRS->getOGRSpatialRef(), wkbPoint);
+    /*OGRLayer* newLayer=*/dS->CreateLayer("layerRep", targetCRS->getOGRSpatialRef(), wkbPoint);
 
     if (sourceCRS==nullptr)
     {
@@ -56,7 +56,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
     {
 
         OGRGeometry *poGeometry = shpFeature->GetGeometryRef();
-        int count = shpFeature->GetGeomFieldCount();
+        //int count = shpFeature->GetGeomFieldCount();
         for (int i=0;i<shpFeature->GetGeomFieldCount();i++)
         {
             if (poGeometry != nullptr)
@@ -72,7 +72,8 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
                 pointOGR->setX(x);
                 pointOGR->setY(y);
                 //qDebug()<<shpFeature->SetGeometry(pointOGR);
-                OGR_L_SetFeature(layer,shpFeature);
+                auto er = OGR_L_SetFeature(layer,shpFeature);
+                Q_UNUSED(er);
 
             }
         }
@@ -93,11 +94,16 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS)
 
 bool LIPPointLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSystem *targetCRS)
 {
-
+    Q_UNUSED(sourceCRS);
+    Q_UNUSED(targetCRS);
 }
 
 bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS, QString fileName)
 {
+    Q_UNUSED(fileName);
+    Q_UNUSED(targetCRS);
+    return false;
+
     //    if (layer==nullptr)
     //    {
     //        LIPWidgetManager::getInstance().showMessage("Для данного слоя перепроицирование невозможно", 2000, messageStatus::Error);
@@ -200,7 +206,7 @@ QVector<LIPPoint *> LIPPointLayer::returnCords()
     OGRFeature *shpFeature;
     layer->ResetReading();
     OGRSpatialReference *targetCRS =  LIPProject::getInstance().getProjectCRS()->getOGRSpatialRef();
-    auto sou = layer->GetSpatialRef();
+    //auto sou = layer->GetSpatialRef();
     OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(layer->GetSpatialRef(), targetCRS);
 //    if (targetCRS->IsSameGeogCS(layer->GetSpatialRef()))
 //        qDebug()<<"coordinates are same";
@@ -306,7 +312,7 @@ QString LIPPointLayer::getFileName()
 void LIPPointLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
 {
     OGRFeature *newFeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
+    //OGRwkbGeometryType t= layer->GetLayerDefn()->GetGeomType();
     OGRPoint featurePoint;
 
     //for (int i=0; i<coords.size(); i++)
@@ -350,9 +356,12 @@ void LIPPointLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> at
     // Добавление объекта к слою
     OGRErr er1 = layer->StartTransaction();
     OGRErr er = layer->CreateFeature(newFeature);
+
     layer->GetLayerDefn()->SetGeomType(wkbPolygon);
     layer->SetSpatialFilter(nullptr);
     er1= layer->CommitTransaction();
+    if (er1!=OGRERR_NONE || er!=OGRERR_NONE)
+        LIPWidgetManager::getInstance().showMessage("Ошибка создания объекта", 1000, Error);
     layer->SyncToDisk();
     //GDALClose(layer);
     //setMapFeatures();

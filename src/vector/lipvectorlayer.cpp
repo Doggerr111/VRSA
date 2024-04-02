@@ -78,17 +78,22 @@ void LIPVectorLayer::setVisible(bool)
 
 bool LIPVectorLayer::reproject(LIPCoordinateSystem *targetCRS)
 {
+    Q_UNUSED(targetCRS);
     return true;
 }
 
 bool LIPVectorLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSystem *targetCRS)
 {
-
+    Q_UNUSED(sourceCRS);
+    Q_UNUSED(targetCRS);
+    return true;
 }
 
 bool LIPVectorLayer::reproject(LIPCoordinateSystem *targetCRS, QString fileName)
 {
-
+    Q_UNUSED(targetCRS);
+    Q_UNUSED(fileName);
+    return true;
 }
 
 void LIPVectorLayer::update()
@@ -107,7 +112,7 @@ bool LIPVectorLayer::setCoordinateSystem(LIPCoordinateSystem *targetCRS)
         return false;
 
     //dS->SetSpatialRef(targetCRS);
-    OGRDataSource* ds;
+
     //ds->SetSpatialRef(targetCRS);
     //char** pszWKT;
     //targetCRS->exportToWkt(pszWKT);
@@ -116,7 +121,9 @@ bool LIPVectorLayer::setCoordinateSystem(LIPCoordinateSystem *targetCRS)
     qDebug()<<layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->GetSpatialRef();
     layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->SetSpatialRef(targetCRS->getOGRSpatialRef());
     qDebug()<<layer->GetLayerDefn()->OGRFeatureDefn::GetGeomFieldDefn(0)->GetSpatialRef();
-    layer->SyncToDisk();
+    auto er = layer->SyncToDisk();
+    Q_UNUSED(er);
+    return true;
 //    const char *originalString = layer->GetName();
 //    const char *stringToAdd = "_rep";
 //    size_t originalStringLength = strlen(originalString);
@@ -269,7 +276,9 @@ QStringList LIPVectorLayer::getAttributesNamesAsList()
 QRectF LIPVectorLayer::getBoundingBox()
 {
     OGREnvelope envelope;
-    layer->GetExtent(&envelope, true);
+    auto er=layer->GetExtent(&envelope, true);
+    if (er!=OGRERR_NONE)
+        return QRectF();
     qreal minX = envelope.MinX;
     qreal minY = envelope.MinY;
     qreal maxX = envelope.MaxX;
@@ -357,12 +366,12 @@ GDALDataset *LIPVectorLayer::getDataSet()
 
 void LIPVectorLayer::setSceneScaleFactor(double factor)
 {
-
+    Q_UNUSED(factor);
 }
 
 void LIPVectorLayer::selectFeature(int index)
 {
-
+    Q_UNUSED(index);
 }
 
 

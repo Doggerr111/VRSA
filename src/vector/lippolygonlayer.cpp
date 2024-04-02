@@ -240,6 +240,7 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
         }
         ring.closeRings(); //ОБЯЗАТЕЛЬНО ПРИ СОЗДАНИИ ПОЛИГОНАЛЬНОГО ОБЬЕКТА!! ИНАЧЕ ОШИБКИ ПРИ РАБОТЕ СО СЛОЕМ
         OGRErr R=polygon->addRingDirectly(&ring);
+        Q_UNUSED(R);
 
 
         for (int i=0; i<attrs.size(); i++)
@@ -268,6 +269,8 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
         // Добавление объекта к слою
         //OGRErr er1 = layer->StartTransaction();
         OGRErr er = layer->CreateFeature(newFeature);
+        if (er!=OGRERR_NONE)
+            LIPWidgetManager::getInstance().showMessage("Ошибка создания объекта", 1000, Error);
         //layer->SetSpatialFilter(nullptr);
         //er1= layer->CommitTransaction();
     }
@@ -294,6 +297,8 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
         }
         ring.closeRings(); //ОБЯЗАТЕЛЬНО ПРИ СОЗДАНИИ ПОЛИГОНАЛЬНОГО ОБЬЕКТА!! ИНАЧЕ ОШИБКИ ПРИ РАБОТЕ СО СЛОЕМ
         OGRErr R=polygon->addRingDirectly(&ring);
+        if (R!=OGRERR_NONE)
+            LIPWidgetManager::getInstance().showMessage("Ошибка создания объекта", 1000, Error);
         polygons->addGeometry(polygon);
 
         for (int i=0; i<attrs.size(); i++)
@@ -322,6 +327,8 @@ void LIPPolygonLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> 
         // Добавление объекта к слою
         //OGRErr er1 = layer->StartTransaction();
         OGRErr er = layer->CreateFeature(newFeature);
+        if (er!=OGRERR_NONE)
+            LIPWidgetManager::getInstance().showMessage("Ошибка создания объекта", 1000, Error);
         //layer->SetSpatialFilter(nullptr);
         //er1= layer->CommitTransaction();
     }

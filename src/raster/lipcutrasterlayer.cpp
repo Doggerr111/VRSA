@@ -8,78 +8,11 @@ LIPCutRasterLayer::LIPCutRasterLayer()
 bool LIPCutRasterLayer::cutRasterByVector(LIPRasterLayer *rLayer, LIPPolygonLayer *vLayer)
 {
 
-
-
-
-
-//    GDALAllRegister();
-
-//       // Открытие растрового файла
-//       GDALDataset *poDataset = (GDALDataset *)GDALOpen("input_raster.tif", GA_ReadOnly);
-//       if (poDataset == NULL) {
-//           // Обработка ошибки
-//       }
-
-//       // Открытие контурной линии
-//       GDALDataset *poCutlineDS = (GDALDataset *)GDALOpenEx("cutline.shp", GDAL_OF_VECTOR, NULL, NULL, NULL);
-//       if (poCutlineDS == NULL) {
-//           // Обработка ошибки
-//       }
-
-//       // Задание опций обрезки (crop to cutline)
-//       const char *pszSource = poDataset->GetDescription();
-//       char *pszCutline = const_cast<char*>(poCutlineDS->GetDescription());
-//       const char *pszDest = "output_cropped.tif";
-
-//       char *options[] = {
-//           "-crop_to_cutline",
-//           pszCutline,
-//           "-of", "GTiff",
-//           "-ot", "Byte",
-//           "-co", "COMPRESS=LZW",
-//           NULL
-//       };
-
-//       // Применение операции обрезки
-//       GDALWarpOptions *psWarpOptions = GDALCreateWarpOptions();
-//       psWarpOptions->nBandCount = poDataset->GetRasterCount();
-//       psWarpOptions->papszWarpOptions = options;
-//       psWarpOptions->hSrcDS = poDataset;
-//       psWarpOptions->hDstDS = NULL;
-
-//       GDALDataset *poCroppedDS = (GDALDataset *)GDALAutoCreateWarpedVRT(psWarpOptions, NULL, nullptr);
-
-//       // Сохранение результата
-//       GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-//       poDriver->CreateCopy(pszDest, poCroppedDS, FALSE, NULL, NULL, NULL);
-
-//       // Освобождение ресурсов
-//       GDALClose(poDataset);
-//       GDALClose(poCutlineDS);
-
-//       GDALDestroyDriverManager();
-
-//       return 0;
-//   }
-
-
-
-
-
-
-
-
-
-
-
     GDALDataset *poDataset = rLayer->getDataSet();
-
-
     //OGRSpatialReference *oSRS = targetCRS->getOGRSpatialRef();
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff"); // Формат результата (может быть другой)
-    GDALDataset *poReprojectedDS;
-
-    poReprojectedDS = poDriver->Create("result.tif", poDataset->GetRasterXSize(), poDataset->GetRasterYSize(), poDataset->GetRasterCount(), GDT_Float32, NULL);
+    //GDALDataset *poReprojectedDS;
+    //poReprojectedDS = poDriver->Create("result.tif", poDataset->GetRasterXSize(), poDataset->GetRasterYSize(), poDataset->GetRasterCount(), GDT_Float32, NULL);
     GDALDriverH hDriver;
     GDALDataType eDT;
     GDALDatasetH hDstDS;
@@ -124,10 +57,10 @@ bool LIPCutRasterLayer::cutRasterByVector(LIPRasterLayer *rLayer, LIPPolygonLaye
     double adfDstGeoTransform[6];
     int nPixels=0, nLines=0;
     CPLErr eErr;
-    eErr = GDALSuggestedWarpOutput( hSrcDS,
+    Q_UNUSED(eErr);
+    GDALSuggestedWarpOutput( hSrcDS,
                                     GDALGenImgProjTransform, hTransformArg,
                                     adfDstGeoTransform, &nPixels, &nLines );
-    CPLAssert( eErr == CE_None );
     GDALDestroyGenImgProjTransformer( hTransformArg );
 
     // Create the output file.
