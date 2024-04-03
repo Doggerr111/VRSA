@@ -65,7 +65,11 @@ void LIPProject::deleteVectorByPath(QString path)
         {
             auto lToDel=vectorLayers.at(i);
             vectorLayers.removeAt(i);
+            if (lToDel == activeLayer)
+                activeLayer=nullptr;
             delete lToDel;
+
+
             //
             //vectorLayers.erase(1);
         }
@@ -114,12 +118,7 @@ LIPVectorLayer *LIPProject::getVectorLayerByPath(QString path)
 
 LIPVectorLayer* LIPProject::getActiveLayer()
 {
-    if (activeLayer!=nullptr)
-        return activeLayer;
-    else
-    {
-        return nullptr;
-    }
+    return activeLayer;
 }
 
 void LIPProject::addRasterLayer(LIPRasterLayer *rasterLayer)
@@ -161,13 +160,18 @@ LIPRasterLayer *LIPProject::getRasterLayerByPath(QString path)
 
 void LIPProject::setActivePostGISConnection(GDALDataset *ds)
 {
-    if (ds!=nullptr)
-        mActivePostGISConnection=ds;
+    if (ds==nullptr)
+        return;
+    //if (mActivePostGISConnection!=nullptr)
+        //disconnectPostGISConnection();
+    mActivePostGISConnection=ds;
+
 
 }
 
 void LIPProject::disconnectPostGISConnection()
 {
+
     GDALClose(mActivePostGISConnection);
     mActivePostGISConnection=nullptr;
 }
