@@ -177,6 +177,8 @@ void LIPPolygonLayer::itemClicked(int ind)
 {
     if (LIPProject::getInstance().isSelectingFeatures())
     {
+        if (LIPProject::getInstance().getActiveLayer() != this)
+            return;
         if (mSelectedFeatureIndex!=-1)
             mapFeatures.at(mSelectedFeatureIndex)->deselect();
         mapFeatures.at(ind)->select();
