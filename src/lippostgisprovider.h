@@ -14,6 +14,7 @@ class LIPPostGisProvider
 {
 public:
     LIPPostGisProvider();
+    ~LIPPostGisProvider();
     /** Return true if connection was succsesful */
     bool isConnected();
     /** Return true if database have an postgis extension */

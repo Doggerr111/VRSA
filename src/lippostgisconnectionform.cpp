@@ -7,9 +7,9 @@ LIPPostGisConnectionForm::LIPPostGisConnectionForm(QWidget *parent) :
 {
     ui->setupUi(this);
     mPGProvider = new LIPPostGisProvider;
-
+    setWindowTitle("Подключение к PostGIS");
     //TESTING
-    ui->lineEditDBName->setText("LIPServer");
+    ui->lineEditDBName->setText("test");
     ui->lineEditDBHost->setText("127.0.0.1");
     ui->lineEditPassword->setText("1234");
     ui->lineEditDBPort->setText("5432");
@@ -18,6 +18,7 @@ LIPPostGisConnectionForm::LIPPostGisConnectionForm(QWidget *parent) :
 
 LIPPostGisConnectionForm::~LIPPostGisConnectionForm()
 {
+    delete mPGProvider;
     delete ui;
 }
 

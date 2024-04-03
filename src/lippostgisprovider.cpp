@@ -6,6 +6,11 @@ LIPPostGisProvider::LIPPostGisProvider()
     mDb = new QSqlDatabase(QSqlDatabase::addDatabase("QPSQL"));
 }
 
+LIPPostGisProvider::~LIPPostGisProvider()
+{
+    delete mDb;
+}
+
 bool LIPPostGisProvider::isConnected()
 {
     return mConnectionFlag;
