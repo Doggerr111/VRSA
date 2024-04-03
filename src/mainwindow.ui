@@ -1131,7 +1131,7 @@ background-color: rgb(68,68,68)
      <normaloff>:/images/icons/postgis.png</normaloff>:/images/icons/postgis.png</iconset>
    </property>
    <property name="text">
-    <string>Connect to PostGIS</string>
+    <string>Подключиться к PostGIS</string>
    </property>
   </action>
   <action name="actionGeosTriangulation">

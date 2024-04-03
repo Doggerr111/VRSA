@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>374</width>
-    <height>474</height>
+    <width>365</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
          <item>
           <widget class="QLabel" name="labelInfo">
            <property name="text">
-            <string>Connection Information</string>
+            <string>Информация о соединении</string>
            </property>
           </widget>
          </item>
@@ -69,11 +69,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Name</string>
+               <string>Название</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditName"/>
             </item>
            </layout>
@@ -97,11 +97,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Host</string>
+               <string>Хост</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditDBHost"/>
             </item>
            </layout>
@@ -125,11 +125,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Port</string>
+               <string>Порт</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditDBPort"/>
             </item>
            </layout>
@@ -153,11 +153,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Database</string>
+               <string>База данных</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditDBName"/>
             </item>
            </layout>
@@ -181,11 +181,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Username</string>
+               <string>Имя пользователя</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditUserName"/>
             </item>
            </layout>
@@ -209,11 +209,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Password</string>
+               <string>Пароль</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignLeft">
              <widget class="QLineEdit" name="lineEditPassword">
               <property name="echoMode">
                <enum>QLineEdit::Password</enum>
@@ -227,29 +227,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="frame_8">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QPushButton" name="pushButtonCancel">
-           <property name="text">
-            <string>Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonConnect">
-           <property name="text">
-            <string>Connect</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
      </layout>

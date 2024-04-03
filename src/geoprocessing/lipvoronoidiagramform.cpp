@@ -61,3 +61,9 @@ void LIPVoronoiDiagramForm::on_pushButtonPath_clicked()
     ui->lineEditPath->setText(fileName);
 }
 
+
+void LIPVoronoiDiagramForm::on_buttonBox_rejected()
+{
+    close();
+}
+

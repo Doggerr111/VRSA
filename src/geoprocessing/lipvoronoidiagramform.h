@@ -22,6 +22,8 @@ private slots:
 
     void on_pushButtonPath_clicked();
 
+    void on_buttonBox_rejected();
+
 private:
     Ui::LIPVoronoiDiagramForm *ui;
     QString fileName;

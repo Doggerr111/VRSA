@@ -25,6 +25,8 @@ LIPVectorStyleForm::LIPVectorStyleForm(QWidget *parent, LIPVectorLayer *layer, L
 //    pointItem->setPos(scene->sceneRect().center());
     if (mStyle==nullptr)
         mStyle=new LIPVectorStyle;
+
+    LIPVectorStyle style1 = *mStyle;
     if (mLayer!=nullptr)
     {
         startRenderFeature();
@@ -111,6 +113,8 @@ void LIPVectorStyleForm::startRenderFeature()
         mScene->addItem(polyItem);
         break;
     }
+    default:
+        break;
 
     }
 }
@@ -170,7 +174,7 @@ void LIPVectorStyleForm::on_lineEditPointSize_textChanged(const QString &arg1)
 
 void LIPVectorStyleForm::on_lineEditPointSize_textEdited(const QString &arg1)
 {
-
+    Q_UNUSED(arg1)
 }
 
 
@@ -304,6 +308,7 @@ void LIPVectorStyleForm::on_comboBoxPointBrushType_currentIndexChanged(int index
 
 //    pointItem->update();
 //    ui->graphicsView->scene()->update();
+    Q_UNUSED(index);
 }
 
 
@@ -321,6 +326,7 @@ void LIPVectorStyleForm::on_comboBox_currentIndexChanged(int index)
 
 void LIPVectorStyleForm::on_lineEditPointPenWidth_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1);
 //    QPen pen = mStyle->getPen();
 //    pen.setWidthF(arg1.toDouble());
 //    mStyle->setPen(pen);

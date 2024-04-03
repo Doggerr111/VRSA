@@ -20,7 +20,11 @@ public:
     GDALDataset* returnDataSet();
 
 private slots:
-    void on_pushButtonConnect_clicked();
+    //void on_pushButtonConnect_clicked();
+
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_rejected();
 
 private:
     Ui::LIPPostGisConnectionForm *ui;
