@@ -390,7 +390,7 @@ void MainWindow::showLayerContextMenu(const QPoint &f)
                     }
                     else {
                         index = ui->LayerTree->indexOfTopLevelItem(clickedItem);
-                        delete ui->LayerTree->takeTopLevelItem(index);
+                        ui->LayerTree->takeTopLevelItem(index);
                     }
                     //delete clickedItem;
                 }
@@ -441,7 +441,7 @@ void MainWindow::showLayerContextMenu(const QPoint &f)
                 }
                 else {
                     index = ui->LayerTree->indexOfTopLevelItem(clickedItem);
-                    delete ui->LayerTree->takeTopLevelItem(index);
+                    ui->LayerTree->takeTopLevelItem(index);
                 }
                 //delete clickedItem;
             }
@@ -1652,10 +1652,53 @@ void MainWindow::on_actionConnect_to_PostGIS_triggered()
     LIPPostGisConnectionForm* form = new LIPPostGisConnectionForm();
     form->exec();
     GDALDataset* dS = form->returnDataSet();
+    delete form;
     if (dS==nullptr)
         return;
+    auto pgDs = LIPProject::getInstance().getPostGISDataSet();
+    if (pgDs!=nullptr)
+    {
+        for (auto layer: LIPProject::getInstance().getVectorLayers())
+        {
+            if (layer->getDataSet()==pgDs)
+            {
+
+
+                for (int i = 0; i < ui->LayerTree->topLevelItemCount(); i++)
+                {
+                    QTreeWidgetItem *item = ui->LayerTree->topLevelItem(i);
+
+                    // Получаем tooltip текст элемента
+                    QString itemTooltipText = item->toolTip(0);
+
+                    // Проверяем совпадение tooltip текста
+                    if (itemTooltipText == layer->returnFileName())
+                    {
+
+                        QTreeWidgetItem *parent = item->parent();
+                        int index;
+                        if (parent) {
+                            index = parent->indexOfChild(item);
+                            delete parent->takeChild(index);
+                        }
+                        else {
+                            index = ui->LayerTree->indexOfTopLevelItem(item);
+                            ui->LayerTree->takeTopLevelItem(index);
+                        }
+
+                        LIPProject::getInstance().deleteVectorByPath(layer->returnFileName());
+                        break;
+                    }
+                }
+
+
+            }
+        }
+    }
+    GDALClose(pgDs);
     LIPProject::getInstance().setActivePostGISConnection(dS);
     QVector<OGRLayer*> vect = LIPVectorReader::readLayersFromDataset(dS);
+    ui->DBLayerTree->clear();
     for (int i=0; i<vect.count(); i++)
     {
 
@@ -2292,7 +2335,7 @@ void MainWindow::on_pushButtonDeleteLayer_clicked()
                 else
                 {
                     index = ui->LayerTree->indexOfTopLevelItem(clickedItem);
-                    delete ui->LayerTree->takeTopLevelItem(index);
+                    ui->LayerTree->takeTopLevelItem(index);
                 }
                 //delete clickedItem;
             }
@@ -2319,7 +2362,7 @@ void MainWindow::on_pushButtonDeleteLayer_clicked()
                 else
                 {
                     index = ui->LayerTree->indexOfTopLevelItem(clickedItem);
-                    delete ui->LayerTree->takeTopLevelItem(index);
+                    ui->LayerTree->takeTopLevelItem(index);
                 }
                 //delete clickedItem;
             }

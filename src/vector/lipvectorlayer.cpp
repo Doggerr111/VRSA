@@ -60,9 +60,12 @@ LIPVectorLayer::~LIPVectorLayer()
         //delete mStyle;
         //mStyle=nullptr;
         //dS=nullptr;
+    if (dS!=LIPProject::getInstance().getPostGISDataSet())
+    {
         GDALClose(dS);
         dS=nullptr;
         layer=nullptr;
+    }
 
 }
 
