@@ -33,14 +33,14 @@ std::vector<std::vector<int>> voronoiDecomposition(const std::vector<Point>& poi
     std::vector<Edge> edges; // Список ребер
 
     // Создание полигона вокруг каждой точки
-    for (int i = 0; i < points.size(); i++) {
+    for (std::size_t i = 0; i < points.size(); i++) {
         std::vector<int> polygon;
 
         // Добавление точек полигона
         polygon.push_back(i);
 
         // Добавление ребер полигона
-        for (int j = 0; j < points.size(); j++) {
+        for (std::size_t j = 0; j < points.size(); j++) {
             if (j != i) {
                 Edge edge;
                 edge.start = i;
@@ -63,10 +63,10 @@ std::vector<std::vector<int>> voronoiDecomposition(const std::vector<Point>& poi
     });
 
     // Объединение ребер для построения полигонов
-    for (int i = 0; i < edges.size(); i++) {
+    for (std::size_t i = 0; i < edges.size(); i++) {
         Edge& edge = edges[i];
 
-        for (int j = i + 1; j < edges.size(); j++) {
+        for (std::size_t j = i + 1; j < edges.size(); j++) {
             if (edge.end == edges[j].start) {
                 edge.end = edges[j].end;
                 edges.erase(edges.begin() + j);

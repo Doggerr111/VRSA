@@ -47,9 +47,9 @@ void LIPNewLineLayerForm::on_pushButton_ok_clicked()
     //создание слоя
 
     QString name = ui->lineEdit_Name->text(); //toDO proverka na dlinu
-    LIPCoordinateSystemLibrary lib;
+    LIPCoordinateSystemLibrary *lib = LIPProject::getInstance().getCRSLibrary();
     LIPLayerCreator *newLayer = new LIPLayerCreator(geometryType, fileName, name,
-                                                    lib.getCRSbyName(ui->comboBox->currentText()));
+                                                    lib->getCRSbyName(ui->comboBox->currentText()));
     //newLayer->setName(name);
     for (int i=0; i<ui->tableWidget->rowCount(); i++)
     {

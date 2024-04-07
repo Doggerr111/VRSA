@@ -73,11 +73,6 @@ public:
 private slots:
     void layerTreeDataChanged(QTreeWidgetItem *item, int column);
     void onItemChanged(QTreeWidgetItem* item, int column);
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_pushButton_3_clicked();
 
     void scenePos(QPointF p);
 
@@ -90,12 +85,10 @@ private slots:
     //void showContextMenu(QPoint p);
 
 
-    void test(QPointF p);
+    //void test(QPointF p);
     //void on_treeView_clicked(const QModelIndex &index);
 
-    void on_pushButton_GeoTiff_clicked();
 
-    void on_pushButton_4_clicked();
 
     void on_actionNew_point_layer_triggered();
 
@@ -115,19 +108,11 @@ private slots:
 
     void on_actionConnect_to_PostGIS_triggered();
 
-    void on_pushButtonTriangulationTest_clicked();
-
-    void on_pushButton_7_clicked();
-
-    void on_pushButtonVoronoiTest_clicked();
-
-    void on_pushButtonRenderTest_clicked();
-
     void on_pushButtonTestRep_clicked();
 
     void on_pushButton_14_clicked();
 
-    void on_pushButton_geosTest_clicked();
+
 
     void on_actionGeosTriangulation_triggered();
 

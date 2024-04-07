@@ -11,6 +11,12 @@ LIPCircle::LIPCircle(QPointF center, double radis)
 
 }
 
+LIPCircle::LIPCircle(const LIPCircle &circle)
+{
+    center=circle.center;
+    rad=circle.rad;
+}
+
 LIPCircle &LIPCircle::operator=(const LIPCircle &right)
 {
     center = right.center;

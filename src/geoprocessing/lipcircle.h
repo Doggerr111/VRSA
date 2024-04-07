@@ -7,6 +7,7 @@ class LIPCircle
 public:
     LIPCircle();
     LIPCircle(QPointF center, double radis);
+    LIPCircle(const LIPCircle &circle);
     LIPCircle &operator=(const LIPCircle &right);
 
     QPointF getCenter() {return center;}

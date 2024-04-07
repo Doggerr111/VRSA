@@ -605,20 +605,6 @@ border-radius: 14px;
             </column>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_3">
-            <property name="text">
-             <string>load shp</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_GeoTiff">
-            <property name="text">
-             <string>GeoTIFF</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -803,13 +789,6 @@ border-radius: 14px;
             </column>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_geosTest">
-            <property name="text">
-             <string>geos tr test</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -871,36 +850,7 @@ background-color: rgb(68,68,68)
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QPushButton" name="pushButton_7">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonTriangulationTest">
-            <property name="text">
-             <string>triangulationTest</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonVoronoiTest">
-            <property name="text">
-             <string>voronoiTest</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonRenderTest">
-            <property name="text">
-             <string>render TEst</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_7"/>
         </widget>
        </item>
        <item alignment="Qt::AlignLeft">
@@ -968,41 +918,7 @@ background-color: rgb(68,68,68)
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <item>
-           <widget class="QComboBox" name="comboBox">
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(135, 134, 131)</string>
-            </property>
-            <item>
-             <property name="text">
-              <string>EPSG:4326</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string>write</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_4">
-            <property name="text">
-             <string>create shp test</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>read</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_11"/>
         </widget>
        </item>
       </layout>

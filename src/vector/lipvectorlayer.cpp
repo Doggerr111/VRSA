@@ -33,7 +33,7 @@ LIPVectorLayer::LIPVectorLayer(OGRLayer *l, QString path, GDALDataset *dataset)
 
 QString LIPVectorLayer::returnGISName()
 {
-
+    return QString();
 }
 
 QString LIPVectorLayer::returnFileName()
@@ -43,23 +43,6 @@ QString LIPVectorLayer::returnFileName()
 
 LIPVectorLayer::~LIPVectorLayer()
 {
-    //mStyle=nullptr;
-//    delete mStyle;
-//    //dS=nullptr;
-//    delete dS;
-//    delete layer;
-    //layer=nullptr;
-    //qDebug()<<(dS->GetLayerCount());
-//    if (!LIPProject::getInstance().isDatasetInUse(dS))
-
-
-    //layer=nullptr;
-
-
-
-        //delete mStyle;
-        //mStyle=nullptr;
-        //dS=nullptr;
     if (dS!=LIPProject::getInstance().getPostGISDataSet())
     {
         GDALClose(dS);
@@ -71,7 +54,8 @@ LIPVectorLayer::~LIPVectorLayer()
 
 void LIPVectorLayer::addFeature(QVector<QPointF> coords, QVector<LIPAttribute> attrs)
 {
-
+    Q_UNUSED(coords);
+    Q_UNUSED(attrs);
 }
 
 void LIPVectorLayer::setVisible(bool)

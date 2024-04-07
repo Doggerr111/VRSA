@@ -33,12 +33,14 @@ LIPSettingsForm::LIPSettingsForm(QWidget *parent) :
         {
             ui->lineEditVectorDir->setText(LIPProject::getInstance().getVectorDataFolder());
             ui->lineEditRasterDir->setText(LIPProject::getInstance().getRasterDataFolder());
+            break;
         }
         case 2:
         {
             ui->pushButtonColor->setStyleSheet("background-color:" + LIPProject::getInstance().getMapCanvasColor().name() + ";"
                                                " border:none;");
             ui->checkBoxAntiAliasing->setChecked(LIPProject::getInstance().isAntiAliasingOn());
+            break;
         }
     }
 
@@ -63,17 +65,20 @@ void LIPSettingsForm::on_tabWidget_currentChanged(int index)
         case 0:
         {
             setActionsTable();
+            break;
         }
         case 1:
         {
             ui->lineEditVectorDir->setText(LIPProject::getInstance().getVectorDataFolder());
             ui->lineEditRasterDir->setText(LIPProject::getInstance().getRasterDataFolder());
+            break;
         }
         case 2:
         {
             ui->pushButtonColor->setStyleSheet("background-color:" + LIPProject::getInstance().getMapCanvasColor().name() + ";"
                                                " border:none;");
             ui->checkBoxAntiAliasing->setChecked(LIPProject::getInstance().isAntiAliasingOn());
+            break;
         }
     }
 

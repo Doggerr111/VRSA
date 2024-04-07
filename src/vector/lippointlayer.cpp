@@ -96,6 +96,7 @@ bool LIPPointLayer::reproject(LIPCoordinateSystem *sourceCRS, LIPCoordinateSyste
 {
     Q_UNUSED(sourceCRS);
     Q_UNUSED(targetCRS);
+    return true;
 }
 
 bool LIPPointLayer::reproject(LIPCoordinateSystem *targetCRS, QString fileName)

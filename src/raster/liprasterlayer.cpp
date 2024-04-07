@@ -143,7 +143,9 @@ QImage LIPRasterLayer::mergeBands()
     for (auto band: mBands)
     {
          unsigned char* bandData = new unsigned char[numPixels];
-         band->RasterIO(GF_Read, 0, 0, width, height, bandData, width, height, GDT_Byte, 0, 0);
+         auto error = band->RasterIO(GF_Read, 0, 0, width, height, bandData, width, height, GDT_Byte, 0, 0);
+         if (error!=CPLE_None)
+             qDebug()<<"ошибка чтения канала";
 
     }
     QImage mergedImage(width, height, QImage::Format_RGB888);

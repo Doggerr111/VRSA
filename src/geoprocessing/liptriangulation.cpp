@@ -135,7 +135,6 @@ void LIPTriangulation::setDelegate(void *d)
 QVector<QPointF> triangulate(LIPPointLayer *layer)
 {
     LIPTriangulation tr;
-    QRectF bBox=layer->getBoundingBox();
     QVector<QPointF> points;
     for (QPointF* pointer : layer->returnCords()) {
             if (pointer) {
@@ -196,7 +195,6 @@ QVector<QPair<LIPCircle, LIPCircle>> pairVec;
 QPair<QVector<LIPEdge>, QVector<LIPTriangle>> generateVoronoiDiagramm(LIPPointLayer *layer)
 {
     LIPTriangulation tr;
-    QRectF bBox=layer->getBoundingBox();
     QVector<QPointF> points;
     for (QPointF* pointer : layer->returnCords()) {
             if (pointer) {

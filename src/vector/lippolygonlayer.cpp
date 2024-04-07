@@ -11,12 +11,6 @@ LIPPolygonLayer::LIPPolygonLayer(OGRLayer *l, QString name, QString path, GDALDa
     mStyle=LIPVectorStyle::createDefaultVectorStyle(LIPGeometryType::LIPPolygon);
     LIPWidgetManager::getInstance().getMainWindow()->addLayer(this);
 
-    qDebug()<<"LAYER CRS IS:";
-    char *pszWKT = NULL;
-    //    qDebug()<<l->GetSpatialRef()->exportToWkt(&pszWKT);
-    //    qDebug()<<pszWKT;
-    //    qDebug()<<l->GetSpatialRef()->GetAuthorityCode(nullptr);//jijlk
-
 }
 
 LIPPolygonLayer::~LIPPolygonLayer()
