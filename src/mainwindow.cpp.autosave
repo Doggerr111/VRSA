@@ -2097,6 +2097,7 @@ void MainWindow::on_action_triggered()
 
 void MainWindow::on_crsComboBox_currentIndexChanged(int index)
 {
+    Q_UNUSED(in)
     LIPCoordinateSystemLibrary *lib = LIPProject::getInstance().getCRSLibrary();
     LIPProject::getInstance().setProjectCRS(
                 lib->getCRSbyName(ui->crsComboBox->currentText()));

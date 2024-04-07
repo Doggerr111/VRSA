@@ -142,10 +142,10 @@ INCLUDEPATH += ../tests/
 INCLUDEPATH += /usr/include/gdal
 INCLUDEPATH += /usr/include/geos
 INCLUDEPATH += customWidgets/
-LIBS += /usr/lib/libgdal.so
+LIBS += /usr/lib/libgdal.so.30
 #LIBS += /lib/x86_64-linux-gnu/libgeos.so
 #LIBS += /lib/x86_64-linux-gnu/libgeos.so.3.10.2
-LIBS += /home/doger/Documents/geosBuildgit/build/lib/libgeos.so
+#LIBS += /home/doger/Documents/geosBuildgit/build/lib/libgeos.so
 LIBS += /home/doger/Documents/geosBuildgit/build/lib/libgeos.so.3.13.0
 #SUBDIRS += tests/ \
  #   tests

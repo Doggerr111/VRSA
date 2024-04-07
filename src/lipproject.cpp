@@ -394,6 +394,13 @@ bool LIPProject::isSelectingFeatures()
     return mIsSelectingFeatures;
 }
 
+LIPCoordinateSystemLibrary *LIPProject::getCRSLibrary()
+{
+    if (mCRSLib==nullptr)
+        mCRSLib=new LIPCoordinateSystemLibrary;
+    return mCRSLib;
+}
+
 
 
 

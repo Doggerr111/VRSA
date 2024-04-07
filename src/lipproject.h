@@ -2,7 +2,7 @@
 #define LIPPROJECT_H
 #include <QObject>
 #include "vector/lipvectorlayer.h"
-#include "lipcoordinatesystem.h"
+#include "lipcoordinatesystemlibrary.h"
 #include "liprasterlayer.h"
 #include <QFile>
 #include <QAction>
@@ -89,6 +89,9 @@ public:
     void setSelectFeatureFlag(bool fl);
     bool isSelectingFeatures();
 
+    //crs
+    LIPCoordinateSystemLibrary *getCRSLibrary();
+
 public slots:
     void redrawNeeded(double);
 
@@ -103,12 +106,14 @@ private:
     QVector<LIPCoordinateSystem*> CRSystems;
     GDALDataset* mActivePostGISConnection;
     LIPCoordinateSystem* mProjectCRS;
+    LIPCoordinateSystemLibrary* mCRSLib=nullptr;
     guiSettings mGUISettings;
     QString mVectorFolder;
     QString mRasterFolder;
     QColor mMapCanvasColor = Qt::white;
     bool mAntiAliasingFlag = false;
     bool mIsSelectingFeatures = false;
+
 
 
 private:

@@ -7,6 +7,7 @@ class LIPCoordinateSystemLibrary
 public:
     LIPCoordinateSystemLibrary();
     QVector<LIPCoordinateSystem*> getCRSLib();
+    //LIPCoordinateSystem* getCRSbyName(QString CRSName);
     LIPCoordinateSystem* getCRSbyName(QString CRSName);
 private:
     QVector<LIPCoordinateSystem*> mCRSLib;
