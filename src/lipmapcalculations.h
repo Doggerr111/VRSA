@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QScreen>
+#include "lipproject.h"
 
 class LIPMapCalculations : public QObject
 {
