@@ -17,6 +17,27 @@ void LIPMapCalculations::setDpi( double dpi )
     mDpi = dpi;
 }
 
+double LIPMapCalculations::calculateScaleFactor(double scale, const QRectF &mapExtent, double canvasWidth)
+{
+
+    if (scale<=0.0)
+        return 1;
+    double conversionFactor = 1/0.0254;
+    if (LIPProject::getInstance().getProjectCRS()->getOGRSpatialRef()->IsGeographic()) //если географическая ск вычисляем дистанцию по формуле Хаверсина
+        conversionFactor = 39.3700787;
+
+    //получаем расстояние в метрах от левого края холста карты до правого при заданном масштабе
+    const double distance = scale * (canvasWidth / mDpi) / conversionFactor;
+    if (distance<=0.0)
+        return 1;
+    double currentDist = calculateGeographicDistance(mapExtent); //вычисляем расстояние для текущего экстента
+    double scaleFactor = currentDist/distance; //коээфицент масштаба
+    qDebug()<<QString::number(currentDist/distance,'f',2);
+    if (scaleFactor<=DBL_MAX)
+        return scaleFactor;
+    return 1;
+}
+
 
 double LIPMapCalculations::calculate( const QRectF &mapExtent, double canvasWidth )  const
 {
@@ -41,7 +62,7 @@ void LIPMapCalculations::calculateMetrics( const QRectF &mapExtent, double &delt
     }
     else //для ПСК в метрах
     {
-        conversionFactor=1.0;
+        conversionFactor=1/0.0254;
     }
     //todo добавить км,
 

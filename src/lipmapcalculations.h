@@ -5,29 +5,22 @@
 #include <QApplication>
 #include <QScreen>
 #include "lipproject.h"
-
+#include <cfloat>
 class LIPMapCalculations : public QObject
 {
     Q_OBJECT
 public:
     explicit LIPMapCalculations(QObject *parent = nullptr);
 public:
-
   void setDpi( double dpi );
-
   double dpi() const;
-
-
-
+  double calculateScaleFactor(double scale, const QRectF &mapExtent, double canvasWidth);
   /**
    * mapExtent - видимая область графической сцены
    * canvasWidth - ширина виджета LIPMapHolder в пикселях
    */
   double calculate( const QRectF &mapExtent, double canvasWidth ) const;
-
-
-  /**
-   * mapExtent видимая область графической сцены
+  /** mapExtent видимая область графической сцены
    */
   double calculateGeographicDistance( const QRectF &mapExtent ) const;
 
