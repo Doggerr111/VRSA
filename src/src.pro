@@ -5,6 +5,7 @@ include(treeView/treeView.pri)
 include(geoprocessing/geoprocessing.pri)
 include(raster/raster.pri)
 include(../tests/test.pri)
+include(network/network.pri)
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 
@@ -138,6 +139,7 @@ INCLUDEPATH += geoprocessing/
 INCLUDEPATH += vector/
 INCLUDEPATH += raster/
 INCLUDEPATH += ../tests/
+INCLUDEPATH += network/
 
 INCLUDEPATH += /usr/include/gdal
 INCLUDEPATH += /usr/include/geos

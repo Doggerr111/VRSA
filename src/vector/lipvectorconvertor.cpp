@@ -5,7 +5,7 @@ LIPVectorConvertor::LIPVectorConvertor()
 
 }
 
-geos::geom::Point LIPVectorConvertor::QPointFtoGeosPoint(QPointF qtPoint)
+std::unique_ptr<geos::geom::Point> LIPVectorConvertor::QPointFtoGeosPoint(QPointF qtPoint)
 {
     using namespace geos::geom;
     geos::geom::Coordinate coordinate;
@@ -14,7 +14,7 @@ geos::geom::Point LIPVectorConvertor::QPointFtoGeosPoint(QPointF qtPoint)
     //geos::geom::Point geoPoint(coordinate,);
 
     GeometryFactory::Ptr factory = GeometryFactory::create();
-    factory->createPoint(coordinate);
+    return factory->createPoint(coordinate);
     //geos::geom::Point* point = new geos::geom::Point(coordinate);
 
     ///
@@ -72,7 +72,7 @@ GeometryFactory LIPVectorConvertor::buildPolygonFromCoordinateSeq(CoordinateSequ
     auto poly = factory->createPolygon(seq.getSize());
 
 
-
+    //return factory;
     // geos::operation::intersection::RectangleIntersection inter(factory->toGeometry(), f);
 }
 
@@ -117,6 +117,8 @@ std::unique_ptr<geos::geom::Geometry> LIPVectorConvertor::getGeosGeometryFromCoo
             wktFormat.append(")");
             break;
         }
+        default:
+            break;
     }
     //auto interResult = reader.read(wktFormat.toStdString())->intersection(reader.read(wktFormat.toStdString()).get());
     return reader.read(wktFormat.toStdString());

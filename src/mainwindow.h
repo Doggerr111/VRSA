@@ -54,6 +54,7 @@
 #include "lipreprojectrasterlayerform.h"
 #include "liprastercontoursform.h"
 #include "lipsettingsform.h"
+#include "lipxyzconnection.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -75,6 +76,8 @@ private slots:
     void onItemChanged(QTreeWidgetItem* item, int column);
 
     void scenePos(QPointF p);
+    void centerScene();
+    void applyScale();
 
     void recalculateScale();
 
@@ -160,11 +163,14 @@ private slots:
 
     void on_pushButtonZoomToLayer_clicked();
 
+    void on_pushButton_clicked();
+
 signals:
     void start_add();
     void newVectorLayer(LIPVectorLayer*);
     void zoomed();
     void scaleFactorChanged(double);
+    void tileLoadNeeded(int, QRectF);
 public slots:
     void redrawNeeded(double);
     void showLayerContextMenu(const QPoint&);

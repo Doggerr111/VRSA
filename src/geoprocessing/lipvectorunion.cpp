@@ -120,4 +120,5 @@ QVector<QVector<QPointF> > LIPVectorUnion::getUnion(LIPVectorLayer *inputLayer, 
 
 
     }
+    return QVector<QVector<QPointF>>();
 }

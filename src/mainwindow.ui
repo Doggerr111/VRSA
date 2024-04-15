@@ -605,6 +605,13 @@ border-radius: 14px;
             </column>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>тайлы</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -869,12 +876,18 @@ background-color: rgb(68,68,68)
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item alignment="Qt::AlignHCenter">
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="lineEditCoordinates">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(135, 134, 131)</string>
@@ -882,7 +895,7 @@ background-color: rgb(68,68,68)
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="lineEditScale">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -894,14 +907,20 @@ background-color: rgb(68,68,68)
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="LIPCRSComboBox" name="crsComboBox">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(135, 134, 131)</string>
+            </property>
+           </widget>
+          </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="LIPCRSComboBox" name="crsComboBox">
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(135, 134, 131)</string>
-         </property>
         </widget>
        </item>
        <item>

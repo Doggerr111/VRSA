@@ -31,7 +31,7 @@ class LIPVectorConvertor
 {
 public:
     LIPVectorConvertor();
-    static geos::geom::Point QPointFtoGeosPoint(QPointF qtPoint);
+    static std::unique_ptr<Point> QPointFtoGeosPoint(QPointF qtPoint);
     static geos::geom::CoordinateSequence LIPPointsToGeosCoordinateSequence(QVector<LIPPoint*> lipPoints);
     static QVector<LIPPoint*> QPointsFtoLIPPoints(QVector<QPointF> qtPoints);
 

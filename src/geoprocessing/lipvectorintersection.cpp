@@ -118,6 +118,7 @@ QVector<QVector<QPointF>> LIPVectorIntersection::getIntersection(LIPVectorLayer 
 
 
     }
+    return QVector<QVector<QPointF>>();
 }
 
 
