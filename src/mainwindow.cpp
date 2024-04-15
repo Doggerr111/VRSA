@@ -33,8 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->DBLayerTree, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(showDBLayerContextMenu(const QPoint&)));
     connect(ui->LayerTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(onItemChanged(QTreeWidgetItem*, int)));
+    connect(ui->lineEditCoordinates, &QLineEdit::returnPressed, this, &MainWindow::centerScene);
+    connect(ui->lineEditScale, &QLineEdit::returnPressed, this, &MainWindow::applyScale);
     sceneInitialization();
-
+    recalculateScale();
 
     ui->right_menu_frame->setAlignment(Qt::AlignRight);
     ui->left_menu_frame->setAlignment(Qt::AlignLeft);
@@ -51,9 +53,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->LayerTree->setDragDropMode(QAbstractItemView::DragDrop);
     ui->LayerTree->setDropIndicatorShown(true);
 
-
     LIPWidgetManager::getInstance().setMainWindow(this);
     //LIPWidgetManager::getInstance().showMessage("Был успешно открыт новый проект", 2000, messageStatus::Success);
+
+    //LIPXYZConnection* con = new LIPXYZConnection;
 
 
 }
@@ -95,10 +98,6 @@ void MainWindow::sceneInitialization()
 
     ui->graphicsView->setSceneRect(xMin, yMax, width, -2*height);
     //ui->graphicsView->setFixedWidth(100);
-
-
-
-    //ui->graphicsView->setRenderHints(QPainter::Antialiasing);
 
 }
 
@@ -312,8 +311,9 @@ void MainWindow::showLayerContextMenu(const QPoint &f)
         {
             form->setLayer(selectedLayer);
             form->exec();
-            delete form;
+
         }
+        delete form;
 
 
     });
@@ -409,16 +409,45 @@ void MainWindow::deleteVector(LIPVectorLayer *layer, QTreeWidgetItem *item)
 
 
 
-void MainWindow::scenePos(QPointF p)
+void MainWindow::scenePos(QPointF p) //получение координат мыши на сцене
 {
-    QString xCoord = QString::number(p.x(), 'f', 2); // Форматируем координату x с двумя знаками после запятой
-    QString yCoord = QString::number(p.y(), 'f', 2); // Форматируем координату y с двумя знаками после запятой
+    if (LIPProject::getInstance().getProjectCRS()->getOGRSpatialRef()->IsGeographic())
+    {
+        QString xCoord = QString::number(p.x(), 'f', 5); // Форматируем координату x с двумя знаками после запятой
+        QString yCoord = QString::number(p.y(), 'f', 5); // Форматируем координату y с двумя знаками после запятой
+        QString coords = QString("%1  %2").arg(xCoord, yCoord); // Соединяем координаты в одну строку с пробелом между ними
+        ui->lineEditCoordinates->setText(coords);
+    }
+    else
+    {
+        QString xCoord = QString::number(p.x(), 'f', 2);
+        QString yCoord = QString::number(p.y(), 'f', 2);
+        QString coords = QString("%1  %2").arg(xCoord, yCoord);
+        ui->lineEditCoordinates->setText(coords);
+    }
 
-    QString coords = QString("%1  %2").arg(xCoord, yCoord); // Соединяем координаты в одну строку с пробелом между ними
 
-    ui->lineEdit->setText(coords);
     //ui->lineEdit->setText(QString::number(p.x()) + " "+QString::number(p.y()));
     //ui->graphicsView->centerOn(p);
+}
+
+void MainWindow::centerScene() //срабатывает при изменении координат мыши сцены пользователем
+{
+    QStringList coords = ui->lineEditCoordinates->text().split(" ");
+    ui->graphicsView->centerOn(QPointF(coords.at(0).toDouble(), coords.at(1).toDouble()));
+}
+
+void MainWindow::applyScale()
+{
+    LIPMapCalculations *calculator = new LIPMapCalculations();
+    calculator->setDpi(QGuiApplication::primaryScreen()->logicalDotsPerInch());
+    int scale = ui->lineEditScale->text().toInt();
+    QRectF visibleRect = ui->graphicsView->mapToScene(ui->graphicsView->viewport()->rect()).boundingRect();
+    double scaleFactor = calculator->calculateScaleFactor(scale, visibleRect, ui->graphicsView->width());
+    ui->graphicsView->scale(scaleFactor, scaleFactor);
+    ui->graphicsView->centerOn(visibleRect.center());
+    emit scaleFactorChanged(ui->graphicsView->transform().m11()); //для обновления граф. элементов сцены
+    delete calculator;
 }
 
 void MainWindow::recalculateScale()
@@ -436,7 +465,7 @@ void MainWindow::recalculateScale()
     //    qDebug()<<"map scale is "+ QString::number(scale);
     //    delete calculator;
 
-    //TODO !!!change to QRectF!!!
+
     LIPMapCalculations *calculator = new LIPMapCalculations();
     calculator->setDpi(QGuiApplication::primaryScreen()->logicalDotsPerInch());
     QMatrix const matrix = ui->graphicsView->matrix().inverted();
@@ -452,8 +481,11 @@ void MainWindow::recalculateScale()
     qDebug()<<ui->graphicsView->width();
     double scale = calculator->calculate(visibleRect1, ui->graphicsView->width());
     //scale=calculator->calculate(scene.)
-    ui->lineEdit_2->setText(QString::number(static_cast<int>(scale)));
+    ui->lineEditScale->setText(QString::number(static_cast<int>(scale)));
     qDebug()<<"map scale is "+ QString::number(scale);
+    qDebug()<< visibleRect;
+    emit tileLoadNeeded(scale, visibleRect);
+
     delete calculator;
 }
 
@@ -1110,6 +1142,7 @@ void MainWindow::on_actionRenderMap_triggered()
     pixMap.save(fileName, "PNG");
     ui->graphicsView->setRenderHints(oldHints);
     //qDebug()<<ui->graphicsView->renderHints();
+
 }
 
 
@@ -1139,6 +1172,7 @@ void MainWindow::on_crsComboBox_currentIndexChanged(int index)
     LIPCoordinateSystemLibrary *lib = LIPProject::getInstance().getCRSLibrary();
     LIPProject::getInstance().setProjectCRS(
                 lib->getCRSbyName(ui->crsComboBox->currentText()));
+    recalculateScale();
 }
 
 
@@ -1344,6 +1378,7 @@ void MainWindow::on_pushButtonZoomToLayer_clicked()
         ui->graphicsView->fitInView(targetRect, Qt::KeepAspectRatio);
         ui->graphicsView->centerOn(targetRect.center());
         emit scaleFactorChanged(ui->graphicsView->transform().m11());
+        recalculateScale();
         //ui->graphicsView->zoomToRect(selectedLayer->getBoundingBox());
     }
     else
@@ -1355,8 +1390,17 @@ void MainWindow::on_pushButtonZoomToLayer_clicked()
         ui->graphicsView->fitInView(targetRect, Qt::KeepAspectRatio);
         ui->graphicsView->centerOn(targetRect.center());
         emit scaleFactorChanged(ui->graphicsView->transform().m11());
+        recalculateScale();
 
     }
+
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    LIPXYZConnection *connection = new LIPXYZConnection;
+    connect(this, &MainWindow::tileLoadNeeded, connection, &LIPXYZConnection::onViewportChanged);
 
 }
 
