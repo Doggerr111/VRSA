@@ -3,6 +3,7 @@
 #include <QGraphicsPixmapItem>
 #include <math.h>
 #include <lipwidgetmanager.h>
+#include <ogr_spatialref.h>
 
 class LIPTile
 {

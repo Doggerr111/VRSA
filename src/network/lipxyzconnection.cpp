@@ -24,12 +24,40 @@ LIPXYZConnection::LIPXYZConnection()
     scales = { 500, 1000, 2000, 4000, 8000, 15000, 35000, 70000, 150000, 250000, 500000, 1000000, 2000000,
                                      4000000, 10000000, 15000000, 35000000, 70000000, 150000000, 250000000, 500000000 };
 
-    QString request  = "https://tile.memomaps.de/tilegen/";
-    request.append(QString::number(13) + "/");
-    request.append(QString::number(5434) + "/");
-    request.append(QString::number(2362) + ".png");
+    //    QString request  = "https://tile.memomaps.de/tilegen/";
+    //    request.append(QString::number(13) + "/");
+    //    request.append(QString::number(5434) + "/");
+    //    request.append(QString::number(2362) + ".png");
 
-    loadTile(request, 0, 0);
+    //    loadTile(request, 0, 0);
+
+    //    QString request1  = "https://tile.memomaps.de/tilegen/";
+    //    request1.append(QString::number(1) + "/");
+    //    request1.append(QString::number(1) + "/");
+    //    request1.append(QString::number(1) + ".png");
+
+    //    loadTile(request1, 0, 0);
+
+    //    QString request2  = "https://tile.memomaps.de/tilegen/";
+    //    request2.append(QString::number(1) + "/");
+    //    request2.append(QString::number(0) + "/");
+    //    request2.append(QString::number(1) + ".png");
+
+    //    loadTile(request2, 0, 0);
+
+    //    QString request3  = "https://tile.memomaps.de/tilegen/";
+    //    request3.append(QString::number(1) + "/");
+    //    request3.append(QString::number(0) + "/");
+    //    request3.append(QString::number(0) + ".png");
+
+    //    loadTile(request3, 0, 0);
+
+    QString request4  = "https://tile.memomaps.de/tilegen/";
+    request4.append(QString::number(1) + "/");
+    request4.append(QString::number(1) + "/");
+    request4.append(QString::number(0) + ".png");
+
+    loadTile(request4, 0, 0);
 }
 
 void LIPXYZConnection::test()
@@ -40,7 +68,9 @@ void LIPXYZConnection::test()
 void LIPXYZConnection::loadTile(const QString& url, qreal x, qreal y)
 {
     QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", "Mozilla/5.0");
     mNetworkManager->get(request);
+
 }
 
 void LIPXYZConnection::onReplyFinished(QNetworkReply* reply)
@@ -99,52 +129,9 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
         else
             break;
     }
+    mNetworkManager->clearAccessCache();
 
 
-//    if (scale >= 500000000)
-//            zoomLevel = 0;
-//        else if (scale >= 250000000)
-//            zoomLevel = 1;
-//        else if (scale >= 150000000)
-//            zoomLevel = 2;
-//        else if (scale >= 70000000)
-//            zoomLevel = 3;
-//        else if (scale >= 35000000)
-//            zoomLevel = 4;
-//        else if (scale >= 15000000)
-//            zoomLevel = 5;
-//        else if (scale >= 10000000)
-//            zoomLevel = 6;
-//        else if (scale >= 4000000)
-//            zoomLevel = 7;
-//        else if (scale >= 2000000)
-//            zoomLevel = 8;
-//        else if (scale >= 1000000)
-//            zoomLevel = 9;
-//        else if (scale >= 500000)
-//            zoomLevel = 10;
-//        else if (scale >= 250000)
-//            zoomLevel = 11;
-//        else if (scale >= 150000)
-//            zoomLevel = 12;
-//        else if (scale >= 70000)
-//            zoomLevel = 13;
-//        else if (scale >= 35000)
-//            zoomLevel = 14;
-//        else if (scale >= 15000)
-//            zoomLevel = 15;
-//        else if (scale >= 8000)
-//            zoomLevel = 16;
-//        else if (scale >= 4000)
-//            zoomLevel = 17;
-//        else if (scale >= 2000)
-//            zoomLevel = 18;
-//        else if (scale >= 1000)
-//            zoomLevel = 19;
-//        else if (scale >= 500)
-//            zoomLevel = 20;
-
-    //zoomLevel = 20 - zoomLevel;
     double topLat;
     double leftLon;
     double bottomLat;
@@ -152,7 +139,7 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
     visibleRect.getRect(&topLat, &leftLon, &bottomLat, &rightLon);
     bottomLat = topLat + bottomLat;
     rightLon = leftLon - rightLon;
-    qDebug()<<topLat <<leftLon<<bottomLat<<rightLon;
+   // qDebug()<<topLat <<leftLon<<bottomLat<<rightLon;
     QPoint minXY = metersToTile(QPointF(topLat, leftLon));
     QPoint maxXY = metersToTile(QPointF(bottomLat, rightLon));
     for (auto tile: vect)
@@ -170,10 +157,11 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
 
 //            tx, (2**zoom - 1) - ty
             request.append(QString::number(x) + "/");
-            request.append(QString::number((std::pow(2,zoomLevel)-1)-y) + ".png");
+            request.append(QString::number((std::pow(2,zoomLevel) - 1) - y) + ".png");
 
 //            LIPTile *tile = new LIPTile(zoomLevel,x,y);
 //            vect.append(tile);
+
             loadTile(request, 0, 0);
             qDebug()<<request;
         }
