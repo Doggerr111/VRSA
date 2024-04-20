@@ -87,16 +87,16 @@ void MainWindow::sceneInitialization()
     //ui->graphicsView->setAttribute(Qt::WA_NoSystemBackground);
     ui->graphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     // ui->graphicsView->scene()->setSceneRect(-180,90,360,-180);
-    double xMin = -20037508.34; // примерно для -180 градусов
-    double yMax = 20037508.34;  // примерно для 90 градусов
-    double width = 40075016.68; // ширина всей карты в EPSG:3857 координатах
-    double height = 20037508.34; // высота всей карты в EPSG:3857 координатах
+    double xMin = -20037508.34;
+    double yMax = 20037508.34;
+    double width = 40075016.68;
+    double height = 20037508.34;
 
     // Установка сцены в пределах EPSG:3857 координат
     ui->graphicsView->scale(1,-1);
     //ui->graphicsView->scene()->setSceneRect(xMin, yMax, width, height);
 
-    ui->graphicsView->setSceneRect(xMin, yMax, width, -2*height);
+    ui->graphicsView->setSceneRect(xMin*2, 2*yMax, 2*width, -4*height);
     //ui->graphicsView->setFixedWidth(100);
 
 }
