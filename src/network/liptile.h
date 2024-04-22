@@ -12,6 +12,7 @@ public:
     ~LIPTile();
     void setResolution(int sizePixels);
     QRectF calculateBoundsLatLon();
+    void getZoomXY(int &zoomLevel, int &x, int &y);
     double tileXToLongitude(int x, int zoom);
     double tileYToLatitude(int y, int zoom);
     int resolution();
@@ -22,6 +23,7 @@ public:
     QPointF pixelsToMeters(double px, double py);
     QRectF tileBounds();
     QPointF metersToPixels();
+
 private:
     int mX;
     int mY;

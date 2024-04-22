@@ -52,12 +52,12 @@ LIPXYZConnection::LIPXYZConnection()
 
     //    loadTile(request3, 0, 0);
 
-    QString request4  = "https://tile.memomaps.de/tilegen/";
-    request4.append(QString::number(1) + "/");
-    request4.append(QString::number(1) + "/");
-    request4.append(QString::number(0) + ".png");
+//    QString request4  = "https://tile.memomaps.de/tilegen/";
+//    request4.append(QString::number(1) + "/");
+//    request4.append(QString::number(1) + "/");
+//    request4.append(QString::number(0) + ".png");
 
-    loadTile(request4, 0, 0);
+//    loadTile(request4, 0, 0);
 }
 
 void LIPXYZConnection::test()
@@ -121,6 +121,8 @@ void LIPXYZConnection::onReplyFinished(QNetworkReply* reply)
 
 void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
 {
+    int prevZoom = zoomLevel;
+
     //определяем уровень зума
     for (std::size_t i = 0; i < scales.size(); ++i)
     {
@@ -128,6 +130,15 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
             zoomLevel = 20-i;
         else
             break;
+    }
+
+    if (prevZoom!=zoomLevel)
+    {
+        for (auto tile: vect)
+        {
+            delete tile;
+        }
+        vect.clear();
     }
     mNetworkManager->clearAccessCache();
 
@@ -137,35 +148,59 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
     double bottomLat;
     double rightLon;
     visibleRect.getRect(&topLat, &leftLon, &bottomLat, &rightLon);
-    bottomLat = topLat + bottomLat;
-    rightLon = leftLon - rightLon;
-   // qDebug()<<topLat <<leftLon<<bottomLat<<rightLon;
+//    bottomLat = topLat + bottomLat;
+//    rightLon = leftLon - rightLon;
+    qDebug()<<"extent"<<QString::number(topLat,'f',3)<<QString::number(leftLon,'f',3)
+           <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
     QPoint minXY = metersToTile(QPointF(topLat, leftLon));
     QPoint maxXY = metersToTile(QPointF(bottomLat, rightLon));
-    for (auto tile: vect)
-    {
-        delete tile;
-    }
-    vect.clear();
+    if (zoomLevel<2)
+        checkMinMaxXY(minXY,maxXY);
+
     counter=0;
+
+    QVector<LIPTile*> tempVec; //= vect;
+
     for (int x = minXY.x(); x<=maxXY.x(); x++)
     {
         for (int y = maxXY.y(); y<=minXY.y(); y++)
         {
-            QString request  = "https://tile.memomaps.de/tilegen/";
-            request.append(QString::number(zoomLevel) + "/");
+            int tempZ, tempX, tempY;
+            bool flag=true;
+            for (LIPTile* tile: vect)
+            {
+                tile->getZoomXY(tempZ, tempX, tempY);
+                if (tempZ==zoomLevel && tempX == x && tempY == (std::pow(2,zoomLevel) - 1) - y)
+                {
+                    tempVec.append(tile);
+                    flag=false;
+                    break;
+                }
+            }
+            if (flag)
+            {
+                QString request  = "https://tile.memomaps.de/tilegen/";
+                request.append(QString::number(zoomLevel) + "/");
+                request.append(QString::number(x) + "/");
+                request.append(QString::number((std::pow(2,zoomLevel) - 1) - y) + ".png");
+                loadTile(request, 0, 0);
+                qDebug()<<request;
+            }
 
-//            tx, (2**zoom - 1) - ty
-            request.append(QString::number(x) + "/");
-            request.append(QString::number((std::pow(2,zoomLevel) - 1) - y) + ".png");
-
-//            LIPTile *tile = new LIPTile(zoomLevel,x,y);
-//            vect.append(tile);
-
-            loadTile(request, 0, 0);
-            qDebug()<<request;
         }
     }
+
+
+    for (LIPTile* tile: vect)
+    {
+        if (!tempVec.contains(tile))
+        {
+            delete tile;
+            tile=nullptr;
+        }
+    }
+    vect.clear();
+    vect=tempVec;
 
 }
 
@@ -194,6 +229,40 @@ QPoint LIPXYZConnection::metersToTile(QPointF coord)
 //    int x_tile = static_cast<int>((coord.x() + 180.0) / 360.0 * n);
 //    int y_tile = static_cast<int>((1.0 - log(tan(coord.y() * M_PI / 180.0))));
     return QPoint(x3, y3);
+}
+
+bool LIPXYZConnection::setZoomLevel(int zoom)
+{
+    zoomLevel=zoom;
+}
+
+void LIPXYZConnection::checkMinMaxXY(QPoint &minXY, QPoint &maxXY)
+{
+
+    int pow = 1<<zoomLevel;
+    if (minXY.x()<0)
+        minXY.setX(0);
+    if (minXY.y()<0)
+        minXY.setY(0);
+    if (minXY.x()>=pow)
+        minXY.setX(pow-1);
+    if (minXY.y()>=pow)
+        minXY.setY(pow-1);
+
+    if (maxXY.x()<0)
+        maxXY.setX(0);
+    if (maxXY.y()<0)
+        maxXY.setY(0);
+    if (maxXY.x()>=pow)
+        maxXY.setX(pow-1);
+    if (maxXY.y()>=pow)
+        maxXY.setY(pow-1);
+
+//    if (minXY.x()>=(pow))
+//        minXY.setX(pow-1);
+//    if (minXY.y()>=pow)
+//        minXY.setY(pow-1);
+
 }
 
 

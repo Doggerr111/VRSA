@@ -12,14 +12,17 @@ public:
     LIPXYZConnection();
     void test();
     void loadTile(const QString& url, qreal x, qreal y);
+    /** pseudo-merkator to tile pixels */
+    QPoint metersToTile(QPointF coord);
+    bool setZoomLevel(int zoom);
+    void checkMinMaxXY(QPoint &minXY, QPoint &maxXY);
 public slots:
     void onReplyFinished(QNetworkReply *reply);
     void onViewportChanged(int scale, QRectF visibleRect);
 
 
 private:
-    /** pseudo-merkator to tile pixels */
-    QPoint metersToTile(QPointF coord);
+
 
     QNetworkAccessManager* mNetworkManager;
     QVector<LIPTile*> vect;

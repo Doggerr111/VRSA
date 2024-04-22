@@ -33,57 +33,19 @@ QRectF LIPTile::calculateBoundsLatLon()
     sourceSRS.importFromEPSG(4326);
     targetSRS.importFromEPSG(3857);
 
-    // Создание объекта преобразования координат из EPSG 4326 в EPSG 3857
     OGRCoordinateTransformation *poCT = OGRCreateCoordinateTransformation(&sourceSRS, &targetSRS);
-//    poCT->Transform(1,  &bottomLat, &leftLon);
-//    poCT->Transform(1, &topLat, &rightLon);
-    //bottomLat=topLat;
-    //rightLon=leftLon;
     poCT->Transform(1, &topLat, &leftLon);
-    //std::swap(leftLon,topLat);
-    //rightLon = 91.999997;
-    //bottomLat = 1.0;
-    //rightLon=90;
-    //bottomLat=180;
     poCT->Transform(1, &bottomLat, &rightLon);
-    //std::swap(rightLon,bottomLat);
-
-//    OGRSpatialReference sourceSRS, targetSRS;
-//        sourceSRS.importFromEPSG(4326); // WGS 84
-//        targetSRS.importFromEPSG(3857); // EPSG 3857
-
-//        // Создание объекта для преобразования координат
-//        OGRCoordinateTransformation *transform = OGRCreateCoordinateTransformation(&sourceSRS, &targetSRS);
-
-//        if (transform)
-//        {
-//            // Исходные координаты
-//            double x = 179.0;
-//            double y = 89.051128;
-
-//            // Перепроекция координат
-//            transform->Transform(1, &y, &x);
-//            std::swap(x,y);
-//            qDebug()<<QString::number(x, 'f', 3)<<QString::number(y, 'f', 3);
-
-
-
-//        }
-
-
-
-//    qDebug()<<QRectF(topLat,leftLon,bottomLat,rightLon);
-
-//    qDebug()<<QString::number(topLat,'f',3)<<QString::number(leftLon,'f',3)
-//           <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
-
-    //return QRectF(topLat, rightLon, bottomLat, leftLon);
-    //qDebug()<< "test"<<QRectF(leftLon, topLat, rightLon, bottomLat);
-
     qDebug()<<"test"<<QString::number(topLat,'f',3)<<QString::number(leftLon,'f',3)
            <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
     return QRectF(topLat, leftLon, bottomLat, rightLon);
-    //return QRectF(leftLon,bottomLat, rightLon, topLat);
+}
+
+void LIPTile::getZoomXY(int &zoomLevel, int &x, int &y)
+{
+    zoomLevel = mZoomLevel;
+    x = mX;
+    y = mY;
 }
 
 double LIPTile::tileXToLongitude(int x, int zoom)
@@ -109,51 +71,21 @@ void LIPTile::setGraphicsItem(QPixmap pixmap)
         mItem = new QGraphicsPixmapItem;
     mItem->setPixmap(pixmap);
     QRectF bRect = calculateBoundsLatLon();
-    //calculateBoundsLatLon();
     double topLat=bRect.x();
     double leftLon=bRect.y();
     double bottomLat=bRect.width();
-
     double rightLon=bRect.height();
-    //qDebug()<<rightLon;
-    //bRect.getCoords(&topLat, &leftLon, &bottomLat, &rightLon);
-    //qDebug()<< "scaleTest"<<topLat-bottomLat;
-    //qDebug()<< "scaleTest"<<rightLon-leftLon;
-
-
-//    double width = fabs(rightLon- leftLon);
-//    double height = fabs(bottomLat - topLat);
-
-//    double currentWidth = pixmap.width();  // предполагается, что pixmapItem является QGraphicsPixmapItem
-//    double currentHeight = pixmap.height();
-
-//    double scaleX = width / currentWidth;
-//    double scaleY = height / currentHeight;
-
     QRectF pixmapRect = mItem->boundingRect();
-
     qDebug()<<"test"<<QString::number(topLat,'f',3)<<QString::number(leftLon,'f',3)
            <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
-    double scaleX = (bottomLat-topLat) / pixmapRect.width();
-    double scaleY = (bRect.height()-bRect.y()) / pixmapRect.height();
-    qDebug()<<scaleX;
+    double scale = (bottomLat-topLat) / pixmapRect.width();
+    qDebug()<<scale;
     QTransform geoTr;
-    //geoTr.translate(topLat, leftLon);
     mItem->setPos(topLat, leftLon);
-    geoTr.scale(scaleX, -scaleX);
+    geoTr.scale(scale, -scale);
     mItem->setTransform(geoTr);
-
-    //mItem->setScale(qMin(scaleX, scaleY)); // устанавливаем минимальное значение для сохранения соотношения сторон
-
-    // Центрирование pixmapItem в пределах targetRect
-    double xOffset = (bRect.width() - pixmapRect.width() * mItem->scale()) / 2.0;
-    double yOffset = (bRect.height() - pixmapRect.height() * mItem->scale()) / 2.0;
-    //mItem->setPos(bRect.topLeft() + QPointF(xOffset, yOffset));
     LIPWidgetManager::getInstance().getScene()->addItem(mItem);
     //LIPWidgetManager::getInstance().getView()->centerOn(topLat, leftLon);
-
-
-
 }
 
 QGraphicsPixmapItem *LIPTile::getItem()
@@ -166,7 +98,6 @@ QRectF LIPTile::tileLatLonBounds()
     QRectF bounds = tileBounds();
     QPointF min = metersToLatLon(bounds.x(), bounds.y());
     QPointF max = metersToLatLon(bounds.width(), bounds.height());
-
     return ( QRectF(min.x(),min.y(),max.x(), max.y()));
 }
 
@@ -242,55 +173,11 @@ QPointF LIPTile::metersToPixels()
 //    double res = resolution();
 //    mx = px * res - self.originShift
 //    my = py * res - self.originShift
-//    return mx, my
+    //    return mx, my
 }
 
 
 
 
-//def __init__(self, tileSize=256):
-//     "Initialize the TMS Global Mercator pyramid"
-//     self.tileSize = tileSize
-//     self.initialResolution = 2 * math.pi * 6378137 / self.tileSize
-//     # 156543.03392804062 for tileSize 256 pixels
-//     self.originShift = 2 * math.pi * 6378137 / 2.0
-//     # 20037508.342789244
 
-// def MetersToLatLon(self, mx, my ):
-//     "Converts XY point from Spherical Mercator EPSG:900913 to lat/lon in WGS84 Datum"
 
-//     lon = (mx / self.originShift) * 180.0
-//     lat = (my / self.originShift) * 180.0
-
-//     lat = 180 / math.pi * (2 * math.atan( math.exp( lat * math.pi / 180.0)) - math.pi / 2.0)
-//     return lat, lon
-
-// def PixelsToMeters(self, px, py, zoom):
-//     "Converts pixel coordinates in given zoom level of pyramid to EPSG:900913"
-
-//     res = self.Resolution( zoom )
-//     mx = px * res - self.originShift
-//     my = py * res - self.originShift
-//     return mx, my
-
-// def TileBounds(self, tx, ty, zoom):
-//     "Returns bounds of the given tile in EPSG:900913 coordinates"
-
-//     minx, miny = self.PixelsToMeters( tx*self.tileSize, ty*self.tileSize, zoom )
-//     maxx, maxy = self.PixelsToMeters( (tx+1)*self.tileSize, (ty+1)*self.tileSize, zoom )
-//     return ( minx, miny, maxx, maxy )
-
-// def TileLatLonBounds(self, tx, ty, zoom ):
-//     "Returns bounds of the given tile in latutude/longitude using WGS84 datum"
-
-//     bounds = self.TileBounds( tx, ty, zoom)
-//     minLat, minLon = self.MetersToLatLon(bounds[0], bounds[1])
-//     maxLat, maxLon = self.MetersToLatLon(bounds[2], bounds[3])
-
-//     return ( minLat, minLon, maxLat, maxLon )
-
-// def Resolution(self, zoom ):
-//     "Resolution (meters/pixel) for given zoom level (measured at Equator)"
-
-//     # return (2 * math.pi * 6378137) / (self.tileSize * 2**zoom)
-//     return self.initialResolution / (2**zoom)
