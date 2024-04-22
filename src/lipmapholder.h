@@ -6,6 +6,7 @@
 #include <QResizeEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
+#include "lipmapcalculations.h"
 /**
  * \class LIPMapHolder
  * \brief Данный класс служит для отображения сцены-карты
@@ -16,6 +17,8 @@ class LIPMapHolder : public QGraphicsView
 public:
     LIPMapHolder(QObject *parent);
     void zoomToRect(QRectF bRect);
+    int getScale();
+    QRectF getExtent();
 public slots:
     void onAddingFeatures();
     void onStopAddingFeatures();
@@ -29,6 +32,7 @@ private:
 signals:
     void MapHolderResized();
     void MapHolderZoomed(double);
+    void extentChanged();
 
     // QWidget interface
 protected:

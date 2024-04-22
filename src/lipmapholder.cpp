@@ -13,6 +13,43 @@ void LIPMapHolder::zoomToRect(QRectF targetRect)
     Q_UNUSED(targetRect);
 }
 
+int LIPMapHolder::getScale()
+{
+    LIPMapCalculations *calculator = new LIPMapCalculations();
+    calculator->setDpi(QGuiApplication::primaryScreen()->logicalDotsPerInch());
+    QMatrix const matrix = this->matrix().inverted();
+    QRectF visibleRect = matrix.mapRect((viewport()->rect()));
+    visibleRect.moveTopLeft(matrix.map(QPoint(horizontalScrollBar()->value(),
+                                              verticalScrollBar()->value())));
+    QRectF visibleRect1 = mapToScene(viewport()->rect()).boundingRect();
+    double scale = calculator->calculate(visibleRect1, width());
+    delete calculator;
+    return static_cast<int>(scale);
+}
+
+QRectF LIPMapHolder::getExtent()
+{
+    QMatrix const matrix = this->matrix().inverted();
+
+    QRectF visibleRect = matrix.mapRect((viewport()->rect()));
+    visibleRect.moveTopLeft(matrix.map(QPoint(horizontalScrollBar()->value(),
+                                              verticalScrollBar()->value())));
+    qDebug()<<visibleRect;
+    double topLat;
+    double leftLon;
+    double bottomLat;
+    double rightLon;
+    visibleRect.getRect(&topLat, &leftLon, &bottomLat, &rightLon);
+    bottomLat = topLat + bottomLat;
+    rightLon = leftLon - rightLon;
+    visibleRect.setWidth(bottomLat);
+    visibleRect.setHeight(rightLon);
+//    qDebug()<<"extent"<<QString::number(topLat,'f',3)<<QString::number(leftLon,'f',3)
+//           <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
+    qDebug()<<visibleRect;
+    return visibleRect;
+}
+
 void LIPMapHolder::onAddingFeatures()
 {
     isAddingFeatures=true;
@@ -98,6 +135,7 @@ void LIPMapHolder::mouseMoveEvent(QMouseEvent *event)
         clickPos=event->pos();
         //QPoint rect=viewport()->rect().center();
         this->centerOn(mapToScene(this->viewport()->rect().center()+delta.toPoint()));
+        emit extentChanged();
     }
     QGraphicsView::mouseMoveEvent(event);
 }
