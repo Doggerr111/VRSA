@@ -8,14 +8,16 @@ CONFIG += c++20
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 SOURCES +=  \
     $$PWD/testinit.cpp \
-    $$PWD/testlipvectorconvertor.cpp
+    $$PWD/testlipvectorconvertor.cpp \
+    $$PWD/testlipxyzconnection.cpp
 
 
 
 
 HEADERS +=  \
     $$PWD/testinit.h \
-    $$PWD/testlipvectorconvertor.h
+    $$PWD/testlipvectorconvertor.h \
+    $$PWD/testlipxyzconnection.h
 
 
 
