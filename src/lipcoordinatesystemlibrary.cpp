@@ -23,6 +23,11 @@ LIPCoordinateSystemLibrary::LIPCoordinateSystemLibrary()
     MSK_50_2->setName("МСК-50 Зона 2");
     mCRSLib.append(MSK_50_2);
 
+    LIPCoordinateSystem *Pseudo_Mercator = new LIPCoordinateSystem();
+    Pseudo_Mercator->getOGRSpatialRef()->importFromEPSG(3857);
+    Pseudo_Mercator->setName("Проекция Меркатора");
+    mCRSLib.append(Pseudo_Mercator);
+
 }
 
 QVector<LIPCoordinateSystem*> LIPCoordinateSystemLibrary::getCRSLib()
