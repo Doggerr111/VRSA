@@ -7,6 +7,7 @@ LIPXYZConnectionForm::LIPXYZConnectionForm(QWidget *parent) :
     mConnection{nullptr}
 {
     ui->setupUi(this);
+    setWindowTitle("Подключение к XYZ-сервису");
 }
 
 LIPXYZConnectionForm::~LIPXYZConnectionForm()
