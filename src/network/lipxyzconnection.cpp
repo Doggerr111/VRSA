@@ -1,63 +1,28 @@
 #include "lipxyzconnection.h"
 #include <QMessageBox>
-LIPXYZConnection::LIPXYZConnection()
+LIPXYZConnection::LIPXYZConnection(QString URL, int minZoom, int maxZoom, QString name)
+    : mURL{URL},
+      fullURL{URL},
+      mName{name},
+      mMinZoom{minZoom},
+      mMaxZoom{maxZoom}
 {
+    mURL = mURL.split("{z}")[0]; //получаем строку до символа {x}
     mNetworkManager = new QNetworkAccessManager(this);
     connect(mNetworkManager, &QNetworkAccessManager::finished, this, &LIPXYZConnection::onReplyFinished);
-
-//    loadTile("https://tile.memomaps.de/tilegen/0/0/0.png", 0, 0);
-
-//    LIPTile *tile = new LIPTile(0,0,0);
-//    vect.append(tile);
-//    loadTile("https://tile.memomaps.de/tilegen/1/1/1.png", 0, 0);
-//    LIPTile *tile1 = new LIPTile(1,1,1);
-//    vect.append(tile1);
-//    loadTile("https://tile.memomaps.de/tilegen/1/0/0.png", 0, 0);
-//    LIPTile *tile2 = new LIPTile(1,0,0);
-//    vect.append(tile2);
-
-//    loadTile("https://tile.memomaps.de/tilegen/1/1/0.png", 0, 0);
-//    LIPTile *tile3 = new LIPTile(1,1,0);
-//    vect.append(tile3);
-//    scaleRatio = {{0,2},{1,2}};
-
-    scales = { 500, 1000, 2000, 4000, 8000, 15000, 35000, 70000, 150000, 250000, 500000, 1000000, 2000000,
+    //21 уровень масштабирования
+    mScales = { 500, 1000, 2000, 4000, 8000, 15000, 35000, 70000, 150000, 250000, 500000, 1000000, 2000000,
                                      4000000, 10000000, 15000000, 35000000, 70000000, 150000000, 250000000, 500000000 };
+}
 
-    //    QString request  = "https://tile.memomaps.de/tilegen/";
-    //    request.append(QString::number(13) + "/");
-    //    request.append(QString::number(5434) + "/");
-    //    request.append(QString::number(2362) + ".png");
-
-    //    loadTile(request, 0, 0);
-
-    //    QString request1  = "https://tile.memomaps.de/tilegen/";
-    //    request1.append(QString::number(1) + "/");
-    //    request1.append(QString::number(1) + "/");
-    //    request1.append(QString::number(1) + ".png");
-
-    //    loadTile(request1, 0, 0);
-
-    //    QString request2  = "https://tile.memomaps.de/tilegen/";
-    //    request2.append(QString::number(1) + "/");
-    //    request2.append(QString::number(0) + "/");
-    //    request2.append(QString::number(1) + ".png");
-
-    //    loadTile(request2, 0, 0);
-
-    //    QString request3  = "https://tile.memomaps.de/tilegen/";
-    //    request3.append(QString::number(1) + "/");
-    //    request3.append(QString::number(0) + "/");
-    //    request3.append(QString::number(0) + ".png");
-
-    //    loadTile(request3, 0, 0);
-
-//    QString request4  = "https://tile.memomaps.de/tilegen/";
-//    request4.append(QString::number(1) + "/");
-//    request4.append(QString::number(1) + "/");
-//    request4.append(QString::number(0) + ".png");
-
-//    loadTile(request4, 0, 0);
+LIPXYZConnection::~LIPXYZConnection()
+{
+    delete mNetworkManager;
+    for (auto tile: mTiles)
+    {
+        delete tile;
+    }
+    mTiles.clear();
 }
 
 void LIPXYZConnection::test()
@@ -68,7 +33,9 @@ void LIPXYZConnection::test()
 void LIPXYZConnection::loadTile(const QString& url, qreal x, qreal y)
 {
     QNetworkRequest request(url);
-    request.setRawHeader("User-Agent", "Mozilla/5.0");
+    //request.setRawHeader("User-Agent", "Mozilla/5.0");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "vrsa/%1/%2");
+    request.setRawHeader("Accept-Language", "en-US,en;q=0.9,es;q=0.8,de;q=0.7");
     mNetworkManager->get(request);
 
 }
@@ -107,7 +74,7 @@ void LIPXYZConnection::onReplyFinished(QNetworkReply* reply)
 
         LIPTile *tile = new LIPTile(z,x,y);
         tile->setGraphicsItem(pixmap);
-        vect.append(tile);
+        mTiles.append(tile);
         //m_currentTile->setPixmap(pixmap);
     }
     else
@@ -121,24 +88,28 @@ void LIPXYZConnection::onReplyFinished(QNetworkReply* reply)
 
 void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
 {
-    int prevZoom = zoomLevel;
+    int prevZoom = mZoomLevel;
 
     //определяем уровень зума
-    for (std::size_t i = 0; i < scales.size(); ++i)
+    for (std::size_t i = 0; i < mScales.size(); ++i)
     {
-        if (scale >= scales[i])
-            zoomLevel = 20-i;
+        if (scale >= mScales[i])
+            mZoomLevel = 20-i;
         else
             break;
     }
 
-    if (prevZoom!=zoomLevel)
+    if (mZoomLevel < mMinZoom)
+        mZoomLevel = mMinZoom;
+    if (mZoomLevel > mMaxZoom)
+        mZoomLevel = mMaxZoom;
+    if (prevZoom!=mZoomLevel)
     {
-        for (auto tile: vect)
+        for (auto tile: mTiles)
         {
             delete tile;
         }
-        vect.clear();
+        mTiles.clear();
     }
     mNetworkManager->clearAccessCache();
 
@@ -154,10 +125,8 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
            <<QString::number(bottomLat,'f',3)<<QString::number(rightLon,'f',3);
     QPoint minXY = metersToTile(QPointF(topLat, leftLon));
     QPoint maxXY = metersToTile(QPointF(bottomLat, rightLon));
-    if (zoomLevel<2)
+    if (mZoomLevel<2)
         checkMinMaxXY(minXY,maxXY);
-
-    counter=0;
 
     QVector<LIPTile*> tempVec; //= vect;
 
@@ -167,10 +136,10 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
         {
             int tempZ, tempX, tempY;
             bool flag=true;
-            for (LIPTile* tile: vect)
+            for (LIPTile* tile: mTiles)
             {
                 tile->getZoomXY(tempZ, tempX, tempY);
-                if (tempZ==zoomLevel && tempX == x && tempY == (std::pow(2,zoomLevel) - 1) - y)
+                if (tempZ==mZoomLevel && tempX == x && tempY == (std::pow(2,mZoomLevel) - 1) - y)
                 {
                     tempVec.append(tile);
                     flag=false;
@@ -179,19 +148,20 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
             }
             if (flag)
             {
-                QString request  = "https://tile.memomaps.de/tilegen/";
-                request.append(QString::number(zoomLevel) + "/");
+                QString request  = mURL;
+                request.append(QString::number(mZoomLevel) + "/");
                 request.append(QString::number(x) + "/");
-                request.append(QString::number((std::pow(2,zoomLevel) - 1) - y) + ".png");
+                request.append(QString::number((std::pow(2,mZoomLevel) - 1) - y) + ".png");
                 loadTile(request, 0, 0);
                 qDebug()<<request;
+
             }
 
         }
     }
 
 
-    for (LIPTile* tile: vect)
+    for (LIPTile* tile: mTiles)
     {
         if (!tempVec.contains(tile))
         {
@@ -199,17 +169,17 @@ void LIPXYZConnection::onViewportChanged(int scale, QRectF visibleRect)
             tile=nullptr;
         }
     }
-    vect.clear();
-    vect=tempVec;
+    mTiles.clear();
+    mTiles=tempVec;
 
 }
 
 QPoint LIPXYZConnection::metersToTile(QPointF coord)
 {
-    double n = pow(2.0, zoomLevel);
-    double res = 2*M_PI*6378137/(256*std::pow(2, zoomLevel));
+    double n = pow(2.0, mZoomLevel);
+    double res = 2*M_PI*6378137/(256*std::pow(2, mZoomLevel));
     double intialRes= (2 * M_PI * 6378137)/256;
-    res = intialRes/std::pow(2,zoomLevel);
+    res = intialRes/std::pow(2, mZoomLevel);
 
     double originShift = 2 * M_PI * 6378137/2;
     int x = static_cast<int>((originShift+256*coord.x())/(res));
@@ -233,13 +203,13 @@ QPoint LIPXYZConnection::metersToTile(QPointF coord)
 
 bool LIPXYZConnection::setZoomLevel(int zoom)
 {
-    zoomLevel=zoom;
+    mZoomLevel=zoom;
 }
 
 void LIPXYZConnection::checkMinMaxXY(QPoint &minXY, QPoint &maxXY)
 {
 
-    int pow = 1<<zoomLevel;
+    int pow = 1<<mZoomLevel;
     if (minXY.x()<0)
         minXY.setX(0);
     if (minXY.y()<0)
@@ -263,6 +233,36 @@ void LIPXYZConnection::checkMinMaxXY(QPoint &minXY, QPoint &maxXY)
 //    if (minXY.y()>=pow)
 //        minXY.setY(pow-1);
 
+}
+
+QString LIPXYZConnection::getName()
+{
+    return mName;
+}
+
+QString LIPXYZConnection::getURL()
+{
+    return fullURL;
+}
+
+void LIPXYZConnection::setZValue(int value)
+{
+    for (LIPTile* tile: mTiles)
+    {
+        QGraphicsPixmapItem* item = tile->getItem();
+        if (item)
+            item->setZValue(value);
+    }
+}
+
+void LIPXYZConnection::setVisible(bool fl)
+{
+    for (LIPTile* tile: mTiles)
+    {
+        QGraphicsPixmapItem* item = tile->getItem();
+        if (item)
+            item->setVisible(fl);
+    }
 }
 
 
