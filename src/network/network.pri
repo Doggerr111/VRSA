@@ -10,11 +10,13 @@ CONFIG += c++20
 
 SOURCES += \
     $$PWD/liptile.cpp \
+    $$PWD/liptilelayer.cpp \
     $$PWD/lipxyzconnection.cpp
 
 
 HEADERS += \
     $$PWD/liptile.h \
+    $$PWD/liptilelayer.h \
     $$PWD/lipxyzconnection.h
 
 
