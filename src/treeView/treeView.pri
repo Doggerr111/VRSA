@@ -12,12 +12,14 @@ SOURCES += \
     $$PWD/liptreewidgetitem.cpp \
     $$PWD/liptreewidgetrasteritem.cpp \
     $$PWD/lipobjecttreemodel.cpp \
+    $$PWD/liptreewidgettileitem.cpp
 
 
 HEADERS += \
     $$PWD/liptreewidgetitem.h \
     $$PWD/liptreewidgetrasteritem.h \
     $$PWD/lipobjecttreemodel.h \
+    $$PWD/liptreewidgettileitem.h
 
 
 
