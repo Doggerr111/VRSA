@@ -6,6 +6,7 @@
 #include "liprasterlayer.h"
 #include <QFile>
 #include <QAction>
+#include "lipxyzconnection.h"
 class LIPProject : public QObject
 {
     Q_OBJECT
@@ -38,10 +39,18 @@ public:
     void setRasterLayers(QVector<LIPVectorLayer*> rasterLayers);
     void deleteRasterLayerByPath(QString path);
 
+
     QVector<LIPRasterLayer*> getRasterLayers();
     LIPRasterLayer* getRasterLayerByIndx(int index);
     LIPRasterLayer* getRasterLayerByName(QString name);
     LIPRasterLayer *getRasterLayerByPath(QString path);
+
+
+    //xyz tiles
+    void addXYZConnection(LIPXYZConnection* connection);
+    void deleteXYZConnectionByConnectionName(QString name);
+
+    LIPXYZConnection *getXYZConnectionByConnectionName(QString name);
 
     //database
     void setActivePostGISConnection(GDALDataset* ds);
@@ -103,6 +112,7 @@ private:
     LIPVectorLayer* activeLayer; //
     QVector<LIPVectorLayer*> vectorLayers;
     QVector<LIPRasterLayer*> rasterLayers;
+    QVector<LIPXYZConnection*> xyzTiles;
     QVector<LIPCoordinateSystem*> CRSystems;
     GDALDataset* mActivePostGISConnection;
     LIPCoordinateSystem* mProjectCRS;

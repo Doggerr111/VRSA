@@ -140,6 +140,35 @@ void LIPProject::deleteRasterLayerByPath(QString path)
     }
 }
 
+void LIPProject::addXYZConnection(LIPXYZConnection *connection)
+{
+    xyzTiles.append(connection);
+}
+
+void LIPProject::deleteXYZConnectionByConnectionName(QString name)
+{
+    for (int i=0;i<xyzTiles.size();i++)
+    {
+        if (xyzTiles.at(i)->getURL()==name)
+        {
+            auto xyz=xyzTiles.at(i);
+            xyzTiles.removeAt(i);
+            delete xyz;
+
+        }
+    }
+}
+
+LIPXYZConnection *LIPProject::getXYZConnectionByConnectionName(QString name)
+{
+    for (int i=0;i<xyzTiles.size();i++)
+    {
+        if (xyzTiles.at(i)->getURL()==name)
+            return xyzTiles.at(i);
+
+    }
+}
+
 QVector<LIPRasterLayer *> LIPProject::getRasterLayers()
 {
     return rasterLayers;
