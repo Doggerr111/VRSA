@@ -63,7 +63,8 @@ SOURCES += \
     lipsettingsform.cpp \
     lipvectorassignprojectform.cpp \
     lipvectorpropertiesform.cpp \
-    lipvectorreprojectform.cpp
+    lipvectorreprojectform.cpp \
+    lipxyzconnectionform.cpp
 
 
 HEADERS += \
@@ -112,7 +113,8 @@ HEADERS += \
     lipsettingsform.h \
     lipvectorassignprojectform.h \
     lipvectorpropertiesform.h \
-    lipvectorreprojectform.h
+    lipvectorreprojectform.h \
+    lipxyzconnectionform.h
 
 
 FORMS += \
@@ -133,7 +135,8 @@ FORMS += \
     lipsettingsform.ui \
     lipvectorassignprojectform.ui \
     lipvectorpropertiesform.ui \
-    lipvectorreprojectform.ui
+    lipvectorreprojectform.ui \
+    lipxyzconnectionform.ui
 
 INCLUDEPATH += geoprocessing/
 INCLUDEPATH += vector/
