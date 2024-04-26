@@ -996,6 +996,7 @@ background-color: rgb(68,68,68)
      <string>Растр</string>
     </property>
     <addaction name="actionOpenRasterLayer"/>
+    <addaction name="actionXYZService"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -1192,6 +1193,15 @@ background-color: rgb(68,68,68)
    </property>
    <property name="text">
     <string>Открыть растровый слой</string>
+   </property>
+  </action>
+  <action name="actionXYZService">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/tiles.png</normaloff>:/images/icons/tiles.png</iconset>
+   </property>
+   <property name="text">
+    <string>Подключиться к XYZ сервису</string>
    </property>
   </action>
  </widget>
