@@ -12,7 +12,7 @@ testLIPXYZConnection::~testLIPXYZConnection()
 
 void testLIPXYZConnection::testMetersToTile()
 {
-    LIPXYZConnection* connection = new LIPXYZConnection;
+    LIPXYZConnection* connection = new LIPXYZConnection("",1,20);
     //test for 1 zoom level
     connection->setZoomLevel(1);
     auto topLeftPoint = connection->metersToTile(QPointF(-8570015.18, 11487467.16));
@@ -36,7 +36,7 @@ void testLIPXYZConnection::testMetersToTile()
 
 void testLIPXYZConnection::testCheckMinMaxXY()
 {
-    LIPXYZConnection* connection = new LIPXYZConnection;
+    LIPXYZConnection* connection = new LIPXYZConnection("",0,20);
     connection->setZoomLevel(1);
     QPoint minXY(-1,-1);
     QPoint maxXY(2,2);
