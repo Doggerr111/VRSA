@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2024-04-03T23:25:25. -->
+<!-- Written by QtCreator 6.0.2, 2024-04-21T15:57:04. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -69,10 +69,13 @@
    </valuemap>
    <valuemap type="QVariantMap" key="AutoTest.CheckStates">
     <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testinit.h:testInit">Checked</value>
-    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointstoGeosPoints">Checked</value>
-    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointstoGeosPolygon">Checked</value>
-    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointtoGeosLine">Checked</value>
-    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.h:testLIPVectorConvertor">Checked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointstoGeosPoints">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointstoGeosPolygon">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.cpp:test_vectorPointtoGeosLine">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipvectorconvertor.h:testLIPVectorConvertor">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipxyzconnection.cpp:testCheckMinMaxXY">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipxyzconnection.cpp:testMetersToTile">Unchecked</value>
+    <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/testlipxyzconnection.h:testLIPXYZConnection">Unchecked</value>
     <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/tst_testlipvectorconvertor.cpp:TestLIPVectorConvertor">Checked</value>
     <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/tst_testlipvectorconvertor.cpp:test_vectorPointstoGeosPoints">Checked</value>
     <value type="Qt::CheckState" key="1@/home/doger/Documents/mireagis/VRSA/tests/tst_testlipvectorconvertor.cpp:test_vectorPointstoGeosPolygon">Checked</value>

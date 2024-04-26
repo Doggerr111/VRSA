@@ -84,6 +84,7 @@ void LIPTile::setGraphicsItem(QPixmap pixmap)
     mItem->setPos(topLat, leftLon);
     geoTr.scale(scale, -scale);
     mItem->setTransform(geoTr);
+
     LIPWidgetManager::getInstance().getScene()->addItem(mItem);
     //LIPWidgetManager::getInstance().getView()->centerOn(topLat, leftLon);
 }
@@ -120,8 +121,13 @@ QPointF LIPTile::pixelsToMeters(double px, double py)
 
 QRectF LIPTile::tileBounds()
 {
+
+
     QPointF min = pixelsToMeters( mX*mResolution, (-mY+(std::pow(2,mZoomLevel)+1))*mResolution );
     QPointF max = pixelsToMeters( (mX+1)*mResolution, ((-mY-1)+ (std::pow(2,mZoomLevel)+1))*mResolution);
+
+//    QPointF max = pixelsToMeters( mX*mResolution, (mY*mResolution ));
+//    QPointF min = pixelsToMeters( (mX+1)*mResolution, ((mY-1)*mResolution));
 
 
 
