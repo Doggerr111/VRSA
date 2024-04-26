@@ -54,7 +54,10 @@
 #include "lipreprojectrasterlayerform.h"
 #include "liprastercontoursform.h"
 #include "lipsettingsform.h"
-#include "lipxyzconnection.h"
+#include "lipxyzconnectionform.h"
+#include "liptilelayer.h"
+#include "treeView/liptreewidgettileitem.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -70,6 +73,7 @@ public:
     /** добавляет ВЕКТОРНЫЙ слой */
     void addLayer(LIPVectorLayer* l);
     void addRasterLayer(LIPRasterLayer* l);
+    void addTileLayer(LIPXYZConnection *l);
 
 private slots:
     void layerTreeDataChanged(QTreeWidgetItem *item, int column);
@@ -165,6 +169,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_actionXYZService_triggered();
+
 signals:
     void start_add();
     void newVectorLayer(LIPVectorLayer*);
@@ -176,6 +182,7 @@ public slots:
     void showLayerContextMenu(const QPoint&);
     void showDBLayerContextMenu(const QPoint&);
     void deleteVector(LIPVectorLayer* layer, QTreeWidgetItem* item);
+    void onExtentChanged();
 
 
 private:

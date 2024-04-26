@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->LayerTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(onItemChanged(QTreeWidgetItem*, int)));
     connect(ui->lineEditCoordinates, &QLineEdit::returnPressed, this, &MainWindow::centerScene);
     connect(ui->lineEditScale, &QLineEdit::returnPressed, this, &MainWindow::applyScale);
+    connect(ui->graphicsView, &LIPMapHolder::extentChanged, this, &MainWindow::onExtentChanged);
     sceneInitialization();
     recalculateScale();
 
@@ -96,7 +97,7 @@ void MainWindow::sceneInitialization()
     ui->graphicsView->scale(1,-1);
     //ui->graphicsView->scene()->setSceneRect(xMin, yMax, width, height);
 
-    ui->graphicsView->setSceneRect(xMin*2, 2*yMax, 2*width, -4*height);
+    ui->graphicsView->setSceneRect(xMin*4, 4*yMax, 4*width, -8*height);
     //ui->graphicsView->setFixedWidth(100);
 
 }
@@ -121,8 +122,6 @@ void MainWindow::addLayer(LIPVectorLayer *l)
     {
         item->setIcon(0,QIcon(":/images/icons/pointLayer.png"));
         return;
-
-
     }
     LIPLineLayer* new_line_layer=dynamic_cast<LIPLineLayer*>(l);
     if(new_line_layer!=nullptr) //если линия
@@ -154,6 +153,18 @@ void MainWindow::addRasterLayer(LIPRasterLayer *l)
     layersOrderChanged();
 }
 
+void MainWindow::addTileLayer(LIPXYZConnection *connection)
+{
+    LIPProject::getInstance().addXYZConnection(connection);
+    LIPTreeWidgetTileItem *item = new LIPTreeWidgetTileItem();
+    item->setText(0, connection->getName());
+    item->setCheckState(0,Qt::Checked);
+    item->setFlags(item->flags() | Qt::ItemIsDragEnabled );
+    item->setToolTip(0,connection->getURL());
+    ui->LayerTree->addTopLevelItem(item);
+    layersOrderChanged();
+}
+
 void MainWindow::layerTreeDataChanged(QTreeWidgetItem *item, int column)
 {
 
@@ -162,7 +173,13 @@ void MainWindow::layerTreeDataChanged(QTreeWidgetItem *item, int column)
     {
         LIPRasterLayer* rasterLayer = LIPProject::getInstance().getRasterLayerByPath(item->toolTip(0));
         if (rasterLayer==nullptr)
+        {
+            LIPXYZConnection* connection = LIPProject::getInstance().getXYZConnectionByConnectionName(item->toolTip(0));
+            if (!connection)
+                return;
+            connection->setVisible(item->checkState(column));
             return;
+        }
         rasterLayer->setVisible(item->checkState(column));
         return;
     }
@@ -260,7 +277,34 @@ void MainWindow::showLayerContextMenu(const QPoint &f)
         delete actionDelete;
 
     }
+    LIPXYZConnection* connection = LIPProject::getInstance().getXYZConnectionByConnectionName(path);
+    if (connection)
+    {
+        QMenu menu;
+        QAction* actionDelete = new QAction(QString::fromUtf8("Удалить"), this);
+        connect(actionDelete, &QAction::triggered, this, [path, clickedItem, this]()
+        {
+            LIPProject::getInstance().deleteXYZConnectionByConnectionName(path);
 
+            QTreeWidgetItem *parent = clickedItem->parent();
+            int index;
+            if (parent) {
+                index = parent->indexOfChild(clickedItem);
+                delete parent->takeChild(index);
+            }
+            else {
+                index = ui->LayerTree->indexOfTopLevelItem(clickedItem);
+                ui->LayerTree->takeTopLevelItem(index);
+            }
+            //delete clickedItem;
+
+
+        });
+        menu.addAction(actionDelete);
+        menu.show();
+        menu.exec(ui->LayerTree->mapToGlobal(f));
+        delete actionDelete;
+    }
     LIPVectorLayer* selectedLayer=LIPProject::getInstance().getVectorLayerByPath(path);
     if (selectedLayer==nullptr)
         return;
@@ -404,6 +448,11 @@ void MainWindow::deleteVector(LIPVectorLayer *layer, QTreeWidgetItem *item)
     Q_UNUSED(item);
 }
 
+void MainWindow::onExtentChanged() //слот вызывается при изменении видимого экстента пользователям при перемещении мышью
+{
+    emit tileLoadNeeded(ui->graphicsView->getScale(), ui->graphicsView->getExtent());
+}
+
 
 
 
@@ -478,13 +527,14 @@ void MainWindow::recalculateScale()
     qDebug()<<visibleRect;
     qDebug()<<"extent";
     qDebug()<<visibleRect1;
+    qDebug()<<ui->graphicsView->getExtent();
     qDebug()<<ui->graphicsView->width();
     double scale = calculator->calculate(visibleRect1, ui->graphicsView->width());
     //scale=calculator->calculate(scene.)
     ui->lineEditScale->setText(QString::number(static_cast<int>(scale)));
     qDebug()<<"map scale is "+ QString::number(scale);
     qDebug()<< visibleRect;
-    emit tileLoadNeeded(scale, visibleRect);
+    emit tileLoadNeeded(scale, ui->graphicsView->getExtent());
 
     delete calculator;
 }
@@ -784,10 +834,19 @@ void MainWindow::layersOrderChanged() //срабатывает при перем
         else
         {
             LIPRasterLayer* rastLayer = LIPProject::getInstance().getRasterLayerByPath(path);
-            if (!rastLayer)
-                continue;
-            rastLayer->setZValue(k);
-            k++;
+            if (rastLayer)
+            {
+                rastLayer->setZValue(k);
+                k++;
+            }
+            else
+            {
+                LIPXYZConnection* connection = LIPProject::getInstance().getXYZConnectionByConnectionName(path);
+                if (!connection)
+                    continue;
+                connection->setZValue(k);
+                k++;
+            }
 
         }
 
@@ -1399,8 +1458,20 @@ void MainWindow::on_pushButtonZoomToLayer_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    LIPXYZConnection *connection = new LIPXYZConnection;
+    LIPXYZConnection *connection = new LIPXYZConnection("",1,20);
     connect(this, &MainWindow::tileLoadNeeded, connection, &LIPXYZConnection::onViewportChanged);
 
+}
+
+
+void MainWindow::on_actionXYZService_triggered()
+{
+    LIPXYZConnectionForm *form = new LIPXYZConnectionForm;
+    form->exec();
+    LIPXYZConnection * connection = form->getXYZConnection();
+    if (connection)
+        connect(this, &MainWindow::tileLoadNeeded, connection, &LIPXYZConnection::onViewportChanged);
+    addTileLayer(connection);
+    delete form;
 }
 
