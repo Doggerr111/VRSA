@@ -7,43 +7,25 @@ LIPRasterTransform::LIPRasterTransform()
 
 bool LIPRasterTransform::reproject(LIPRasterLayer *layer, LIPCoordinateSystem *targetCRS, QString fileName)
 {
-    GDALDataset *poDataset = layer->getDataSet();
-
-    Q_UNUSED(targetCRS)
     //OGRSpatialReference *oSRS = targetCRS->getOGRSpatialRef();
-    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff"); // Формат результата (может быть другой)
-    GDALDataset *poReprojectedDS;
-
-    poReprojectedDS = poDriver->Create("result.tif", poDataset->GetRasterXSize(), poDataset->GetRasterYSize(), poDataset->GetRasterCount(), GDT_Float32, NULL);
     GDALDriverH hDriver;
     GDALDataType eDT;
     GDALDatasetH hDstDS;
     GDALDatasetH hSrcDS;
-
-
-
     // Open the source file.
     hSrcDS = layer->getDataSet();
-    CPLAssert( hSrcDS != NULL );
-
     // Create output with same datatype as first input band.
     eDT = GDALGetRasterDataType(GDALGetRasterBand(hSrcDS,1));
-
     // Get output driver (GeoTIFF format)
     hDriver = GDALGetDriverByName( "GTiff" );
-    CPLAssert( hDriver != NULL );
-
     // Get Source coordinate system.
     const char *pszSrcWKT = NULL;
     char* pszDstWKT = NULL;
     pszSrcWKT = GDALGetProjectionRef( hSrcDS );
-    CPLAssert( pszSrcWKT != NULL && strlen(pszSrcWKT) > 0 );
-
+    qDebug()<< "Src proj:" <<pszSrcWKT;
     // Setup output coordinate system that is UTM 11 WGS84.
-    OGRSpatialReference oSRS;
-    //oSRS.SetUTM( 11, TRUE );
-    oSRS.SetWellKnownGeogCS( "WGS84" );
-    oSRS.exportToWkt( &pszDstWKT );
+    OGRSpatialReference *oSRS = targetCRS->getOGRSpatialRef();
+    oSRS->exportToWkt( &pszDstWKT );
 
     // Create a transformer that maps from source pixel/line coordinates
     // to destination georeferenced coordinates (not destination
@@ -51,8 +33,8 @@ bool LIPRasterTransform::reproject(LIPRasterLayer *layer, LIPCoordinateSystem *t
     // handle (setting it to NULL).
     void *hTransformArg;
     hTransformArg =
-        GDALCreateGenImgProjTransformer( hSrcDS, pszSrcWKT, NULL, pszDstWKT,
-                                         FALSE, 0, 1 );
+            GDALCreateGenImgProjTransformer( hSrcDS, pszSrcWKT, NULL, pszDstWKT,
+                                             FALSE, 0, 1 );
     CPLAssert( hTransformArg != NULL );
 
     // Get approximate output georeferenced bounds and resolution for file.
@@ -85,50 +67,54 @@ bool LIPRasterTransform::reproject(LIPRasterLayer *layer, LIPCoordinateSystem *t
         GDALSetRasterColorTable( GDALGetRasterBand(hDstDS,1), hCT );
 
     //    char *crsWKT;
-//    oSRS->exportToWkt(&crsWKT);
-//    poReprojectedDS->SetProjection(crsWKT); // Установка проекции нового растра
-//    GDALReprojectImage(poDataset, NULL, poReprojectedDS, NULL, GRA_Bilinear, 0, 0, NULL, NULL, NULL);
-//    // Используйте нужные параметры интерполяции
+    //    oSRS->exportToWkt(&crsWKT);
+    //    poReprojectedDS->SetProjection(crsWKT); // Установка проекции нового растра
+    //    GDALReprojectImage(poDataset, NULL, poReprojectedDS, NULL, GRA_Bilinear, 0, 0, NULL, NULL, NULL);
+    //    // Используйте нужные параметры интерполяции
 
     int nBands = GDALGetRasterCount(hSrcDS);
 
     GDALWarpOptions *psWarpOptions = GDALCreateWarpOptions();
-       psWarpOptions->hSrcDS = hSrcDS;
-       psWarpOptions->hDstDS = hDstDS;
-       psWarpOptions->nBandCount = nBands;
+    psWarpOptions->hSrcDS = hSrcDS;
+    psWarpOptions->hDstDS = hDstDS;
+    psWarpOptions->nBandCount = nBands;
 
-       psWarpOptions->panSrcBands =
-           (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
-       //psWarpOptions->panSrcBands[0] = 1;
-       psWarpOptions->panDstBands =
-           (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
-       //psWarpOptions->panDstBands[0] = 1;
-       psWarpOptions->pfnProgress = GDALTermProgress;
-       for (int i = 0; i < nBands; i++) {
-           psWarpOptions->panSrcBands[i] = i + 1;
-           psWarpOptions->panDstBands[i] = i + 1;
-       }
-       // Establish reprojection transformer.
-       psWarpOptions->pTransformerArg =
-           GDALCreateGenImgProjTransformer( hSrcDS,
-                                           GDALGetProjectionRef(hSrcDS),
-                                           hDstDS,
-                                           GDALGetProjectionRef(hDstDS),
-                                           FALSE, 0.0, 1 );
-       psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
+    psWarpOptions->panSrcBands =
+            (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
+    //psWarpOptions->panSrcBands[0] = 1;
+    psWarpOptions->panDstBands =
+            (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
+    //psWarpOptions->panDstBands[0] = 1;
+    psWarpOptions->pfnProgress = GDALTermProgress;
+    for (int i = 0; i < nBands; i++) {
+        psWarpOptions->panSrcBands[i] = i + 1;
+        psWarpOptions->panDstBands[i] = i + 1;
+    }
+    // Establish reprojection transformer.
+    psWarpOptions->pTransformerArg =
+            GDALCreateGenImgProjTransformer( hSrcDS,
+                                             GDALGetProjectionRef(hSrcDS),
+                                             hDstDS,
+                                             GDALGetProjectionRef(hDstDS),
+                                             FALSE, 0.0, 1 );
+    psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
 
-       // Initialize and execute the warp operation.
-       GDALWarpOperation oOperation;
-       oOperation.Initialize( psWarpOptions );
-       oOperation.ChunkAndWarpImage( 0, 0,
-                                   GDALGetRasterXSize( hDstDS ),
-                                   GDALGetRasterYSize( hDstDS ) );
+    // Initialize and execute the warp operation.
+    GDALWarpOperation oOperation;
+
+    qDebug()<< oOperation.Initialize( psWarpOptions );
+    int err = oOperation.ChunkAndWarpImage( 0, 0,
+                                            GDALGetRasterXSize( hDstDS ),
+                                            GDALGetRasterYSize( hDstDS ) );
 
 
 
-       GDALDestroyGenImgProjTransformer( psWarpOptions->pTransformerArg );
-       GDALDestroyWarpOptions( psWarpOptions );
-       GDALClose( hDstDS );
-       GDALClose( hSrcDS );
-       return 0;
+    GDALDestroyGenImgProjTransformer( psWarpOptions->pTransformerArg );
+    GDALDestroyWarpOptions( psWarpOptions );
+    GDALClose( hDstDS );
+    //GDALClose( hSrcDS );
+    if (err==0)
+        return true;
+    return false;
+
 }
