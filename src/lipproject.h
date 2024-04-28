@@ -81,7 +81,6 @@ public:
     //path settings
     void setVectorDataFolder(QString);
     void setRasterDataFolder(QString);
-
     QString getVectorDataFolder();
     QString getRasterDataFolder();
 
@@ -100,6 +99,11 @@ public:
 
     //crs
     LIPCoordinateSystemLibrary *getCRSLibrary();
+
+
+    //config file
+    void writeSettings();
+    void loadSettings();
 
 public slots:
     void redrawNeeded(double);

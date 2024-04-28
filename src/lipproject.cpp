@@ -1,5 +1,6 @@
 #include "lipproject.h"
 #include "QDebug"
+#include "mainwindow.h"
 
 LIPProject &LIPProject::getInstance()
 {
@@ -331,6 +332,7 @@ void LIPProject::addAction(QAction *action)
 {
     mGUISettings.mainToolBarActions.append(action);
     LIPWidgetManager::getInstance().getMainWindow();
+    writeSettings();
 }
 
 void LIPProject::deleteAction(QAction *delAction)
@@ -349,6 +351,7 @@ void LIPProject::deleteAction(QAction *delAction)
 
         }
     }
+    writeSettings();
 }
 
 bool LIPProject::isActionAdded(QAction *action)
@@ -369,6 +372,7 @@ void LIPProject::setActions(QVector<QAction *>)
 void LIPProject::setVectorDataFolder(QString path)
 {
     mVectorFolder = path;
+    writeSettings();
 }
 
 void LIPProject::setRasterDataFolder(QString path)
@@ -393,12 +397,14 @@ void LIPProject::setMapCanvasColor(QColor col)
     else
         mMapCanvasColor = Qt::white;
     LIPWidgetManager::getInstance().getScene()->setBackgroundBrush(QBrush(mMapCanvasColor));
+    writeSettings();
 }
 
 void LIPProject::setAntiAliasing(bool flag)
 {
     mAntiAliasingFlag = flag;
     LIPWidgetManager::getInstance().getView()->setRenderHint(QPainter::Antialiasing, mAntiAliasingFlag);
+    writeSettings();
 
 
 }
@@ -428,6 +434,69 @@ LIPCoordinateSystemLibrary *LIPProject::getCRSLibrary()
     if (mCRSLib==nullptr)
         mCRSLib=new LIPCoordinateSystemLibrary;
     return mCRSLib;
+}
+
+void LIPProject::writeSettings()
+{
+    QFile file("config.bin");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        QDataStream out(&file);
+        // Записываем данные
+        out << mVectorFolder << mRasterFolder << mMapCanvasColor << mAntiAliasingFlag;
+        out << mGUISettings.mainToolBarActions.size();
+        for (QAction* action: mGUISettings.mainToolBarActions)
+            out << action->objectName();
+        file.close();
+    }
+}
+
+void LIPProject::loadSettings()
+{
+    QFile file("config.bin");
+    if (file.open(QIODevice::ReadOnly))
+    {
+        mGUISettings.mainToolBarActions.clear();
+        QDataStream in(&file);
+        in >> mVectorFolder >> mRasterFolder >> mMapCanvasColor >> mAntiAliasingFlag;
+        int size;
+        in >> size;
+        setMapCanvasColor(mMapCanvasColor);
+        setAntiAliasing(mAntiAliasingFlag);
+        MainWindow* mW = LIPWidgetManager::getInstance().getMainWindow();
+        QList<QAction *> allActions = mW->findChildren<QAction *>();
+        for (int i = 0; i < size; i++)
+        {
+            QString objName;
+            in >> objName;
+            for (QAction *action: allActions)
+            {
+                if (action->objectName() == objName)
+                    mGUISettings.mainToolBarActions.append(action);
+            }
+        }
+
+        foreach (QWidget* child, mW->findChildren<QWidget*>())
+        {
+            if (child->objectName() == "frameMainToolBar")
+            {
+                for (QAction* action : mGUISettings.mainToolBarActions)
+                {
+                    QPushButton* button = new QPushButton(action->icon(), "");
+                    button->setStyleSheet("QPushButton { border:none; } QPushButton:pressed { background-color: gray; "
+                                          "border: 1px solid } QPushButton:hover { border: 1px solid;"
+                                          "border-color: #333; /* Цвет рамки при наведении */  }");
+                    button->setIcon(action->icon());
+                    button->setMinimumSize(QSize(50, 50));
+                    button->setIconSize(QSize(45, 45));
+                    connect(button, &QPushButton::clicked, action, &QAction::triggered);
+                    child->layout()->addWidget(button);
+                    action->setProperty("associatedButton", QVariant::fromValue<QWidget*>(button));
+                }
+
+            }
+        }
+    }
 }
 
 

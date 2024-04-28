@@ -8,16 +8,10 @@ LIPSettingsForm::LIPSettingsForm(QWidget *parent) :
     isMapColChanged{false}
 {
     ui->setupUi(this);
-    // Установите режим ресайза для таблицы на основе содержимого ячеек
     ui->tableWidgetToolBarSettings->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableWidgetToolBarSettings->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-
-    // Уберите названия колонок таблицы
     ui->tableWidgetToolBarSettings->horizontalHeader()->hide();
     ui->tableWidgetToolBarSettings->verticalHeader()->hide();
-
-    // Измените стиль номеров строк
     ui->tableWidgetToolBarSettings->verticalHeader()->setStyleSheet("background-color: lightgray; color: black;");
     ui->tableWidgetToolBarSettings->setStyleSheet("QTableWidget::item { border: none; }");
     ui->tableWidgetToolBarSettings->setStyleSheet("QTableView { border: 0px; gridline-color: white; }");
@@ -91,12 +85,11 @@ void LIPSettingsForm::setActionsTable()
     ui->tableWidgetToolBarSettings->setRowCount(0);
     MainWindow* mW = LIPWidgetManager::getInstance().getMainWindow();
     QList<QAction *> allActions = mW->findChildren<QAction *>();
-    foreach (QAction *action, allActions)
+    for(QAction *action: allActions)
     {
         QMenu *menu = qobject_cast<QMenu*>(action->parentWidget());
         if (!menu)
         {
-
             int currentIndex = ui->tableWidgetToolBarSettings->rowCount();
             ui->tableWidgetToolBarSettings->insertRow(currentIndex);
             QLabel *iconLabel = new QLabel;
@@ -134,6 +127,7 @@ void LIPSettingsForm::setActionsTable()
                             child->layout()->addWidget(button);
                             action->setProperty("associatedButton", QVariant::fromValue<QWidget*>(button));
                             LIPProject::getInstance().addAction(action);
+
                         }
                     }
                 }
@@ -173,6 +167,7 @@ void LIPSettingsForm::on_pushButtonDirSave_clicked()
     QString rasterDir = ui->lineEditRasterDir->text();
     LIPProject::getInstance().setVectorDataFolder(vectorDir);
     LIPProject::getInstance().setRasterDataFolder(rasterDir);
+
 }
 
 
@@ -183,6 +178,7 @@ void LIPSettingsForm::on_pushButtonMapSettingSave_clicked()
     if (isMapColChanged)
         LIPProject::getInstance().setMapCanvasColor(canvasColor);
     LIPProject::getInstance().setAntiAliasing(state);
+
 
 }
 
