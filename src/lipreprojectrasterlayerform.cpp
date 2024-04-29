@@ -6,6 +6,7 @@ LIPReprojectRasterLayerForm::LIPReprojectRasterLayerForm(QWidget *parent) :
     ui(new Ui::LIPReprojectRasterLayerForm)
 {
     ui->setupUi(this);
+    setWindowTitle("Перепроецирование растра");
 }
 
 LIPReprojectRasterLayerForm::~LIPReprojectRasterLayerForm()
@@ -20,7 +21,11 @@ void LIPReprojectRasterLayerForm::on_buttonBox_accepted()
     if (ui->comboBoxCRS->getCurrentCRS()==nullptr)
         return;
 
-    LIPRasterTransform::reproject(ui->comboBoxRaster->getRasterLayer(), ui->comboBoxCRS->getCurrentCRS(), fileName);
+    if (LIPRasterTransform::reproject(ui->comboBoxRaster->getRasterLayer(), ui->comboBoxCRS->getCurrentCRS(), fileName))
+        new LIPRasterLayer(fileName);
+    else
+        LIPWidgetManager::getInstance().showMessage("Ошибка перепроецирования", 1000, Error);
+    close();
 }
 
 

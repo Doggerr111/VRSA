@@ -33,7 +33,7 @@ void LIPXYZConnectionForm::on_buttonBox_accepted()
         QMessageBox::warning(this, "Ошибка", "Минимальный уровень зума не может быть выше максимального уровня зума");
         return;
     }
-    mConnection= new LIPXYZConnection(url, minZoom, maxZoom, connectionName);
+    mConnection = new LIPXYZConnection(url, minZoom, maxZoom, connectionName);
 }
 
 
