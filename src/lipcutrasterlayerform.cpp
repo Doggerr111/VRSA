@@ -6,6 +6,7 @@ LIPCutRasterLayerForm::LIPCutRasterLayerForm(QWidget *parent) :
     ui(new Ui::LIPCutRasterLayerForm)
 {
     ui->setupUi(this);
+    setWindowTitle("Обрезка растра");
 }
 
 LIPCutRasterLayerForm::~LIPCutRasterLayerForm()
@@ -33,7 +34,14 @@ void LIPCutRasterLayerForm::on_buttonBox_accepted()
         return;
     }
     if (LIPCutRasterLayer::cutRasterByVector(ui->comboBoxRaster->getRasterLayer(), mask, fileName))
+    {
         new LIPRasterLayer(fileName);
+        close();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Ошибка", "Ошибка обрезки растра");
+    }
 }
 
 
@@ -43,7 +51,10 @@ void LIPCutRasterLayerForm::on_pushButtonPath_clicked()
     if (fileName.endsWith(".tif"))
         ui->lineEditPath->setText(fileName);
     else
-        ui->lineEditPath->setText(fileName+".tif");
+    {
+        fileName += ".tif";
+        ui->lineEditPath->setText(fileName);
+    }
 
 }
 
