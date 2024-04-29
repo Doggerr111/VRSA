@@ -122,7 +122,6 @@ LIPRasterLayer::LIPRasterLayer(QString fName):
 LIPRasterLayer::~LIPRasterLayer()
 {
     GDALClose(mDs);
-
     mDs=nullptr;
     delete mPixmapItem;
     mPixmapItem=nullptr;

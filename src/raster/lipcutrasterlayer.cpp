@@ -5,193 +5,42 @@ LIPCutRasterLayer::LIPCutRasterLayer()
 
 }
 
-bool LIPCutRasterLayer::cutRasterByVector(LIPRasterLayer *rLayer, LIPPolygonLayer *vLayer)
+bool LIPCutRasterLayer::cutRasterByVector(LIPRasterLayer *rLayer, LIPPolygonLayer *vLayer, QString outPath)
 {
+    if (rLayer == nullptr || vLayer == nullptr || outPath.isEmpty())
+        return false;
+    QByteArray ba = outPath.toLocal8Bit();
+    const char *outputPath = ba.data();
+    const char *read_filenamePoly = vLayer->getFileName().toLocal8Bit().data();
+    char **argv = nullptr;
+    argv = CSLAddString(argv, "-cutline");
+    argv = CSLAddString(argv, read_filenamePoly);
+    argv = CSLAddString(argv, "-crop_to_cutline");
+    argv = CSLAddString(argv, "-multi");
+    argv = CSLAddString(argv, "-dstnodata");
+    argv = CSLAddString(argv, 0);
+    argv = CSLAddString(argv, "-ot");
+    argv = CSLAddString(argv, "Uint16");
+    argv = CSLAddString(argv, "-wm");
+    argv = CSLAddString(argv, "512");
+    argv = CSLAddString(argv, "-wo");
+    argv = CSLAddString(argv, "NUM_THREADS=8");
 
-    GDALDataset *poDataset = rLayer->getDataSet();
-    //OGRSpatialReference *oSRS = targetCRS->getOGRSpatialRef();
-    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff"); // Формат результата (может быть другой)
-    //GDALDataset *poReprojectedDS;
-    //poReprojectedDS = poDriver->Create("result.tif", poDataset->GetRasterXSize(), poDataset->GetRasterYSize(), poDataset->GetRasterCount(), GDT_Float32, NULL);
-    GDALDriverH hDriver;
-    GDALDataType eDT;
-    GDALDatasetH hDstDS;
-    GDALDatasetH hSrcDS;
+    //Input data
+    GDALDatasetH inputDs = rLayer->getDataSet();
 
-    GDALDataset *poMaskDS = vLayer->getDataSet();
+    int anOverviewList[7] = { 2, 4, 8, 16, 32,64,128 };
+    int bUsageError = false;
 
-    // Open the source file.
-    hSrcDS = rLayer->getDataSet();
-    CPLAssert( hSrcDS != NULL );
-
-    // Create output with same datatype as first input band.
-    eDT = GDALGetRasterDataType(GDALGetRasterBand(hSrcDS,1));
-
-    // Get output driver (GeoTIFF format)
-    hDriver = GDALGetDriverByName( "GTiff" );
-    CPLAssert( hDriver != NULL );
-
-    // Get Source coordinate system.
-    const char *pszSrcWKT = NULL;
-    char* pszDstWKT = NULL;
-    pszSrcWKT = GDALGetProjectionRef( hSrcDS );
-    CPLAssert( pszSrcWKT != NULL && strlen(pszSrcWKT) > 0 );
-
-    // Setup output coordinate system that is UTM 11 WGS84.
-    OGRSpatialReference oSRS;
-    //oSRS.SetUTM( 11, TRUE );
-    oSRS.SetWellKnownGeogCS( "WGS84" );
-    oSRS.exportToWkt( &pszDstWKT );
-
-    // Create a transformer that maps from source pixel/line coordinates
-    // to destination georeferenced coordinates (not destination
-    // pixel line).  We do that by omitting the destination dataset
-    // handle (setting it to NULL).
-    void *hTransformArg;
-    hTransformArg =
-        GDALCreateGenImgProjTransformer( hSrcDS, pszSrcWKT, NULL, pszDstWKT,
-                                         FALSE, 0, 1 );
-    CPLAssert( hTransformArg != NULL );
-
-    // Get approximate output georeferenced bounds and resolution for file.
-    double adfDstGeoTransform[6];
-    int nPixels=0, nLines=0;
-    CPLErr eErr;
-    Q_UNUSED(eErr);
-    GDALSuggestedWarpOutput( hSrcDS,
-                                    GDALGenImgProjTransform, hTransformArg,
-                                    adfDstGeoTransform, &nPixels, &nLines );
-    GDALDestroyGenImgProjTransformer( hTransformArg );
-
-    // Create the output file.
-    qDebug()<<adfDstGeoTransform;
-
-    const char *nameChar = "filename";
-    hDstDS = GDALCreate( hDriver, nameChar, nPixels, nLines,
-                         GDALGetRasterCount(hSrcDS), eDT, NULL );
-
-    CPLAssert( hDstDS != NULL );
-
-    // Write out the projection definition.
-    GDALSetProjection( hDstDS, pszDstWKT );
-    GDALSetGeoTransform( hDstDS, adfDstGeoTransform );
-
-    // Copy the color table, if required.
-    GDALColorTableH hCT;
-    hCT = GDALGetRasterColorTable( GDALGetRasterBand(hSrcDS,1) );
-    if( hCT != NULL )
-        GDALSetRasterColorTable( GDALGetRasterBand(hDstDS,1), hCT );
-
-    //    char *crsWKT;
-//    oSRS->exportToWkt(&crsWKT);
-//    poReprojectedDS->SetProjection(crsWKT); // Установка проекции нового растра
-//    GDALReprojectImage(poDataset, NULL, poReprojectedDS, NULL, GRA_Bilinear, 0, 0, NULL, NULL, NULL);
-//    // Используйте нужные параметры интерполяции
-
-    int nBands = GDALGetRasterCount(hSrcDS);
-
-    GDALWarpOptions *psWarpOptions = GDALCreateWarpOptions();
-       psWarpOptions->hSrcDS = hSrcDS;
-       psWarpOptions->hDstDS = hDstDS;
-       psWarpOptions->nBandCount = nBands;
-
-       psWarpOptions->panSrcBands =
-           (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
-       //psWarpOptions->panSrcBands[0] = 1;
-       psWarpOptions->panDstBands =
-           (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount );
-       //psWarpOptions->panDstBands[0] = 1;
-       psWarpOptions->pfnProgress = GDALTermProgress;
-       for (int i = 0; i < nBands; i++) {
-           psWarpOptions->panSrcBands[i] = i + 1;
-           psWarpOptions->panDstBands[i] = i + 1;
-       }
-       // Establish reprojection transformer.
-//       psWarpOptions->pTransformerArg =
-//           GDALCreateGenImgProjTransformer( hSrcDS,
-//                                           GDALGetProjectionRef(hSrcDS),
-//                                           hDstDS,
-//                                           GDALGetProjectionRef(hDstDS),
-//                                           FALSE, 0.0, 1 );
-
-       //psWarpOptions->papszWarpOptions = CSLSetNameValue(psWarpOptions->papszWarpOptions, "DST_METHOD", "NO_GEOTRANSFORM");
-
-       char **papszTransformerOptions = nullptr;
-       papszTransformerOptions = CSLSetNameValue(
-                      papszTransformerOptions, "DST_METHOD", "NO_GEOTRANSFORM");
-       psWarpOptions->pTransformerArg = GDALCreateGenImgProjTransformer2(poDataset, poMaskDS, papszTransformerOptions);
-       psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
-
-
-       vLayer->getOGRLayer()->ResetReading();
-       //qDebug()<<vLayer->getOGRLayer()->GetNextFeature()->GetGeometryRef();
-       psWarpOptions->hCutline = vLayer->getOGRLayer()->GetNextFeature()->GetGeometryRef();
-
-       // Initialize and execute the warp operation.
-       GDALWarpOperation oOperation;
-       oOperation.Initialize( psWarpOptions );
-       //oOperation.WarpRegion(0, 0, poDataset->GetRasterXSize(), poDataset->GetRasterYSize());
-       oOperation.ChunkAndWarpImage(0, 0, poDataset->GetRasterXSize(), poDataset->GetRasterYSize());
-
-       GDALDestroyGenImgProjTransformer( psWarpOptions->pTransformerArg );
-       GDALDestroyWarpOptions( psWarpOptions );
-       GDALClose( hDstDS );
-       GDALClose( hSrcDS );
-       return 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    GDALDataset *poDataset = rLayer->getDataSet();
-//    GDALDataset *poMaskDS = vLayer->getDataSet();
-
-//    //todo for для каждого канала???
-//    GDALRasterBand *poSrcBand = poDataset->GetRasterBand(1);
-
-//    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-
-//    const char *options[] = { "INTERLEAVE=PIXEL", NULL };
-//    GDALDataset *poMask = poDriver->Create("output.tif", poDataset->GetRasterXSize(), poDataset->GetRasterYSize(), 1, GDT_Byte, options);
-
-//    GDALWarpOptions *psWarpOptions = GDALCreateWarpOptions();
-//    psWarpOptions->hSrcDS = poDataset;
-//    psWarpOptions->hDstDS = poMask;
-//    psWarpOptions->nBandCount = 1;
-//    psWarpOptions->panSrcBands = (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount);
-//    psWarpOptions->panSrcBands[0] = 1;
-//    psWarpOptions->panDstBands = (int *) CPLMalloc(sizeof(int) * psWarpOptions->nBandCount);
-//    psWarpOptions->panDstBands[0] = 1;
-//    psWarpOptions->pTransformerArg = GDALCreateGenImgProjTransformer2(poDataset, poMaskDS, NULL);
-//    psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
-
-//    const char *pszWKT = NULL;
-//   // psWarpOptions->papszWarpOptions = CSLSetNameValue(psWarpOptions->papszWarpOptions, "CUTLINE", "mask.shp");
-//    psWarpOptions->hCutline = poMaskDS;
-//    psWarpOptions->papszWarpOptions = CSLSetNameValue(psWarpOptions->papszWarpOptions, "DST_METHOD", "NO_GEOTRANSFORM");
-//    psWarpOptions->eWorkingDataType = GDT_Byte;
-
-//    GDALWarpOperation oOperation;
-
-//    oOperation.Initialize(psWarpOptions);
-//    oOperation.WarpRegion(0, 0, poDataset->GetRasterXSize(), poDataset->GetRasterYSize());
-
-//    GDALClose(poMask);
-//    GDALClose(poMaskDS);
-//    GDALClose(poDataset);
-//    GDALDestroyWarpOptions(psWarpOptions);
-
-//    GDALDumpOpenDatasets(stderr);
-
-//    return true;
+    //gdalwarp
+    GDALWarpAppOptions *opt = GDALWarpAppOptionsNew(argv, nullptr);
+    GDALDataset *outputDs = (GDALDataset *)GDALWarp(outputPath, nullptr, 1, &inputDs, opt, &bUsageError);
+    GDALWarpAppOptionsFree(opt);
+    CSLDestroy(argv);
+    if (outputDs)
+    {
+        outputDs->BuildOverviews("NEAREST", 5, anOverviewList, 0, nullptr, nullptr, nullptr);
+        return true;
+    }
+    return false;
 }
