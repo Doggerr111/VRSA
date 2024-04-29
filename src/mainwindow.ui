@@ -1155,6 +1155,10 @@ background-color: rgb(68,68,68)
    </property>
   </action>
   <action name="actionCutRasterByVectorMask">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/imageCut.png</normaloff>:/images/icons/imageCut.png</iconset>
+   </property>
    <property name="text">
     <string>Обрезать по маске слоя</string>
    </property>
