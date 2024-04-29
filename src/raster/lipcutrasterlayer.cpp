@@ -40,6 +40,7 @@ bool LIPCutRasterLayer::cutRasterByVector(LIPRasterLayer *rLayer, LIPPolygonLaye
     if (outputDs)
     {
         outputDs->BuildOverviews("NEAREST", 5, anOverviewList, 0, nullptr, nullptr, nullptr);
+        GDALClose(outputDs);
         return true;
     }
     return false;
