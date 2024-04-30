@@ -13,6 +13,7 @@ LIPNewLineLayerForm::LIPNewLineLayerForm(QWidget *parent, LIPGeometryType geomTy
     typeBox->addItem("Real");
     typeBox->addItem("String");
     ui->tableWidget->setCellWidget(0,1,typeBox);
+    setWindowTitle("Создание нового слоя");
 }
 
 LIPNewLineLayerForm::~LIPNewLineLayerForm()
