@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "vector/lipvectorlayer.h"
+#include <QCloseEvent>
 
 namespace Ui {
 class LIPAttributesTableForm;
@@ -23,6 +24,10 @@ private slots:
 private:
     Ui::LIPAttributesTableForm *ui;
     LIPVectorLayer* layer;
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // LIPATTRIBUTESTABLEFORM_H

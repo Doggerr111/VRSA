@@ -7,6 +7,7 @@ LIPAttributesTableForm::LIPAttributesTableForm(QWidget *parent) :
     layer{nullptr}
 {
     ui->setupUi(this);
+
 }
 
 LIPAttributesTableForm::~LIPAttributesTableForm()
@@ -20,6 +21,7 @@ void LIPAttributesTableForm::setLayer(LIPVectorLayer *l)
     {
         ui->tableWidget->setLayer(l);
         layer=l;
+        layer->deselectItems();
     }
 
 }
@@ -27,9 +29,17 @@ void LIPAttributesTableForm::setLayer(LIPVectorLayer *l)
 void LIPAttributesTableForm::on_tableWidget_itemSelectionChanged()
 {
     QList<QTableWidgetItem*> selectedItems = ui->tableWidget->selectedItems();
+    layer->deselectItems();
     for (int i=0; i<selectedItems.count(); i++)
     {
         layer->selectFeature(selectedItems.at(i)->row());
     }
 }
 
+
+
+void LIPAttributesTableForm::closeEvent(QCloseEvent *event)
+{
+    if (layer)
+        layer->deselectItems();
+}
