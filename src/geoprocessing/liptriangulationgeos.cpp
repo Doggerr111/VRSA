@@ -69,30 +69,29 @@ QVector<QVector<QPointF> > LIPTriangulationGeos::getVoronoiDiagram(LIPVectorLaye
     QVector<QVector<QPointF>> polygonsVec; //координаты полигонов
     QVector<LIPPoint*> lipPoints= layer->returnCords();
     //geos::geom::GeometryFactory geometryFactory = geos::geom::GeometryFactory::getDefaultInstance();
-    geos::triangulate::DelaunayTriangulationBuilder geosTr;
     geos::triangulate::VoronoiDiagramBuilder geosVD;
     geosVD.setSites(LIPVectorConvertor::LIPPointsToGeosCoordinateSequence(lipPoints));
 
     geos::geom::GeometryFactory::Ptr gfact = geos::geom::GeometryFactory::create();
     std::unique_ptr<geos::geom::GeometryCollection> polygons= geosVD.getDiagram(*gfact);
 
-    for(std::size_t i=0; i<polygons->getLength(); i++)
+    for( std::size_t i =0; i<polygons->getNumGeometries(); i++)
     {
 
         auto poly = polygons->getGeometryN(i);
         if (poly==nullptr)
             break;
-        auto polyCords = poly->getCoordinates();
+        std::vector<Coordinate> polyCords;
+        poly->getCoordinates()->toVector(polyCords);
         QVector<QPointF> tempVec;
-        for(std::size_t n=0; n<polyCords->getSize(); n++)
+        for(std::size_t n=0; n<polyCords.size(); n++)
         {
-            auto point = polyCords->getAt(n);
+            auto point = polyCords.at(n);
             tempVec.append(QPointF(point.x, point.y));
         }
         polygonsVec.append(tempVec);
 
     }
-
     return polygonsVec;
     //return QVector<QVector<QPointF>>();
 }
