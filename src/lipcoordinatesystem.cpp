@@ -6,6 +6,15 @@ LIPCoordinateSystem::LIPCoordinateSystem()
     mSR = new OGRSpatialReference;
 }
 
+LIPCoordinateSystem::LIPCoordinateSystem(const LIPCoordinateSystem &other)
+    :mSR{nullptr}
+{
+    mSR = new OGRSpatialReference;
+    char* wkt = nullptr;
+    other.mSR->exportToWkt(&wkt);
+    mSR->importFromWkt(wkt);
+}
+
 LIPCoordinateSystem::~LIPCoordinateSystem()
 {
     delete mSR;

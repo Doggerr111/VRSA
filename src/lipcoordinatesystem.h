@@ -8,6 +8,7 @@ class LIPCoordinateSystem
 {
 public:
     LIPCoordinateSystem(/*QString name ="", QString projString=""*/);
+    LIPCoordinateSystem(const LIPCoordinateSystem &other);
     ~LIPCoordinateSystem();
     bool setName(QString name);
     bool setProj(QString proj);
