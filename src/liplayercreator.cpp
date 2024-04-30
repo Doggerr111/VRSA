@@ -19,9 +19,10 @@ LIPLayerCreator::LIPLayerCreator(LIPGeometryType type, QString name, QString nam
     case LIPGeometryType::LIPPoint: //если создаем точечный слой
     {
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
+        const char *options[] = { "ENCODING=UTF-8", NULL };
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, nullptr);
-        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbPoint, nullptr);
+        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbPoint, const_cast<char**>(options));
         if (layer == nullptr)
         {
             //cout << "Layer creation failed!" << endl;
