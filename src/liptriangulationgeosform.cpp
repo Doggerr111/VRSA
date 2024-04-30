@@ -59,9 +59,9 @@ void LIPTriangulationGeosForm::on_buttonBox_accepted()
         return;
     }
     const auto triangles = LIPTriangulationGeos::getTriangulation(inputLayer);
-    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
-    crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
-    LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",crs.get());
+//    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
+//    crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
+    LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",inputLayer->getCRS());
     outputLayer=lCr->returnLayer();
     for (auto triangle : triangles)
     {

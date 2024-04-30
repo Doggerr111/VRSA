@@ -31,17 +31,16 @@ void LIPVoronoiDiagramForm::on_buttonBox_accepted()
         return;
     }
     const auto polygons = LIPTriangulationGeos::getVoronoiDiagram(inputLayer);
-    std::shared_ptr<LIPCoordinateSystem> crs= std::make_shared<LIPCoordinateSystem>();
-    crs->setOGRSpatialRef(inputLayer->getOGRLayer()->GetSpatialRef());
+    //LIPCoordinateSystem crs(*inputLayer->getCRS());
     LIPLayerCreator *lCr=new LIPLayerCreator(LIPGeometryType::LIPPolygon, fileName, "outputLayer",
-                                             crs.get());
+                                             inputLayer->getCRS());
     outputLayer=lCr->returnLayer();
     for (auto polygon : polygons)
     {
         outputLayer->addFeature(polygon, QVector<LIPAttribute>());
     }
     outputLayer->update();
-
+    delete lCr;
     close();
 }
 
