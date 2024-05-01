@@ -14,12 +14,12 @@ LIPLayerCreator::LIPLayerCreator(LIPGeometryType type, QString name, QString nam
     QByteArray ba = name.toLocal8Bit();
     const char *nameChar = ba.data();
     geomType=type;
+    const char *options[] = { "ENCODING=UTF-8", NULL };
     switch (geomType)
     {
     case LIPGeometryType::LIPPoint: //если создаем точечный слой
     {
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
-        const char *options[] = { "ENCODING=UTF-8", NULL };
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, nullptr);
         layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbPoint, const_cast<char**>(options));
@@ -38,7 +38,7 @@ LIPLayerCreator::LIPLayerCreator(LIPGeometryType type, QString name, QString nam
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, NULL);
-        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbLineString, NULL);
+        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbLineString, const_cast<char**>(options));
         if (layer == NULL)
         {
             //cout << "Layer creation failed!" << endl;
@@ -54,7 +54,7 @@ LIPLayerCreator::LIPLayerCreator(LIPGeometryType type, QString name, QString nam
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, NULL);
-        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbPolygon, NULL);
+        layer = ds->CreateLayer(nameChar, system->getOGRSpatialRef(), wkbPolygon, const_cast<char**>(options));
         if (layer == NULL)
         {
             //cout << "Layer creation failed!" << endl;
@@ -64,6 +64,8 @@ LIPLayerCreator::LIPLayerCreator(LIPGeometryType type, QString name, QString nam
             polyLayer = new LIPPolygonLayer(layer, mainName, fileNameAsString, ds);
         }
     }
+    default:
+        break;
     }
 
 
@@ -227,7 +229,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
 
     QByteArray ba = fileName.toLocal8Bit();
     const char *nameChar = ba.data();
-
+    const char *options[] = { "ENCODING=UTF-8", NULL };
     OGRCoordinateTransformation* crTr = OGRCreateCoordinateTransformation(sourceCRS->getOGRSpatialRef(), targetCRS->getOGRSpatialRef());
     switch (LIPVectorTypeChecker::getType(inputLayer))
     {
@@ -236,7 +238,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         GDALDataset *ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, nullptr);
-        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbPoint, nullptr);
+        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbPoint, const_cast<char**>(options));
         if (layer == nullptr)
             return nullptr;
 
@@ -281,6 +283,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
             OGRFeature::DestroyFeature(feature);
             OGRFeature::DestroyFeature(newFeature);
         }
+        break;
 
     }
 
@@ -289,7 +292,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         GDALDataset *ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, nullptr);
-        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbLineString, nullptr);
+        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbLineString, const_cast<char**>(options));
         if (layer == nullptr)
             return nullptr;
 
@@ -363,7 +366,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
         const char *pszDriverName = "ESRI Shapefile"; //toDO выбор драйвера пользователем
         GDALDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
         GDALDataset *ds = poDriver->Create(nameChar, 0, 0, 0, GDT_Unknown, nullptr);
-        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbPolygon, nullptr);
+        OGRLayer *layer = ds->CreateLayer(nameChar, targetCRS->getOGRSpatialRef(), wkbPolygon, const_cast<char**>(options));
         if (layer == nullptr)
             return nullptr;
 
