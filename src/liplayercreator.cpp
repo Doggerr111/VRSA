@@ -283,6 +283,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
             OGRFeature::DestroyFeature(feature);
             OGRFeature::DestroyFeature(newFeature);
         }
+        return new LIPPointLayer(layer, "reprojected layer", fileName, ds);
         break;
 
     }
@@ -357,6 +358,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
             OGRFeature::DestroyFeature(feature);
             OGRFeature::DestroyFeature(newFeature);
         }
+        return new LIPLineLayer(layer, "reprojected layer", fileName, ds);
         break;
 
 
@@ -451,6 +453,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
             OGRFeature::DestroyFeature(feature);
             OGRFeature::DestroyFeature(newFeature);
         }
+        return new LIPPolygonLayer(layer, "reprojected layer", fileName, ds);
         break;
 
 
@@ -461,6 +464,7 @@ LIPVectorLayer *LIPLayerCreator::createReprojectedLayer(LIPVectorLayer *inputLay
             break;
         }
     }
+    return nullptr;
 
 
 
