@@ -14,7 +14,7 @@ LIPCoordinateSystemLibrary::LIPCoordinateSystemLibrary()
     mCRSLib.append(GSK_2011);
 
     LIPCoordinateSystem *PZ_90_11 = new LIPCoordinateSystem();
-    PZ_90_11->setProj("+proj=longlat +a=6378136 +rf=298.257839303 +no_defs +type=crs");
+    PZ_90_11->setProj("+proj=geocent +a=6378136 +rf=298.257839303 +units=m +no_defs");
     PZ_90_11->setName("ПЗ-90.11");
     mCRSLib.append(PZ_90_11);
 
