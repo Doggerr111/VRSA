@@ -8,7 +8,7 @@ LIPRasterLayer::LIPRasterLayer(QString fName):
 {
     GDALAllRegister();
     int startIndex = mFileName.lastIndexOf('/') + 1; // Находим индекс символа '/' и добавляем 1, чтобы пропустить его
-    int endIndex = mFileName.indexOf(".shp");
+    int endIndex = mFileName.indexOf(".tif");
     mGISName = mFileName.mid(startIndex, endIndex - startIndex);
     QByteArray bytea=mFileName.toLocal8Bit();
     const char *charname=bytea.data();
@@ -173,13 +173,13 @@ bool LIPRasterLayer::composeRGBImage()
 {
     if (mBands.isEmpty())
         return false;
-
+    double noDataValue = mBands.at(0)->GetNoDataValue();
     for (int i = 0; i < mNumPixels; i++)
     {
 
-        auto pixelValue1 = mRasterData[mRGBStyle->bandIndex1-1][i];
-        auto pixelValue2 = mRasterData[mRGBStyle->bandIndex2-1][i];
-        auto pixelValue3 = mRasterData[mRGBStyle->bandIndex3-1][i];
+        const auto pixelValue1 = mRasterData[mRGBStyle->bandIndex1-1][i];
+        const auto pixelValue2 = mRasterData[mRGBStyle->bandIndex2-1][i];
+        const auto pixelValue3 = mRasterData[mRGBStyle->bandIndex3-1][i];
 
         int normalizedBrightness1=0;
         int normalizedBrightness2=0;
@@ -198,8 +198,16 @@ bool LIPRasterLayer::composeRGBImage()
             normalizedBrightness2=255;
         if (normalizedBrightness3>255)
             normalizedBrightness3=255;
-        QRgb color = qRgb(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3);
-        mImage.setPixel(i % mWidth, i / mWidth, color);
+        if  (pixelValue1 != noDataValue)
+        {
+            QRgb color = qRgb(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3);
+            mImage.setPixel(i % mWidth, i / mWidth, color);
+        }
+        else
+        {
+            QRgb color = qRgba(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3,0);
+            mImage.setPixel(i % mWidth, i / mWidth, color);
+        }
 
     }
     mPixmapItem->setPixmap(QPixmap::fromImage(mImage));
@@ -290,6 +298,7 @@ void LIPRasterLayer::update()
 {
     if (!mStyle)
         return;
+    double noDataValue = mBands.at(0)->GetNoDataValue();
     LIPRasterRGBStyle *rgbStyle = dynamic_cast<LIPRasterRGBStyle*>(mStyle);
     if (rgbStyle)
     {
@@ -307,11 +316,25 @@ void LIPRasterLayer::update()
                 normalizedBrightness2=255;
             if (normalizedBrightness3>255)
                 normalizedBrightness3=255;
-            QRgb color = qRgb(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3);
-            mImage.setPixel(i % mWidth, i / mWidth, color);
+            if  (pixelValue1 != noDataValue)
+            {
+                QRgb color = qRgb(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3);
+                mImage.setPixel(i % mWidth, i / mWidth, color);
+            }
+            else
+            {
+                QRgb color = qRgba(normalizedBrightness1, normalizedBrightness2, normalizedBrightness3,0);
+                mImage.setPixel(i % mWidth, i / mWidth, color);
+            }
 
         }
         mPixmapItem->setPixmap(QPixmap::fromImage(mImage));
 
     }
+
+
+
+
+
+
 }
